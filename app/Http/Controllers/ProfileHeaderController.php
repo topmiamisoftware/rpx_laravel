@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\ProfileHeader;
+use Illuminate\Http\Request;
+
+class ProfileHeaderController extends Controller
+{
+    
+    public function myProfileHeader(ProfileHeader $profileHeader){
+        return $profileHeader->myProfileHeader();
+    } 
+
+    public function setDefault(ProfileHeader $profileHeader, Request $request){
+        
+        return $profileHeader->setDefault($request);
+    }  
+
+    public function uploadDefault(ProfileHeader $profileHeader, Request $request){
+        
+        return $profileHeader->uploadDefault($request);
+    } 
+
+    public function setDescription(ProfileHeader $profileHeader, Request $request){
+        
+        return $profileHeader->setDescription($request);
+    }  
+
+}
