@@ -25,5 +25,6 @@ class DefaultImagesFactory extends Factory
         return [
             'default_image_url' => null
         ];
+        
     }
 }

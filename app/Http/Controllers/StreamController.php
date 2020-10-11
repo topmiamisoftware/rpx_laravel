@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Stream;
+use App\User;
 use Illuminate\Http\Request;
 
 class StreamController extends Controller
@@ -15,5 +16,5 @@ class StreamController extends Controller
     public function myGeneralStream(Stream $stream, Request $request){
         return $stream->myGeneralStream($request);
     }
-
+    
 }

@@ -63,7 +63,7 @@ class Friendship extends Pivot
     public function showPending(){
 
         $user = Auth::user();
-
+        
         $pendingFriendshipList = $user
         ->relationships()
         ->where('relation', 0)
@@ -72,7 +72,7 @@ class Friendship extends Pivot
         ->paginate(20);
 
         $response = array(
-            'message' => 'success',
+            'success' => true,
             'pending_friends_list' => $pendingFriendshipList
         );
 
@@ -151,7 +151,7 @@ class Friendship extends Pivot
         ->delete();
 
         $response = array(
-            'message' => 'success'
+            'success' =>  true
         );
 
         return response($response);
@@ -171,12 +171,36 @@ class Friendship extends Pivot
         $blockPeer = $user
         ->relationships()
         ->updateOrInsert(
-            ['peer_id' => $validatedData['peer_id']],
+            ['user_id' => $userId, 'peer_id' => $validatedData['peer_id']],
             ['relation' => 2]
         );
 
         $response = array(
             'message' => 'success'
+        );
+
+        return response($response);
+
+    }
+
+    public function unblock(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'peer_id' => 'required|numeric'
+        ]);
+
+        $blockPeer = $user
+        ->relationships()
+        ->where('peer_id', $validatedData['peer_id'])
+        ->where('relation', 2)
+        ->delete();
+
+        $response = array(
+            'success' => true
         );
 
         return response($response);
@@ -202,6 +226,130 @@ class Friendship extends Pivot
         
         $response = array(
             'message' => 'success',
+        );
+
+        return response($response);
+
+    }
+
+    public function checkRelationship(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'peer_id' => 'required|numeric'
+        ]);
+        
+        $relationship = $user->relationships()
+        ->select('user_id', 'peer_id', 'relation')
+        ->where('user_id', $userId)
+        ->where('peer_id', $validatedData['peer_id'])
+        ->first();
+        
+        if($relationship === null)
+            $relation = null;
+        else
+            $relation = $relationship->relation;
+
+        $response = array(
+            'success' => true,
+            'relationship' => $relation
+        );
+
+        return response($response);
+
+    }
+
+    public function acceptRequest(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'user_id' => 'required|numeric'
+        ]);
+
+        $user->relationships()
+        ->where('user_id', $validatedData['user_id']) 
+        ->where('peer_id', $userId)
+        ->where('relation', 0)
+        ->update(['relation' => 1]);
+
+        $response = array(
+            'success' => true
+        );
+
+        return response($response);
+
+    }
+
+    public function declineRequest(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'peer_id' => 'required|numeric'
+        ]);
+
+        $user->relationships()
+        ->where('peer_id', $validatedData['peer_id'])
+        ->where('relation', 0)
+        ->delete();
+
+        $response = array(
+            'success' => true
+        );
+
+        return response($response);
+
+    }
+
+    public function cancelRequest(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'peer_id' => 'required|numeric'
+        ]);
+
+        $user->relationships()
+        ->where('peer_id', $validatedData['peer_id'])
+        ->where('relation', 0)
+        ->delete();
+
+        $response = array(
+            'success' => true
+        );
+
+        return response($response);
+
+    }
+
+    public function addFriend(Request $request){
+
+        $user = Auth::user();
+
+        $userId = $user->id;
+
+        $validatedData = $request->validate([
+            'peer_id' => 'required|numeric'
+        ]);
+        
+        $user->relationships()
+        ->updateOrInsert(
+            ['user_id' => $userId, 'peer_id' => $validatedData['peer_id']],
+            ['relation' => 0]
+        );
+
+        $response = array(
+            'success' => true
         );
 
         return response($response);

@@ -16,7 +16,7 @@ class CreateReportsTable extends Migration
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id')->references('id')->on('users');
-            $table->unsignedInteger('report_by')->references('id')->on('users');
+            $table->unsignedInteger('peer_id')->references('id')->on('users');
             $table->integer('report_reason');
             $table->timestamps();
             $table->softDeletes();

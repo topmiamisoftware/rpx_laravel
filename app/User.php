@@ -283,38 +283,55 @@ class User extends Authenticatable
     
     public function saveSettings(Request $request){
         
-        $validatedData = $request->validate([
-            'username' => 'required|unique|max:35|min:1|URL',
-            'email' => 'required|email',
-            'first_name' => ['required', new FirstName],
-            'last_name' => ['required', new LastName],
-            'phone_number' => ['required', new PhoneNumber],
-            'ghost_mode' => 'required|boolean',
-            'privacy' => 'required|boolean',
-        ]);
-        
         $user = Auth::user();
+
+        if($user->username === $request->username) {
+
+            $validatedData = $request->validate([
+                'username' => 'required|string|max:35|min:1',
+                'email' => 'required|email',
+                'first_name' => ['required', new FirstName],
+                'last_name' => ['required', new LastName],
+                'phone_number' => ['required', new PhoneNumber],
+                'ghost_mode' => 'required|boolean',
+                'privacy' => 'required|boolean',
+                'animal' => 'required|string'
+            ]);
+
+        } else {
+
+            $validatedData = $request->validate([
+                'username' => 'required|string|unique:users|max:35|min:1',
+                'email' => 'required|email',
+                'first_name' => ['required', new FirstName],
+                'last_name' => ['required', new LastName],
+                'phone_number' => ['required', new PhoneNumber],
+                'ghost_mode' => 'required|boolean',
+                'privacy' => 'required|boolean',
+                'animal' => 'required|string'
+            ]);
+
+        }
 
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];
 
         $user->save();
 
-        $spotbieUser = $user->spotbieUser();
-
-        $spotbieUser->first_name = $validatedData['first_name'];
-        $spotbieUser->last_name = $validatedData['last_name'];
-        $spotbieUser->phone_number = $validatedData['phone_number'];
-        $spotbieUser->ghost_mode = $validatedData['ghost_mode'];
-        $spotbieUser->privacy = $validatedData['privacy'];
+        $user->spotbieUser->first_name = $validatedData['first_name'];
+        $user->spotbieUser->last_name = $validatedData['last_name'];
+        $user->spotbieUser->phone_number = $validatedData['phone_number'];
+        $user->spotbieUser->ghost_mode = $validatedData['ghost_mode'];
+        $user->spotbieUser->privacy = $validatedData['privacy'];
+        $user->spotbieUser->animal = $validatedData['animal'];
         
-        $spotbieUser->save();
+        $user->spotbieUser->save();
 
         $response = array(
-            'message' => 'success'
+            'success' => true
         );
 
-        return $response;
+        return response($response);
 
     }
 

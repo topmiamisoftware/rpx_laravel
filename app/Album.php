@@ -61,11 +61,10 @@ class Album extends Model
             'loc_x', 'loc_y', 'media_type', 'caption', 'content', 'created_at', 'updated_at')
             ->withCount('likes')
             ->withCount('comments')
-            ->where('active', true)
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-            $album_settings = $this->select('name', 'description', 'privacy', 'cover', 'created_at')
+            $album_settings = $this->select('id', 'name', 'description', 'privacy', 'cover', 'created_at')
             ->where('id', $this->id)
             ->first();
 

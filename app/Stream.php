@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Carbon\Carbon;
 
+use App\User;
+
 class Stream extends Model
 {
     /* 
@@ -24,16 +26,17 @@ class Stream extends Model
 
     public function myStream(Request $request){
 
-        $user = Auth::user();
-
         if(!Auth::check()){
 
-            $response = array(
-                'message' => 'failed'
-            );
-    
-            return response($response);
+            $validatedData = $request->validate([
+                'user_id' => 'required|integer'
+            ]);
+
+            $user = User::where('id', $validatedData['user_id'])
+            ->first();
             
+        } else {
+            $user = Auth::user();
         }
 
         $stream_post_list = $user->streamPosts()
@@ -43,7 +46,7 @@ class Stream extends Model
         ->withCount('likes')
         ->with('extraMediaList:id,type,content,stream_post_id,owner_user_id,status,created_at,updated_at')
         ->with('user:id,username')
-        ->with('spotbieUser:user_id,default_picture')
+        ->with('spotbieUser:id,default_picture')
         ->with('webOptions:time_zone')
         ->orderBy('updated_at', 'desc')      
         ->paginate(10);

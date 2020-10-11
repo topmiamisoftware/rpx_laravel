@@ -9,14 +9,14 @@ class AlbumsSeeder extends Seeder
 {
     public function run()
     {
-        
-        $link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
-    
-        if(!$link) {die('Failed to connect to server: ' . mysqli_connect_error() . " Line Number: " . __LINE__ . " File Name: " . __FILE__);}
-    
+
+        $link = mysqli_connect(config('database.connections.mysql_spotbie_old.host'), 
+                                config('database.connections.mysql_spotbie_old.username'), 
+                                config('database.connections.mysql_spotbie_old.password'), 
+                                config('database.connections.mysql_spotbie_old.database'));
         $con = $link;
 
-        $sql = "SELECT * FROM exe_albums WHERE 1";
+        $sql = "SELECT * FROM exe_albums WHERE belongs_to = '1'";
 
         $qry = mysqli_query($con, $sql);
 

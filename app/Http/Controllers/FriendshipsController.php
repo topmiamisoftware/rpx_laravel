@@ -32,11 +32,33 @@ class FriendshipsController extends Controller
         return $friendships->block($request);
     }
 
+    public function unblock(Friendship $friendships, Request $request){
+        return $friendships->unblock($request);
+    }
 
     public function report(Friendship $friendships, Request $request){
         return $friendships->report($request);
     }
 
+    public function cancelRequest(Friendship $friendships, Request $request){
+        return $friendships->cancelRequest($request);
+    }
+
+    public function acceptRequest(Friendship $friendships, Request $request){
+        return $friendships->acceptRequest($request);
+    }
+
+    public function declineRequest(Friendship $friendships, Request $request){
+        return $friendships->declineRequest($request);
+    }
+
+    public function checkRelationship(Friendship $friendships, Request $request){
+        return $friendships->checkRelationship($request);
+    }
     
+    public function addFriend(Friendship $friendships, Request $request){
+        return $friendships->addFriend($request);
+    }
+
 
 }

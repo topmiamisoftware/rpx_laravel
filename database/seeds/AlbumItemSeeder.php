@@ -10,13 +10,13 @@ class AlbumItemSeeder extends Seeder
     public function run()
     {
         
-        $link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
-    
-        if(!$link) {die('Failed to connect to server: ' . mysqli_connect_error() . " Line Number: " . __LINE__ . " File Name: " . __FILE__);}
-    
+        $link = mysqli_connect(config('database.connections.mysql_spotbie_old.host'), 
+                                config('database.connections.mysql_spotbie_old.username'), 
+                                config('database.connections.mysql_spotbie_old.password'), 
+                                config('database.connections.mysql_spotbie_old.database'));
         $con = $link;
 
-        $sql = "SELECT * FROM exe_album_items WHERE 1";
+        $sql = "SELECT * FROM exe_album_items WHERE album_by = '1'";
 
         $qry = mysqli_query($con, $sql);
 
@@ -30,7 +30,7 @@ class AlbumItemSeeder extends Seeder
                     'album_id' => $album_item['album_id'],
                     'media_type' => $album_item['album_media_type'],  
                     'caption' => $album_item['album_item_caption'],  
-                    'content' => $album_item['album_media_content'],  
+                    'content' => str_replace('../', 'https://spotbie.com/', $album_item['album_media_content']),  
                     'active' => $album_item['item_active'],                        
                     'created_at' => $album_item['item_created'],
                     'updated_at' => $album_item['item_updated']                               

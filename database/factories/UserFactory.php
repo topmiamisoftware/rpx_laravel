@@ -29,5 +29,6 @@ class UserFactory extends Factory
             'password' => Hash::make('HelloWorld33!'),
             'confirm' => strtoupper(Str::random(6))
         ];
+        
     }
 }

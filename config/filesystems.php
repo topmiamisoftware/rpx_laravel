@@ -80,7 +80,9 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        public_path('defaults') => storage_path('app/defaults')
+        public_path('defaults') => storage_path('app/defaults'),
+        public_path('backgrounds') => storage_path('app/backgrounds'),
+        public_path('albums') => storage_path('app/albums')
     ],
 
 ];

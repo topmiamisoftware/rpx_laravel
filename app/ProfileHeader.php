@@ -4,6 +4,8 @@ namespace App;
 
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\DefaultImages;
 
 class ProfileHeader extends User
 {
@@ -43,18 +45,18 @@ class ProfileHeader extends User
     
     public function setDefault(Request $request){
 
-        $validatedDate = $request->validate([
-            'default_picture' => 'required|max:100|min:1'
+        $validatedData = $request->validate([
+            'default_picture' => 'required|max:150|min:1'
         ]);
 
         $user = Auth::user();
         
-        $user->spotbieUser->default_picture = $validatedDate['default_picture'];
+        $user->spotbieUser->default_picture = $validatedData['default_picture'];
         
         $user->spotbieUser->save();
         
         $response = array(
-            'message' => 'success',
+            'success' => true,
             'default_picture' => $user->spotbieUser->default_picture
         );
 
@@ -64,21 +66,81 @@ class ProfileHeader extends User
 
     public function uploadDefault(Request $request){
 
-        $validatedDate = $request->validate([
+        $success = true;
+        $message = null;
+
+        $validatedData = $request->validate([
             'default_picture' => 'required|image|max:2999'
         ]);
 
         $user = Auth::user();
-
-        $user->spotbieUser->default_picture = $user->id. '/' .$validatedDate['default_picture']->hashName();
         
-        $validatedDate['default_picture']->storeAs('defaults', $user->spotbieUser->default_picture);
+        $defaultImagesPath = 'http://localhost:8000/defaults/';
+        $hashedFileName = $validatedData['default_picture']->hashName();
+
+        $user->spotbieUser->default_picture = $defaultImagesPath . $user->id. '/' . $hashedFileName;
+        
+        $validatedData['default_picture']->storeAs('defaults',  $user->id . '/' . $hashedFileName);
         
         $user->spotbieUser->save();
         
+        $userDefaultList = $user->defaultImages;
+
+        if(count($userDefaultList) == 10){
+
+            $success = false;
+            $message = 'You have already uploaded 10 default images. Delete one before uploading another one.';
+
+        } else {
+
+            $defaultImage = new DefaultImages;
+            $defaultImage->user_id = $user->id;
+            $defaultImage->default_image_url = $user->spotbieUser->default_picture;
+
+            $defaultImage->save();
+
+        }
+
         $response = array(
-            'message' => 'success',
+            'success' => $success,
+            'message' => $message,
             'default_picture' => $user->spotbieUser->default_picture
+        );
+
+        return response($response);
+
+    }
+
+    public function deleteDefault(Request $request){
+
+        $validatedData = $request->validate([
+            'default_image_url' => 'required|string'
+        ]);
+
+        $user = Auth::user();
+
+        $user->defaultImages()
+        ->select('user_id', 'default_image_url')
+        ->where('user_id', $user->id)
+        ->where('default_image_url', $validatedData['default_image_url'])
+        ->delete();
+
+        $newDefault = $user->defaultImages()
+        ->select('user_id', 'default_image_url')
+        ->where('user_id', $user->id)
+        ->orderBy('id', 'asc')
+        ->first();
+
+        if($newDefault !== null)
+            $user->spotbieUser->default_picture = $newDefault->default_image_url; 
+        else
+            $user->spotbieUser->default_picture = 'http://localhost:8000/defaults/user.png';
+
+        $user->spotbieUser->save();
+
+        $response = array(
+            'success' => true,
+            'new_profile_default' => $user->spotbieUser->default_picture
         );
 
         return response($response);
@@ -87,18 +149,50 @@ class ProfileHeader extends User
 
     public function setDescription(Request $request){
 
-        $validatedDate = $request->validate([
-            'description' => 'required|max:500|min:1'
+        $validatedData = $request->validate([
+            'description' => 'required|string|max:500|min:1'
         ]);
 
         $user = Auth::user();
         
-        $user->spotbieUser->description = $validatedDate['description'];
+        $user->spotbieUser->description = $validatedData['description'];
         
         $user->spotbieUser->save();
         
         $response = array(
             'description' =>  $user->spotbieUser->description
+        );
+
+        return response($response);
+
+    }
+
+    public function uploadBackground(Request $request){
+
+        $validatedData = $request->validate([
+            'background_picture' => 'required|image|max:2999'
+        ]);
+
+        $user = Auth::user();
+        
+        $backgroundImagePath = 'http://localhost:8000/backgrounds/';
+        $hashedFileName = $validatedData['background_picture']->hashName();
+        
+        //Let's delete any other backgrounds
+        if(Storage::exists('backgrounds/'.$user->id)){
+            $allFiles = Storage::allFiles('backgrounds/'.$user->id);
+            Storage::delete($allFiles); 
+        }
+
+        $user->webOptions->spotmee_bg = $backgroundImagePath . $user->id. '/' . $hashedFileName;
+        
+        $validatedData['background_picture']->storeAs('backgrounds',  $user->id . '/' . $hashedFileName);
+        
+        $user->webOptions->save();
+
+        $response = array(
+            'success' => true,
+            'background_picture' => $user->webOptions->spotmee_bg
         );
 
         return response($response);

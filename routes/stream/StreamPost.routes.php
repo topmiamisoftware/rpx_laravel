@@ -10,7 +10,7 @@
 
     Route::delete('stream_post/destroy', 'StreamPostController@destroy')->middleware('auth');
 
-    Route::get('stream/my_stream', 'StreamController@myStream')->middleware('auth');
+    Route::get('stream/my_stream', 'StreamController@myStream');
 
     Route::get('stream/my_general_stream', 'StreamController@myGeneralStream')->middleware('auth');
 
