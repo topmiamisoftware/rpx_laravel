@@ -52,4 +52,12 @@ class UserController extends Controller
         return $user->getUser($request);
     }
 
+    public function sendPassEmail(User $user, Request $request){
+        return $user->setPassResetPin($request);
+    }
+
+    public function completePassReset(User $user, Request $request){
+        return $user->completePassReset($request);
+    }
+
 }   

@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 
+use App\Report;
+
+use Carbon\Carbon;
+
 class Friendship extends Pivot
 {
     
@@ -66,6 +70,7 @@ class Friendship extends Pivot
         
         $pendingFriendshipList = $user
         ->relationships()
+        ->select('user_id', 'peer_id', 'updated_at')
         ->where('relation', 0)
         ->with('user:id,username')
         ->with('spotbieUser:id,first_name,last_name,default_picture')
@@ -218,11 +223,17 @@ class Friendship extends Pivot
             'report_reason' => 'required|numeric'
         ]);
 
-        $reportPeer = DB::table('reports')->insert([
-            'user_id' =>  $userId,
-            'peer_id' => $validatedData['peer_id'],
-            'report_reason' => $validatedData['report_reason'],
-        ]);
+        $reportPeer = Report::updateOrCreate(
+            [
+                'user_id' =>  $userId,
+                'peer_id' => $validatedData['peer_id']
+            ],
+            [
+                'report_reason' => $validatedData['report_reason'],
+                'created_at' =>  Carbon::now(),
+                'updated_at' => Carbon::now()           
+            ]
+        );
         
         $response = array(
             'message' => 'success',

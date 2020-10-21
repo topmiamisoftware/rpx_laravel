@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
 
 use Twilio\Rest\Client;
@@ -23,6 +24,7 @@ use App\Rules\LastName;
 use App\Rules\PhoneNumber;
 use App\Rules\Password;
 use App\Rules\Username;
+
 
 class User extends Authenticatable
 {
@@ -183,7 +185,7 @@ class User extends Authenticatable
         Auth::logout();
 
         $logoutResponse = array(
-            'message' => 'success'
+            'success' => true
         );   
 
         return response($logoutResponse);
@@ -373,6 +375,84 @@ class User extends Authenticatable
             'spotbie_user' => $spotbieUser,
             'web_options' => $webOptions,
             'default_images' => $defaultImages
+        );
+
+        return response($response);
+
+    }
+
+    public function setPassResetPin(Request $request){
+
+        $success = false;
+
+        $validatedData = $request->validate([
+            'email_or_phone' => 'required|string'
+        ]);
+        
+        $user = User::select('id', 'email')
+        ->where('email', $validatedData['email_or_phone'])
+        ->first();
+
+        if($user === null){
+
+            $user = SpotbieUser::select('id')
+            ->where('phone_number', $validatedData['email_or_phone'])
+            ->first();
+
+            $user = User::select('id', 'email')
+            ->where('id', $user->id)
+            ->first();
+            
+        }
+
+        $spotbieUser = SpotbieUser::select('id', 'phone_number')
+        ->where('id', $user->id)
+        ->first();
+
+        $userId = $user->id;
+
+        $status = IlluminatePassword::sendResetLink(
+            $user->only('email')
+        );
+
+        $success = true;
+
+        $response = array(
+            'success' => $success,
+            'user' => $user,
+            'status' => $status
+        );
+
+        return response($response);
+
+    }
+
+    public function completePassReset(Request $request){
+
+        $success = true;
+
+        $validatedData = $request->validate([
+            'email' => ['required', 'email'],
+            'token' => ['required', 'string'],
+            'password' => ['required', new Password, 'confirmed']
+        ]);
+        
+        $status = IlluminatePassword::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+    
+                $user->setRememberToken(Str::random(60));
+    
+                event(new IlluminatePassword($user));
+            }
+        );
+
+        $response = array(
+            'success' => $success,
+            'status' => $status
         );
 
         return response($response);

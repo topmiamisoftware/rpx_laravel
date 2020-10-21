@@ -16,4 +16,10 @@
 
     Route::delete('user/deactivate', 'UserController@deactivate')->middleware('auth');
 
+    Route::post('user/send-pass-email', 'UserController@sendPassEmail');
+
+    Route::put('user/complete-pass-reset', 'UserController@completePassReset');
+
+    Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
+
 ?>
