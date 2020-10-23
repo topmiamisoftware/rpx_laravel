@@ -63,6 +63,10 @@ class User extends Authenticatable
         return $this->hasMany('App\DefaultImages');
     }
 
+    public function myFavorites(){
+        return $this->hasMany('App\MyFavorites', 'user_id');
+    }
+
     public function signUp(Request $request){
 
         $validatedData = $request->validate([

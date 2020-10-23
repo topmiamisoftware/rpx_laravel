@@ -12,15 +12,6 @@ class AlbumController extends Controller
         return $album->myAlbums();
     }
 
-    public function create()
-    {
-        //
-    }
-
-    public function store(Request $request)
-    {
-        //
-    }
 
     public function viewAlbum(Album $album, Request $request)
     {
@@ -32,13 +23,5 @@ class AlbumController extends Controller
         return $album->slideShowSet($request);
     }
     
-    public function update(Request $request, Album $albums)
-    {
-        //
-    }
-
-    public function destroy(Album $albums)
-    {
-        //
-    }
+    
 }

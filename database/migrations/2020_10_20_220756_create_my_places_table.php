@@ -15,9 +15,13 @@ class CreateMyPlacesTable extends Migration
     {
         Schema::create('my_places', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->references('id')->on('users');
+            $table->string('place_name', 50);
+            $table->string('place_description', 2500);
             $table->float('loc_x', 8, 6)->nullable();
             $table->float('loc_y', 8, 6)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

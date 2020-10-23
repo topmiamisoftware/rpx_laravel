@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\MyFavorites;
+
+class MyFavoritesController extends Controller
+{
+
+    public function saveFavorite(MyFavorites $myFavorites, Request $request){
+
+        $response = array(
+            'success' => true,
+            'data' => $myFavorites->saveFavorite($request)
+        );
+
+        return response($response); 
+
+    }
+
+    public function removeFavorite(MyFavorites $myFavorites, Request $request){
+
+        $response = array(
+            'success' => true,
+            'data' => $myFavorites->removeFavorite($request)
+        );
+
+        return response($response); 
+
+    }
+
+    public function getFavorites(MyFavorites $myFavorites, Request $request){
+
+        $response = array(
+            'success' => true,
+            'favorite_items' => $myFavorites->getFavorites($request)
+        );
+
+        return response($response); 
+
+    }
+    
+
+}
