@@ -16,7 +16,7 @@ class CreateMyFavoritesTable extends Migration
         Schema::create('my_favorites', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->references('id')->on('users');
-            $table->string('yelp_id', 35)->unique()->nullable();
+            $table->string('third_party_id', 35)->unique()->nullable();
             $table->string('name', 50);
             $table->string('description', 2500)->nullable();            
             $table->float('loc_x', 8, 6)->nullable();

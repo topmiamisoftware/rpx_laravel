@@ -42,5 +42,16 @@ class MyFavoritesController extends Controller
 
     }
     
+    public function isAFavorite(MyFavorites $myFavorites, Request $request){
+
+        $response = array(
+            'success' => true,
+            'is_a_favorite' => $myFavorites->isAFavorite($request)
+        );
+
+        return response($response); 
+
+    }
+
 
 }

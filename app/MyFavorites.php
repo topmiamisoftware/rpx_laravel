@@ -24,7 +24,7 @@ class MyFavorites extends Model
         $favorites = $user
         ->myFavorites()
         ->select('id', 'yelp_id', 'name', 'description', 'loc_x', 'loc_y', 'created_at')
-        ->paginate(1);
+        ->paginate(10);
 
         return $favorites;
 
@@ -61,14 +61,37 @@ class MyFavorites extends Model
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'yelp_id' => ['string']
+            'id' => ['string']
         ]);
 
         $user->myFavorites()
-        ->where('yelp_id', $validatedData['yelp_id'])
+        ->where('yelp_id', $validatedData['id'])
         ->delete();
         
         return true;
+
+    }
+
+    public function isAFavorite(Request $request){
+        
+        $isAFavorite = false;
+
+        $validatedData = $request->validate([
+            'obj_type' => ['string'],
+            'obj_id' => ['string']
+        ]);
+
+        $user = Auth::user();
+
+        $favorite = $user
+        ->myFavorites()
+        ->where('yelp_id', $validatedData['obj_id'])
+        ->select('id')
+        ->first();
+
+        if($favorite !== null) $isAFavorite = true;
+
+        return $favorite;
 
     }
 
