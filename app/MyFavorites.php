@@ -23,7 +23,7 @@ class MyFavorites extends Model
 
         $favorites = $user
         ->myFavorites()
-        ->select('id', 'yelp_id', 'name', 'description', 'loc_x', 'loc_y', 'created_at')
+        ->select('id', 'third_party_id', 'name', 'description', 'loc_x', 'loc_y', 'created_at')
         ->paginate(10);
 
         return $favorites;
@@ -35,7 +35,7 @@ class MyFavorites extends Model
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'yelp_id' => ['nullable', 'string'],
+            'third_party_id' => ['nullable', 'string'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'loc_x' => ['required', 'numeric'],
@@ -44,7 +44,7 @@ class MyFavorites extends Model
 
         $newFavorite = new MyFavorites;
 
-        $newFavorite->yelp_id = $validatedData['yelp_id'];
+        $newFavorite->third_party_id = $validatedData['third_party_id'];
         $newFavorite->name = $validatedData['name'];
         $newFavorite->description = $validatedData['description'];
         $newFavorite->loc_x = $validatedData['loc_x'];
@@ -65,7 +65,7 @@ class MyFavorites extends Model
         ]);
 
         $user->myFavorites()
-        ->where('yelp_id', $validatedData['id'])
+        ->where('third_party_id', $validatedData['third_party_id'])
         ->delete();
         
         return true;
@@ -78,14 +78,14 @@ class MyFavorites extends Model
 
         $validatedData = $request->validate([
             'obj_type' => ['string'],
-            'obj_id' => ['string']
+            'third_party_id' => ['string']
         ]);
 
         $user = Auth::user();
 
         $favorite = $user
         ->myFavorites()
-        ->where('yelp_id', $validatedData['obj_id'])
+        ->where('third_party_id', $validatedData['third_party_id'])
         ->select('id')
         ->first();
 

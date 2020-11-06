@@ -13,5 +13,3 @@
     Route::get('stream/my_stream', 'StreamController@myStream');
 
     Route::get('stream/my_general_stream', 'StreamController@myGeneralStream')->middleware('auth');
-
-?> 

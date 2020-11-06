@@ -18,5 +18,3 @@
     Route::delete('friendship/unblock', 'FriendshipsController@unblock')->middleware('auth');
     Route::delete('friendship/decline', 'FriendshipsController@declineRequest')->middleware('auth');
     Route::delete('friendship/cancel_request', 'FriendshipsController@cancelRequest')->middleware('auth');
-
-?>

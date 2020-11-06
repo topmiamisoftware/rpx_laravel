@@ -13,5 +13,3 @@
 
     Route::delete('album_items/destroy', 'AlbumItemController@destroy')->middleware('auth');
     Route::delete('album_items/delete_all_unused', 'AlbumItemController@deleteAllUnused')->middleware('auth');
-
-?>

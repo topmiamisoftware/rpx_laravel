@@ -11,5 +11,3 @@
     Route::get('extra_media/show', 'ExtraMediaController@show');
 
     Route::delete('extra_media/destroy', 'ExtraMediaController@destroy')->middleware('auth');
-
-?>

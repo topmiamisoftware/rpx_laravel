@@ -8,5 +8,3 @@
     Route::get('stream_post_like/show', 'StreamPostLikeController@show');
 
     Route::delete('stream_post_like/destroy', 'StreamPostLikeController@destroy')->middleware('auth');
-
-?>

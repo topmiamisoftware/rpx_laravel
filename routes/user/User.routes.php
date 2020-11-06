@@ -10,7 +10,7 @@
 
     Route::put('user/update', 'UserController@update')->middleware('auth');
 
-    Route::get('user/settings', 'UserController@settings')->middleware('auth');
+    Route::post('user/settings', 'UserController@settings')->middleware('auth');
 
     Route::get('user/{user:username}', 'UserController@getUser');
 
@@ -19,7 +19,3 @@
     Route::post('user/send-pass-email', 'UserController@sendPassEmail');
 
     Route::put('user/complete-pass-reset', 'UserController@completePassReset');
-
-    Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
-
-?>

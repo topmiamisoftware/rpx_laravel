@@ -1,3 +1,4 @@
 {
-    "workbench.colorTheme": "Monokai GRS"
+    "workbench.colorTheme": "Monokai GRS",
+    "workbench.preferredDarkColorTheme": "Monokai GRS"
 }

@@ -10,5 +10,3 @@
     Route::get('stream_post_comment/show', 'StreamPostCommentController@show');
 
     Route::delete('stream_post_comment/destroy', 'StreamPostCommentController@destroy')->middleware('auth');
-
-?>

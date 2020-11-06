@@ -1,7 +1,7 @@
 <?php
 
     /* Album Controllers */
-    Route::get('album/my_albums', 'AlbumController@myAlbums')->middleware('auth');
+    Route::post('album/my_albums', 'AlbumController@myAlbums')->middleware('auth');
 
     Route::get('album/{album}', 'AlbumController@viewAlbum');
 
@@ -12,5 +12,3 @@
     Route::put('album/update', 'AlbumController@update')->middleware('auth');
     
     Route::delete('album/destroy', 'AlbumController@destroy')->middleware('auth');
-
-?>

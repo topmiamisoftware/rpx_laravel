@@ -12,6 +12,3 @@
     Route::delete('chat/destroy_all', 'ChatController@deleteAll')->middleware('auth');
 
     Route::delete('chat/destroy_single', 'ChatController@deleteSingle')->middleware('auth');
-
-
-?>

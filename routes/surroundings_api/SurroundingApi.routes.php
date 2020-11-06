@@ -7,5 +7,3 @@
     Route::post('search-businesses', 'SurroundingsApiController@searchBusinesses');
 
     Route::post('pull-info-object', 'SurroundingsApiController@pullInfoObject');
-    
-?>
