@@ -6,9 +6,12 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Album extends Model
 {
+
+    use SoftDeletes;
 
     public function albumItems(){
         return $this->hasMany('App\AlbumItem');

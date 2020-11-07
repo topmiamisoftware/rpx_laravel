@@ -5,9 +5,12 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AlbumItem extends Model
 {
+
+    use SoftDeletes;
 
     public function comments(){
         return $this->hasMany('App\AlbumItemComment', 'album_item_id');

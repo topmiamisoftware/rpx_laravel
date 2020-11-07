@@ -7,12 +7,12 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WebOptions extends Model
 {
 
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /* 
     * WebOptions belogns to User.

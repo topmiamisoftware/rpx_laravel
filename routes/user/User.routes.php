@@ -19,3 +19,5 @@
     Route::post('user/send-pass-email', 'UserController@sendPassEmail');
 
     Route::put('user/complete-pass-reset', 'UserController@completePassReset');
+
+    Route::put('user/change-password', 'UserController@changePassword');

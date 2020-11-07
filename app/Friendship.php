@@ -12,10 +12,12 @@ use App\Report;
 
 use Carbon\Carbon;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Friendship extends Pivot
 {
     
-    use HasFactory; 
+    use HasFactory, SoftDeletes; 
     
     public function initiatingUser(){
         return $this->belongsTo('App\User', 'user_id', 'id');

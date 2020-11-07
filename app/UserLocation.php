@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserLocation extends Model
 {
 
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public function user(){
         return $this->belongsTo('App\User', 'user_id');
@@ -101,8 +102,7 @@ class UserLocation extends Model
         ->join('users', 'spotbie_users.id', 'users.id')
         ->select('spotbie_users.default_picture', 'spotbie_users.description', 'spotbie_users.ghost_mode', 
         'web_options.bg_color', 'web_options.spotmee_bg', 'users.username')
-        ->whereRaw("((user_locations.user_id = 2 OR user_locations.user_id = 1
-        OR ($xr user_locations.user_id != 0 AND user_locations.loc_x = $loc_x AND user_locations.loc_y = $loc_y)
+        ->whereRaw("((($xr user_locations.user_id != 0 AND user_locations.loc_x = $loc_x AND user_locations.loc_y = $loc_y)
         OR ($xr user_locations.user_id != 0 
         AND (ABS(SQRT(((POWER((user_locations.loc_x - $loc_x), 2)) + (POWER ((user_locations.loc_y - $loc_y), 2))))) <= 0.01)))
         AND spotbie_users.user_type = '$search_type')")

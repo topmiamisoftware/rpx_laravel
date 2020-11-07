@@ -6,6 +6,7 @@ use Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
 
@@ -13,6 +14,7 @@ use App\User;
 
 class Stream extends Model
 {
+    use SoftDeletes;
     /* 
     * Get the user who initiated the relationship.
     */

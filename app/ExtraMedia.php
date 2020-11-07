@@ -3,9 +3,11 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ExtraMedia extends Model
 {
+    use SoftDeletes;
     /* 
     * Get the stream post this media belongs to.
     */

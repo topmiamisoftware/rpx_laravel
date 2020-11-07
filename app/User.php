@@ -7,6 +7,8 @@ use Mail;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 
@@ -16,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
-
 use Twilio\Rest\Client;
 
 use App\Rules\FirstName;
@@ -29,7 +30,7 @@ use App\Rules\Username;
 class User extends Authenticatable
 {
     
-    use Notifiable, HasFactory;  
+    use Notifiable, HasFactory, SoftDeletes;  
 
     public function userLocation(){
         return $this->hasOne('App\UserLocation');
@@ -127,12 +128,33 @@ class User extends Authenticatable
 
     public function logIn(Request $request){
 
-        $login = $request['login'];
-        $password = $request['password'];
-        $timezone = $request['timezone'];
-        $remember_me = $request['remember_me_opt'];
+        $validatedData = $request->validate([
+            'login' => ['required', 'string'],
+            'password' => ['required', new Password],
+            'timezone' => ['required', 'string'],
+            'remember_me_opt' => ['required', 'string']
+        ]);        
+
+        $login = $validatedData['login'];
+        $password = $validatedData['password'];
+        $timezone = $validatedData['timezone'];
+        $remember_me = $validatedData['remember_me_opt'];
 
         $login_failed = true;
+        
+        $searchUser = User::onlyTrashed()
+        ->select('id', 'password')
+        ->where(
+            function($query) use ($login){
+                $query->where('username', $login)
+                    ->orWhere('email', $login);
+            }
+        )
+        ->first();
+            
+        if($searchUser !== null && Hash::check($password, $searchUser->password)) 
+            $searchUser->restore();
+        
 
         if(!Auth::attempt(['email' => $login, 'password' => $password], $remember_me)
         && !Auth::attempt(['username' => $login, 'password' => $password], $remember_me)
@@ -174,7 +196,7 @@ class User extends Authenticatable
                 'user' => $user,
                 'spotbie_user' => $spotbieUser
             );    
-            
+
             //Start the session
             Auth::login($user, $remember_me);
 
@@ -463,8 +485,63 @@ class User extends Authenticatable
 
     }
 
-    public function deactivate(){
+    public function changePassword(Request $request){
 
+        $success = false;
+
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'password' => ['required', new Password, 'confirmed'],
+            'current_password' => ['required', new Password]
+        ]);
+            
+        if(Hash::check($validatedData['current_password'], $user->password)){
+            $user->password = Hash::make($validatedData['password']);
+            $user->save();
+            $success = true;
+            $message = 'saved';
+        } else {
+            $message = 'SB-E-000';
+        }
+
+        $response = array(
+            'success' => $success,
+            'message' => $message,
+        );
+
+        return response($response);
+
+    }
+
+    public function deactivate(Request $request){
+
+        $success = false;
+
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'password' => ['required', new Password]
+        ]);            
+
+        if($user->delete()) 
+            $success = true;
+        else 
+            $success = false;
+        
+        $response = array(
+            'success' => $success
+        );
+
+        return response($response);
+
+    }
+
+    public function activate(){
+
+
+
+        
     }
 
 }

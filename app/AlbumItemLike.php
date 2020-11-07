@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AlbumItemLike extends Model
 {
+
+    use SoftDeletes;
 
     public function albumItem(){
         return $this->belongsTo('App\AlbumItem', 'album_media_id');

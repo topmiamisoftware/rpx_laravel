@@ -23,9 +23,9 @@ class UserController extends Controller
         return $user->getSettings($request);
     }
 
-    public function deactivate(User $user)
+    public function deactivate(User $user, Request $request)
     {
-        return $user->deactivate();
+        return $user->deactivate($request);
     }
 
     public function logIn(User $user, Request $request){
@@ -58,6 +58,10 @@ class UserController extends Controller
 
     public function completePassReset(User $user, Request $request){
         return $user->completePassReset($request);
+    }
+
+    public function changePassword(User $user, Request $request){
+        return $user->changePassword($request);
     }
 
 }   

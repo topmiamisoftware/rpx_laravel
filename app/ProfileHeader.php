@@ -6,10 +6,12 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\DefaultImages;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProfileHeader extends User
 {
-    //
+    
+    use SoftDeletes;
 
     public function myProfileHeader(){
         
