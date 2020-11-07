@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use Illuminate\Http\Request;
+
+use App\Album;
 
 class AlbumController extends Controller
 {
     
-    public function myAlbums(Album $album){
+    public function myAlbums(Album $album)
+    {
         return $album->myAlbums();
     }
-
 
     public function viewAlbum(Album $album, Request $request)
     {

@@ -1,3 +1,11 @@
+Header add Access-Control-Allow-Origin "https://spotbie.com"
+
+Header add Access-Control-Allow-Credentials "true"
+
+Header add Access-Control-Allow-Methods "GET,HEAD,OPTIONS,POST,PUT"
+
+Header add Access-Control-Allow-Headers "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Set-Cookie, X-XSRF-TOKEN, Cookie"
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

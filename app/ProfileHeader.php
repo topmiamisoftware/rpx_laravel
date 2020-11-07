@@ -75,7 +75,7 @@ class ProfileHeader extends User
 
         $user = Auth::user();
         
-        $defaultImagesPath = 'http://localhost:8000/defaults/';
+        $defaultImagesPath = config('spotbie.default_images_path');
         $hashedFileName = $validatedData['default_picture']->hashName();
 
         $user->spotbieUser->default_picture = $defaultImagesPath . $user->id. '/' . $hashedFileName;
@@ -134,7 +134,7 @@ class ProfileHeader extends User
         if($newDefault !== null)
             $user->spotbieUser->default_picture = $newDefault->default_image_url; 
         else
-            $user->spotbieUser->default_picture = 'http://localhost:8000/defaults/user.png';
+            $user->spotbieUser->default_picture = config('spotbie.default_images_path').'user.png';
 
         $user->spotbieUser->save();
 
@@ -175,7 +175,7 @@ class ProfileHeader extends User
 
         $user = Auth::user();
         
-        $backgroundImagePath = 'http://localhost:8000/backgrounds/';
+        $backgroundImagePath = config('spotbie.background_images_path');
         $hashedFileName = $validatedData['background_picture']->hashName();
         
         //Let's delete any other backgrounds
