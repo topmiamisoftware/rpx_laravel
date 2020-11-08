@@ -14,6 +14,11 @@ class AlbumController extends Controller
         return $album->myAlbums();
     }
 
+    public function publicAlbums(Album $album, Request $request)
+    {
+        return $album->publicAlbums($request);
+    }
+
     public function viewAlbum(Album $album, Request $request)
     {
         return $album->viewAlbum($request);

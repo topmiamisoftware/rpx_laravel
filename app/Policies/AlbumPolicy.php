@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use Auth;
+
 use App\Album;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -32,7 +34,7 @@ class AlbumPolicy
         if($album->privacy == true){
 
             //check if users are friends or if user is viewing their own media
-            if($user !== null){
+            if(Auth::check()){
 
                 //user is logged in, now we have to check for existing friendship.
 

@@ -3,6 +3,7 @@
 namespace App;
 
 use Auth;
+
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -40,6 +41,75 @@ class Album extends Model
         ->paginate(10);
 
         $message = "success";
+
+        $response = array(
+            "message" => $message,
+            "album_list" => $album_list  
+        );
+
+        return response($response);
+
+    }
+
+    public function publicAlbums(Request $request){
+        
+        $validatedData = $request->validate([
+            'peer_id' => 'required|int'
+        ]);
+        
+        $peer_id = $validatedData['peer_id'];
+
+        if(Auth::check()){
+
+            $user = User::auth();
+
+            $usersAreFriends = $user->relationships()
+            ->select('user_id', 'peer_id')
+            ->where('user_id', $user->id)
+            ->where('peer_id', $peer_id)
+            ->where('relation', 1)
+            ->first();
+            
+            if($usersAreFriends !== null || $peer_id == $user->id){
+
+                //Users are friends or User is viewing their own profile.
+
+                $album_list = $this->
+                where('user_id', $peer_id)
+                ->withCount('comments')
+                ->withCount('likes')        
+                ->orderByDesc('created_at')
+                ->paginate(10);
+
+            } else {
+
+                $album_list = $this->
+                where('user_id', $peer_id)
+                ->where('privacy', 0)
+                ->withCount('comments')
+                ->withCount('likes')        
+                ->orderByDesc('created_at')
+                ->paginate(10);
+
+            }
+        
+            $message = "success";
+
+        } else {
+
+            //Get non-private albums since user is not logged in
+
+            $album_list = $this->
+            where('user_id', $peer_id)
+            ->where('privacy', '0')
+            ->withCount('comments')
+            ->withCount('likes')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+            $message = "success";
+
+        }
 
         $response = array(
             "message" => $message,

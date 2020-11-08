@@ -3,6 +3,8 @@
     /* Album Controllers */
     Route::post('album/my_albums', 'AlbumController@myAlbums')->middleware('auth');
 
+    Route::post('album/public-albums', 'AlbumController@publicAlbums');
+
     Route::get('album/{album}', 'AlbumController@viewAlbum');
 
     Route::get('album/{album}/slide_show_set', 'AlbumController@slideShowSet');
