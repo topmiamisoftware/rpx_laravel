@@ -41,3 +41,5 @@
     require 'surroundings_api/SurroundingApi.routes.php';
 
     require 'my_favorites/MyFavorites.routes.php';
+
+    require 'ads/Ads.routes.php';

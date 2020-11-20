@@ -110,8 +110,8 @@ class User extends Authenticatable
         //Start the session
         Auth::login($user);
 
-        //$this->sendSignUpConfirmationSms();
-        //$this->sendConfirmationEmail();
+        $this->sendSignUpConfirmationSms();
+        $this->sendConfirmationEmail();
         
         $user = Auth::user();
         $user = $user->select('id', 'username', 'email')->first();
