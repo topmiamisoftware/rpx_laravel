@@ -1,4 +1,4 @@
-Header add Access-Control-Allow-Origin "https://spotbie.com"
+Header add Access-Control-Allow-Origin "http://localhost:4200"
 
 Header add Access-Control-Allow-Credentials "true"
 

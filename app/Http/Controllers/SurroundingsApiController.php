@@ -48,6 +48,17 @@ class SurroundingsApiController extends Controller
 
     }    
 
+    public function getEvent(Request $request){
+
+        $response = array(
+            'success' => true,
+            'data' => $this->apiService->getEvent($request),
+        );
+
+        return response($response); 
+
+    } 
+
     public function getClassifications(Request $request){
 
         $response = array(

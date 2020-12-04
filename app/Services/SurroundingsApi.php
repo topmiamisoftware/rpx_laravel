@@ -101,6 +101,32 @@ class SurroundingsApi
 
     }
     
+    public function getEvent(Request $request){
+
+        $serviceUrl = $this->ticketMasterDiscovery . "&" . $request->config_url;
+
+        $curl = curl_init($serviceUrl);
+
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $curlResponse = curl_exec($curl);
+
+        if ($curlResponse === false) {
+            $info = curl_getinfo($curl);
+            curl_close($curl);
+            die('curl error');
+        }
+
+        curl_close($curl);
+
+        if (isset($decoded1->response->status) && $decoded1->response->status == 'ERROR')
+            die('error occured: ' . $decoded1->response->errormessage);          
+
+        return json_decode($curlResponse);
+
+    }
+
     public function getClassifications(Request $request){
         
         $serviceUrl = $this->ticketMasterDiscoveryClassifications;
