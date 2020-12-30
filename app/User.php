@@ -75,7 +75,7 @@ class User extends Authenticatable
             'first_name' => ['required', new FirstName],
             'last_name' => ['required', new LastName],
             'email' => ['required', 'unique:users', 'email'],
-            'phone_number' => ['required', 'unique:spotbie_users', new PhoneNumber],
+            'phone_number' => ['required', new PhoneNumber],
             'password' => ['required', new Password, 'confirmed']
         ]);
         
@@ -253,9 +253,9 @@ class User extends Authenticatable
 
     private function sendSignUpConfirmationSms(){
 
-        $account_sid = getenv("TWILIO_SID");
-        $auth_token = getenv("TWILIO_AUTH_TOKEN");
-        $twilio_number = getenv("TWILIO_NUMBER");
+        $account_sid = config("services.twilio.account_sid");
+        $auth_token = config("services.twilio.password");
+        $twilio_number = config("services.twilio.from");
 
         $client = new Client($account_sid, $auth_token);
 

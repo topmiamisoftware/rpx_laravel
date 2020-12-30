@@ -17,7 +17,7 @@ class UserObserver
      */
     public function created(User $user)
     {
-        /*/Create User Location
+        //Create User Location
         $userLocation = new UserLocation();
         $userLocation->createUserLocation($user);
 
@@ -27,7 +27,7 @@ class UserObserver
 
         //Create user ContactMe Options
         $contactMe = new ContactMe();
-        $contactMe->createContactMe($user);*/
+        $contactMe->createContactMe($user);
     }
 
     /**

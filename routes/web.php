@@ -43,3 +43,5 @@
     require 'my_favorites/MyFavorites.routes.php';
 
     require 'ads/Ads.routes.php';
+    
+    require 'bugs/Bugs.routes.php';
