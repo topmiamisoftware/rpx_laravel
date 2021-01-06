@@ -9,7 +9,7 @@ class SurroundingsApi
 
     private $currentSearchType;
 
-    private $yelpApiKey = "Bearer GsqTZZ0BaqQgYeJmQ692lddjO7A1EbCERqED66KcOoWpqDmly3N_dW-_yxJkTDIQbQEGlL3Mwfhwyvf0Ww0E7-KBuIrld0-VJ_8pIw7agmyj9RbZJbAMsvGQj8MkXnYx";
+    private $yelpApiKey = "Bearer 5KElIffVD9ak_CJuO9JR50t_nAYM-VFG7SauuRDQfoxH-Lp84ZxwKpyo15Bm9F2mq9tU5eNF-Rhw5DVgazxmp28F0BYAtJG126RKh4y3zAmlmU6wK_SUBIpTlFbzX3Yx";
         
     private $ticketMasterDiscovery = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7g94WBVHVpPZfTD7ANdBQdC438WXCHOj";
 
