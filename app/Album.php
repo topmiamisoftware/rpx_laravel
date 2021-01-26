@@ -30,6 +30,10 @@ class Album extends Model
         return $this->belongsTo('App\User', 'owner_user_id');
     }  
 
+    public function update(Request $request){
+
+    }
+
     public function myAlbums(){
 
         $user = Auth::user();
@@ -61,7 +65,7 @@ class Album extends Model
 
         if(Auth::check()){
 
-            $user = User::auth();
+            $user = Auth::user();
 
             $usersAreFriends = $user->relationships()
             ->select('user_id', 'peer_id')

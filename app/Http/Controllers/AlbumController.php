@@ -29,5 +29,9 @@ class AlbumController extends Controller
         return $album->slideShowSet($request);
     }
     
+    public function update(Album $album, Request $request)
+    {
+        return $album->update($request);
+    }
     
 }
