@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\ContactMe;
+use App\Models\ContactMe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

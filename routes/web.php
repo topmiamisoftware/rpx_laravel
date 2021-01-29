@@ -13,35 +13,35 @@
     |
     */
 
-    require 'user/User.routes.php';
+    Route::prefix('user')                       ->group(__DIR__ . '/User/User.routes.php');
 
-    require 'album/Album.routes.php';
-    require 'album/AlbumItem.routes.php';
-    require 'album/AlbumItemComments.routes.php';
-    require 'album/AlbumItemLikes.routes.php';
+    Route::prefix('album')                      ->group(__DIR__ . '/Album/Album.routes.php');
+    Route::prefix('album-item')                 ->group(__DIR__ . '/Album/AlbumItem.routes.php');
+    Route::prefix('album-item-comment')         ->group(__DIR__ . '/Album/AlbumItemComments.routes.php');
+    Route::prefix('album-item-like')            ->group(__DIR__ . '/Album/AlbumItemLikes.routes.php');
 
-    require 'chat/Chat.routes.php';
+    Route::prefix('chat')                       ->group(__DIR__ . '/Chat/Chat.routes.php');
 
-    require 'friendship/Friendship.routes.php';
+    Route::prefix('friendship')                 ->group(__DIR__ . '/Friendship/Friendship.routes.php');
 
-    require 'stream/StreamPost.routes.php';
-    require 'stream/StreamPostComment.routes.php';
-    require 'stream/StreamPostLike.routes.php';
+    Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPost.routes.php');
+    Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPostComment.routes.php');
+    Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPostLike.routes.php');
 
-    require 'stream/ExtraMedia.routes.php';
+    Route::prefix('extra-media')                ->group(__DIR__ . '/ExtraMedia/ExtraMedia.routes.php');
 
-    require 'public_stats/PublicStats.routes.php';
+    Route::prefix('public-stats')               ->group(__DIR__ . '/PublicStats/PublicStats.routes.php');
 
-    require 'web_options/WebOptions.routes.php';
+    Route::prefix('web-options')                ->group(__DIR__ . '/WebOptions/WebOptions.routes.php');
 
-    require 'profile_header/ProfileHeader.routes.php';
+    Route::prefix('profile-header')             ->group(__DIR__ . '/ProfileHeader/ProfileHeader.routes.php');
 
-    require 'user_location/UserLocation.routes.php';
+    Route::prefix('user-location')              ->group(__DIR__ . '/UserLocation/UserLocation.routes.php');
 
-    require 'surroundings_api/SurroundingApi.routes.php';
+    Route::prefix('surroundings')               ->group(__DIR__ . '/Surroundings/SurroundingApi.routes.php');
 
-    require 'my_favorites/MyFavorites.routes.php';
+    Route::prefix('my-favorites')               ->group(__DIR__ . '/MyFavorites/MyFavorites.routes.php');
 
-    require 'ads/Ads.routes.php';
-    
-    require 'bugs/Bugs.routes.php';
+    Route::prefix('ads')                        ->group(__DIR__ . '/Ads/Ads.routes.php');
+
+    Route::prefix('bugs')                       ->group(__DIR__ . '/Bugs/Bugs.routes.php');

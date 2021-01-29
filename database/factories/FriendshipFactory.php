@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\User;
-use App\Friendship;
+use App\Models\User;
+use App\Models\Friendship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

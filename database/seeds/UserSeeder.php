@@ -4,10 +4,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Factories\UserFactory;
 
-use App\User;
-use App\SpotbieUser;
-use App\Friendship;
-use App\ContactMe;
+use App\Models\User;
+use App\Models\SpotbieUser;
+use App\Models\Friendship;
+use App\Models\ContactMe;
 
 // composer require laracasts/testdummy
 use Laracasts\TestDummy\Factory as TestDummy;
