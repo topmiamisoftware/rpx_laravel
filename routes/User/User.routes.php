@@ -25,3 +25,9 @@ Route::delete('deactivate',       [UserController::class, 'deactivate'])->middle
 Route::put('complete-pass-reset', [UserController::class, 'completePassReset']);
 
 Route::put('change-password',     [UserController::class, 'changePassword']);
+
+Route::post('unique-email',       [UserController::class, 'uniqueEmail']);
+
+Route::post('send-code',           [UserController::class, 'sendCode']);
+
+Route::post('check-confirm',       [UserController::class, 'checkConfirm']);

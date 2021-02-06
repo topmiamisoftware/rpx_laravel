@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePhoneConfirmationsTable extends Migration
+class DropStatusInUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreatePhoneConfirmationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('phone_confirmations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('status');
         });
     }
 
@@ -26,6 +25,8 @@ class CreatePhoneConfirmationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('phone_confirmations');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

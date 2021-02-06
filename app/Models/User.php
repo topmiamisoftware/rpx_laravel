@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Auth;
 use Mail;
+
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +23,6 @@ use Twilio\Rest\Client;
 
 use App\Rules\FirstName;
 use App\Rules\LastName;
-use App\Rules\PhoneNumber;
 use App\Rules\Password;
 use App\Rules\Username;
 
@@ -41,7 +41,7 @@ class User extends Authenticatable
     }
 
     public function webOptions(){
-        return $this->hasOne('App\WebOptions');
+        return $this->hasOne('App\Models\WebOptions');
     }
 
     public function contactMe(){
@@ -57,7 +57,7 @@ class User extends Authenticatable
     }    
 
     public function albums(){
-        return $this->hasMany('App\Album');
+        return $this->hasMany('App\Models\Album');
     }
 
     public function defaultImages(){
@@ -75,7 +75,6 @@ class User extends Authenticatable
             'first_name' => ['required', new FirstName],
             'last_name' => ['required', new LastName],
             'email' => ['required', 'unique:users', 'email'],
-            'phone_number' => ['required', new PhoneNumber],
             'password' => ['required', new Password, 'confirmed']
         ]);
         
@@ -85,11 +84,8 @@ class User extends Authenticatable
         $user->email = $validatedData['email'];
         $user->password = Hash::make($validatedData['password']);
         
-        $user->confirm = strtoupper(Str::random(6));
-        
         $newSpotbieUser = new SpotbieUser();
         
-        $newSpotbieUser->default_picture = 'defaults/user.png';
         $newSpotbieUser->first_name = $validatedData['first_name'];
         $newSpotbieUser->last_name = $validatedData['last_name'];
 
@@ -98,8 +94,6 @@ class User extends Authenticatable
 
         $newSpotbieUser->description = $description;
         $newSpotbieUser->last_known_ip_address = $request->ip;
-        $newSpotbieUser->phone_number = $validatedData['phone_number'];
-        $newSpotbieUser->phone_is_confirmed = false;
 
         DB::transaction(function () use ($user, $newSpotbieUser){
             $user->save();
@@ -110,11 +104,13 @@ class User extends Authenticatable
         //Start the session
         Auth::login($user);
 
-        $this->sendSignUpConfirmationSms();
         $this->sendConfirmationEmail();
         
         $user = Auth::user();
-        $user = $user->select('id', 'username', 'email')->first();
+        $user = $user
+        ->select('id', 'username', 'email')
+        ->where('id', $user->id)
+        ->first();
 
         $signUpResponse = array(
             'message' => 'success',
@@ -186,13 +182,8 @@ class User extends Authenticatable
 
             $spotbieUser = $user->spotbieUser()->select('default_picture')->first();
 
-            if($user->confirm == '1')
-                $message = 'success';
-            else
-                $message = 'confirm';
-
             $loginResponse = array(
-                'message' => $message,
+                'message' => 'success',
                 'user' => $user,
                 'spotbie_user' => $spotbieUser
             );    
@@ -251,26 +242,6 @@ class User extends Authenticatable
 
     }
 
-    private function sendSignUpConfirmationSms(){
-
-        $account_sid = config("services.twilio.account_sid");
-        $auth_token = config("services.twilio.password");
-        $twilio_number = config("services.twilio.from");
-
-        $client = new Client($account_sid, $auth_token);
-
-        $user = Auth::user();
-
-        $account_code = $user->confirm;
-        $recipient = $user->spotbieUser->phone_number;
-
-        $message = "Hello " . $user->username . ". Welcome to SpotBie. Verify your account through this link: https://spotbie.com?c=".$account_code.", through the e-mail we've sent you, or enter this code next time you log-in: ".$account_code;
-
-        $client->messages->create($recipient, 
-                ['from' => $twilio_number, 'body' => $message] );
-        
-    }
-
     private function sendConfirmationEmail (){
 
         $user = Auth::user();
@@ -296,7 +267,7 @@ class User extends Authenticatable
 
         $spotbieUserSettings = $user
         ->spotbieUser()
-        ->select('first_name', 'last_name', 'animal', 'ghost_mode', 'privacy', 'phone_number')
+        ->select('first_name', 'last_name', 'animal', 'ghost_mode', 'privacy')
         ->get()[0];
 
         $settingsResponse = array(
@@ -320,7 +291,6 @@ class User extends Authenticatable
                 'email' => 'required|email',
                 'first_name' => ['required', new FirstName],
                 'last_name' => ['required', new LastName],
-                'phone_number' => ['required', new PhoneNumber],
                 'ghost_mode' => 'required|boolean',
                 'privacy' => 'required|boolean',
                 'animal' => 'required|string'
@@ -333,7 +303,6 @@ class User extends Authenticatable
                 'email' => 'required|email',
                 'first_name' => ['required', new FirstName],
                 'last_name' => ['required', new LastName],
-                'phone_number' => ['required', new PhoneNumber],
                 'ghost_mode' => 'required|boolean',
                 'privacy' => 'required|boolean',
                 'animal' => 'required|string'
@@ -348,7 +317,6 @@ class User extends Authenticatable
 
         $user->spotbieUser->first_name = $validatedData['first_name'];
         $user->spotbieUser->last_name = $validatedData['last_name'];
-        $user->spotbieUser->phone_number = $validatedData['phone_number'];
         $user->spotbieUser->ghost_mode = $validatedData['ghost_mode'];
         $user->spotbieUser->privacy = $validatedData['privacy'];
         $user->spotbieUser->animal = $validatedData['animal'];
@@ -412,17 +380,17 @@ class User extends Authenticatable
         $success = false;
 
         $validatedData = $request->validate([
-            'email_or_phone' => 'required|string'
+            'email' => 'required|string'
         ]);
         
         $user = User::select('id', 'email')
-        ->where('email', $validatedData['email_or_phone'])
+        ->where('email', $validatedData['email'])
         ->first();
 
         if($user === null){
 
             $user = SpotbieUser::select('id')
-            ->where('phone_number', $validatedData['email_or_phone'])
+            ->where('email', $validatedData['email'])
             ->first();
 
             $user = User::select('id', 'email')
@@ -431,7 +399,7 @@ class User extends Authenticatable
             
         }
 
-        $spotbieUser = SpotbieUser::select('id', 'phone_number')
+        $spotbieUser = SpotbieUser::select('id', 'email')
         ->where('id', $user->id)
         ->first();
 
@@ -514,61 +482,6 @@ class User extends Authenticatable
 
     }
 
-    public function sendSmsConfirmCode(Request $request){
-
-        $validated = $request->validated();
-
-        $this->userValidationService = new UserValidationService(); 
-
-        $checkIfPhoneIsConfirmed = $this->userValidationService->checkIfPhoneIsConfirmed($request);
-
-        if($checkIfPhoneIsConfirmed){
-
-            $status = 'confirmation.verified';
-            $success = true;
-
-        } else {
-
-            $status = $this->userValidationService->sendSmsConfirmCode($request);
-            $success = true;
-            
-        }
-
-        return response()->json([
-            'success' => $success,
-            'status' => $status
-        ]); 
-
-    }
-
-    public function validateSmsConfirmCode(Request $request){
-
-        $validated = $request->validated();
-
-        $this->userValidationService = new UserValidationService(); 
-
-        $check = $this->userValidationService->validateSmsConfirmCode($request);
-
-        return response()->json([
-            'success' => $check
-        ]);
-
-    }
-
-    public function checkIfPhoneIsConfirmed(Request $request){
-
-        $validated = $request->validated();
-
-        $this->userValidationService = new UserValidationService(); 
-
-        $check = $this->userValidationService->checkIfPhoneIsConfirmed($request);
-
-        return response()->json([
-            'success' => $check
-        ]);
-
-    }
-
     public function deactivate(Request $request){
 
         $success = false;
@@ -593,10 +506,111 @@ class User extends Authenticatable
     }
 
     public function activate(){
-
-
-
         
+    }
+
+    public function uniqueEmail(Request $request){
+
+        $emailConfirmed = EmailConfirmation::select(
+            'email', 'email_is_verified'
+        )
+        ->where('email', $request->email)
+        ->where('email_is_verified', true)
+        ->first();
+
+        if($emailConfirmed !== null)
+            return true;
+        else
+            return false;
+            
+    }
+
+    public function checkConfirm(Request $request){
+
+    }
+
+
+    public function checkIfEmailIsConfirmed($request){
+
+        $emailConfirmed = EmailConfirmation::select(
+            'email', 'email_is_verified'
+        )
+        ->where('email', $request->email)
+        ->where('email_is_verified', true)
+        ->first();
+
+        if($emailConfirmed !== null)
+            return true;
+        else
+            return false;
+
+    }
+
+    public function sendCode(Request $request): bool {
+
+        $request->validated();
+
+        $user = array("email" => $request->email, "first_name" => $request->first_name);
+
+        $pin = mt_rand(100000, 999999);
+
+        EmailConfirmation::updateOrCreate(
+            [
+                'email' => $request->email,
+                'email_is_verified' => false
+            ], [
+                'confirmation_token' => $pin
+        ]);
+
+        Mail::queue(new EmailConfirmationEmail($user, $propertyInfo, $pin, $lang));
+
+        return true;
+
+    }
+
+    public function validateEmailConfirmCode(ValidateEmailConfirmCode $request): bool{
+
+        $emailToConfirm = EmailConfirmation::select(
+            'email', 'email_is_verified'
+        )
+        ->where('email', $request->email)
+        ->where('email_is_verified', false)
+        ->where('confirmation_token', $request->confirm_code)
+        ->first();
+
+        if($emailToConfirm !== null){
+            EmailConfirmation::where('email', $request->email)
+            ->where('email_is_verified', false)
+            ->where('confirmation_token', $request->confirm_code)
+            ->update(
+                ['email_is_verified' => true]
+            );
+        } else {
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+    public function checkConfirmCode(CheckEmailConfirmCode $request){
+
+        $now = Carbon::now();
+
+        $emailConfirmed = EmailConfirmation::select(
+            'email', 'email_is_verified'
+        )
+        ->where('email', $request->email)
+        ->where('expires_at', '>', $now->toDateTimeString())
+        ->where('email_is_verified', true)
+        ->first();
+
+        if($emailConfirmed !== null)
+            return true;
+        else
+            return false;
+
     }
 
 }

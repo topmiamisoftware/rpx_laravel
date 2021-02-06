@@ -24,6 +24,7 @@
 
     Route::prefix('friendship')                 ->group(__DIR__ . '/Friendship/Friendship.routes.php');
 
+    Route::prefix('stream')                     ->group(__DIR__ . '/Stream/Stream.routes.php');
     Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPost.routes.php');
     Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPostComment.routes.php');
     Route::prefix('stream')                     ->group(__DIR__ . '/Stream/StreamPostLike.routes.php');

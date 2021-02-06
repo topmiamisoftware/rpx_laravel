@@ -20,7 +20,7 @@ class StreamPost extends Model
     }
 
     public function webOptions(){
-        return $this->hasOneThrough('App\WebOptions', 'App\Models\User', 'id', 'user_id', 'user_id');
+        return $this->hasOneThrough('App\Models\WebOptions', 'App\Models\User', 'id', 'user_id', 'user_id');
     }
 
     /* 

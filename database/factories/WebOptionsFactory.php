@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\WebOptions;
+use App\Models\WebOptions;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

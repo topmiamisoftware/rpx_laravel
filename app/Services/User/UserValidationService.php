@@ -198,12 +198,12 @@ class UserValidationService
 
     }
 
-    public function checkIfEmailIsConfirmed($sendConfirmationEmailRequest){
+    public function checkIfEmailIsConfirmed($request){
 
         $emailConfirmed = EmailConfirmation::select(
             'email', 'email_is_verified'
         )
-        ->where('email', $sendConfirmationEmailRequest->email)
+        ->where('email', $request->email)
         ->where('email_is_verified', true)
         ->first();
 
@@ -214,20 +214,20 @@ class UserValidationService
 
     }
 
-    public function sendConfirmationEmail(Request $sendConfirmationEmailRequest): bool{
+    public function sendConfirmationEmail(Request $request): bool{
 
-        $sendConfirmationEmailRequest->validated();
+        $request->validated();
 
-        $system = 'external_mysql_' . $sendConfirmationEmailRequest->system;
-        $lang = $sendConfirmationEmailRequest->lang;
+        $system = 'external_mysql_' . $request->system;
+        $lang = $request->lang;
 
-        $user = array("email" => $sendConfirmationEmailRequest->email, "first_name" => $sendConfirmationEmailRequest->first_name);
+        $user = array("email" => $request->email, "first_name" => $request->first_name);
 
-        $systemHelper = new SystemHelper($sendConfirmationEmailRequest->system);
+        $systemHelper = new SystemHelper($request->system);
 
         $propertyRepository = new PropertyRepository($system);
 
-        $propertyInfo = $propertyRepository->getPropertyInfoForEmail($sendConfirmationEmailRequest->property_id);
+        $propertyInfo = $propertyRepository->getPropertyInfoForEmail($request->property_id);
 
         $propertyInfo->system_domain = $systemHelper->systemDomain;
         $propertyInfo->system_name = $systemHelper->systemName;
@@ -237,7 +237,7 @@ class UserValidationService
 
         EmailConfirmation::updateOrCreate(
             [
-                'email' => $sendConfirmationEmailRequest->email,
+                'email' => $request->email,
                 'email_is_verified' => false
             ], [
                 'confirmation_token' => $pin

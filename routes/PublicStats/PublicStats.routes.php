@@ -1,12 +1,7 @@
 <?php
 
+use App\Http\Controllers\PublicStats\PublicStatsController;
+
 use Illuminate\Support\Facades\Route;
 
-
-
-Route::get('total-users', function(){
-
-    $stats = new \App\Models\PublicStats();
-    $stats->getTotalUsers();
-
-});
+Route::get('total-users', [PublicStatsController::class, 'getTotalUsers']);

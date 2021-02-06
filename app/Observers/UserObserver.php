@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\User;
-use App\WebOptions;
+use App\Models\WebOptions;
 use App\Models\UserLocation;
 use App\Models\ContactMe;
 

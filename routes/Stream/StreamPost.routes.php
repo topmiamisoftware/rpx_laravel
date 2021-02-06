@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\StreamPost\StreamPostController;
+use App\Http\Controllers\Stream\StreamPostController;
 
 use Illuminate\Support\Facades\Route;
 

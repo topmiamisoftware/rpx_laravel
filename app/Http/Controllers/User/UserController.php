@@ -67,4 +67,16 @@ class UserController extends Controller
         return $user->changePassword($request);
     }
 
+    public function uniqueEmail(User $user, Request $request){
+        return $user->uniqueEmail($request);
+    }
+
+    public function sendCode(User $user, Request $request){
+        return $user->sendCode($request);
+    }
+
+    public function checkConfirm(User $user, Request $request){
+        return $user->sendCode($request);
+    }
+
 }   
