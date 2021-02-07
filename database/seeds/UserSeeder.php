@@ -22,7 +22,6 @@ class UserSeeder extends Seeder
             'first_name' => 'Franco',
             'last_name' => 'Petitfour',
             'description' => 'Hello my name is Franco Petitfour. Welcome to my SpotBie profile!',
-            'phone_number' =>  '7866005946'
         ])
         ->hasUserLocation(1)
         ->hasWebOptions(1)
@@ -33,8 +32,7 @@ class UserSeeder extends Seeder
         ->create([
             'username' => '0456fra', 
             'email' => 'franco.petitfour001@gmail.com', 
-            'password' => Hash::make('HelloWorld33!'),
-            'confirm' => strtoupper(Str::random(6))
+            'password' => Hash::make('HelloWorld33!')
         ]);
 
         User::factory()
