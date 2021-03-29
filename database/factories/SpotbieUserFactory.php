@@ -27,8 +27,7 @@ class SpotbieUserFactory extends Factory
             'first_name' => $this->faker->firstName,
             'default_picture' => "https://picsum.photos/id/$randomNumber/200/300",
             'last_name' => $this->faker->lastName,
-            'description' => $this->faker->text(500),
-            'phone_number' =>  $this->faker->e164PhoneNumber 
+            'description' => $this->faker->text(500)
         ];
     }
 }
