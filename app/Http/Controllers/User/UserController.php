@@ -39,6 +39,10 @@ class UserController extends Controller
         return $user->logOut($request);
     }
 
+    public function closeBrowser(User $user, Request $request){
+        return $user->closeBrowser($request);
+    }
+
     public function myStream(User $user, Request $request){
         return $user->getMyStream($request);
     }

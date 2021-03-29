@@ -12,6 +12,8 @@ Route::post('check-user-auth',    [UserController::class, 'checkAuth']);
 
 Route::post('login',              [UserController::class, 'logIn']);
 
+Route::post('close-browser',      [UserController::class, 'closeBrowser'])->middleware('auth');
+
 Route::post('logout',             [UserController::class, 'logOut'])->middleware('auth');
 
 Route::put('update',              [UserController::class, 'update'])->middleware('auth');

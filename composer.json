@@ -16,7 +16,8 @@
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
         "reliese/laravel": "^0.0.16",
-        "twilio/sdk": "^6.9"
+        "twilio/sdk": "^6.9",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

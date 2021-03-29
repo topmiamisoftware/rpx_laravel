@@ -72,7 +72,7 @@ class ProfileHeader extends User
         $message = null;
 
         $validatedData = $request->validate([
-            'default_picture' => 'required|image|max:2999'
+            'default_picture' => 'required|image|max:9999'
         ]);
 
         $user = Auth::user();
@@ -172,7 +172,7 @@ class ProfileHeader extends User
     public function uploadBackground(Request $request){
 
         $validatedData = $request->validate([
-            'background_picture' => 'required|image|max:2999'
+            'background_picture' => 'required|image|max:9999'
         ]);
 
         $user = Auth::user();

@@ -21,16 +21,63 @@ use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
 use Twilio\Rest\Client;
 
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
 use App\Rules\FirstName;
 use App\Rules\LastName;
 use App\Rules\Password;
 use App\Rules\Username;
 
-
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     
     use Notifiable, HasFactory, SoftDeletes;  
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(Auth::refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => Auth::factory()->getTTL() * 60
+        ]);
+    }
 
     public function userLocation(){
         return $this->hasOne('App\Models\UserLocation');
@@ -113,6 +160,7 @@ class User extends Authenticatable
         ->first();
 
         $signUpResponse = array(
+            'tokenInfo' => $this->respondWithToken(Auth::refresh()),
             'message' => 'success',
             'user' => $user,
             'spotbie_user' => $newSpotbieUser
@@ -151,15 +199,16 @@ class User extends Authenticatable
         if($searchUser !== null && Hash::check($password, $searchUser->password)) 
             $searchUser->restore();
         
-
-        if(!Auth::attempt(['email' => $login, 'password' => $password], $remember_me)
-        && !Auth::attempt(['username' => $login, 'password' => $password], $remember_me)
-        && !Auth::viaRemember())
+        if
+        ( 
+            !Auth::attempt(['email' => $login, 'password' => $password]) &&
+            !Auth::attempt(['username' => $login, 'password' => $password])
+        )
             $login_failed = true;
         else
             $login_failed = false;
 
-        //TODO: Login Credentials do not exist. Send invalid login attempt to front end.
+        
         if($login_failed){
 
             $loginResponse = array(
@@ -168,28 +217,34 @@ class User extends Authenticatable
 
         } else {
 
-            if(Auth::viaRemember()){
-                $user = Auth::user();
-            } else {
-                $user = User::select('id', 'username')->where(
-                    function($query) use ($login){
-                        $query->where('username', $login)
-                            ->orWhere('email', $login);
-                    }
-                )
-                ->first();
-            }
+            $user = User::select('id', 'username')->where(
+                function($query) use ($login){
+                    $query->where('username', $login)
+                        ->orWhere('email', $login);
+                }
+            )
+            ->first();
 
-            $spotbieUser = $user->spotbieUser()->select('default_picture')->first();
-
-            $loginResponse = array(
-                'message' => 'success',
-                'user' => $user,
-                'spotbie_user' => $spotbieUser
-            );    
+            $spotbieUser = $user->spotbieUser()->select('default_picture')->first(); 
 
             //Start the session
             Auth::login($user, $remember_me);
+            $token = Auth::refresh();
+            
+            if($remember_me == '1'){
+                Auth::user()->remember_token = $token;
+            } else {
+                Auth::user()->remember_token = null;
+            }
+
+            Auth::user()->save();
+
+            $loginResponse = array(
+                'token_info' => $this->respondWithToken($token),
+                'message' => 'success',
+                'user' => $user,
+                'spotbie_user' => $spotbieUser
+            );   
 
         }
 
@@ -209,11 +264,26 @@ class User extends Authenticatable
 
     }
 
+    public function closeBrowser(Request $request){
+
+        if(Auth::user()->remember_me !== NULL)
+            Auth::logout();        
+
+        $logoutResponse = array(
+            'success' => true
+        );   
+
+        return response($logoutResponse);
+
+    }
+
     public function checkIfLoggedIn(){
 
         if(Auth::check()){
+
             $msg = '1';
             $userId = Auth::user()->id;
+
         } else {
             $msg = 'not_logged_in';
             $userId = null;
