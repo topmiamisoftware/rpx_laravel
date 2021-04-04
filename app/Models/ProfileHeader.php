@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Auth;
+use Image;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\DefaultImages;
@@ -72,7 +74,7 @@ class ProfileHeader extends User
         $message = null;
 
         $validatedData = $request->validate([
-            'default_picture' => 'required|image|size:25000'
+            'default_picture' => 'required|image|max:25000'
         ]);
 
         $user = Auth::user();
@@ -82,7 +84,15 @@ class ProfileHeader extends User
 
         $user->spotbieUser->default_picture = $defaultImagesPath . $user->id. '/' . $hashedFileName;
         
-        $validatedData['default_picture']->storeAs('defaults',  $user->id . '/' . $hashedFileName);
+        $newFile = Image::make($request->file('default_picture'))->resize(1200, null, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        
+        $newFile = $newFile->encode('jpg', 60);
+        $newFile = (string) $newFile;
+
+        Storage::put( 'defaults/' . $user->id. '/' . $hashedFileName, $newFile);
         
         $user->spotbieUser->save();
         
@@ -172,7 +182,7 @@ class ProfileHeader extends User
     public function uploadBackground(Request $request){
 
         $validatedData = $request->validate([
-            'background_picture' => 'required|image|size:25000'
+            'background_picture' => 'required|image|max:25000'
         ]);
 
         $user = Auth::user();
@@ -188,7 +198,15 @@ class ProfileHeader extends User
 
         $user->webOptions->spotmee_bg = $backgroundImagePath . $user->id. '/' . $hashedFileName;
         
-        $validatedData['background_picture']->storeAs('backgrounds',  $user->id . '/' . $hashedFileName);
+        $newFile = Image::make($request->file('background_picture'))->resize(1200, null, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        
+        $newFile = $newFile->encode('jpg', 60);
+        $newFile = (string) $newFile;
+
+        Storage::put( 'backgrounds/' . $user->id. '/' . $hashedFileName, $newFile);
         
         $user->webOptions->save();
 
