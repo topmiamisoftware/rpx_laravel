@@ -24,7 +24,7 @@ class MyFavorites extends Model
 
         $favorites = $user
         ->myFavorites()
-        ->select('id', 'third_party_id', 'name', 'description', 'loc_x', 'loc_y', 'created_at')
+        ->select('id', 'third_party_id', 'name', 'type_of_info_object_category', 'loc_x', 'loc_y', 'created_at')
         ->paginate(10);
 
         return $favorites;
@@ -38,16 +38,16 @@ class MyFavorites extends Model
         $validatedData = $request->validate([
             'third_party_id' => ['nullable', 'string'],
             'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
             'loc_x' => ['required', 'numeric'],
-            'loc_y' => ['required', 'numeric']
+            'loc_y' => ['required', 'numeric'],
+            'type_of_info_object_category' => ['required', 'string']
         ]);
 
         $newFavorite = new MyFavorites;
 
         $newFavorite->third_party_id = $validatedData['third_party_id'];
         $newFavorite->name = $validatedData['name'];
-        $newFavorite->description = $validatedData['description'];
+        $newFavorite->type_of_info_object_category = $validatedData['type_of_info_object_category'];
         $newFavorite->loc_x = $validatedData['loc_x'];
         $newFavorite->loc_y = $validatedData['loc_y'];
         
