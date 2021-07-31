@@ -22,7 +22,7 @@
 
     Route::prefix('chat')                       ->group(__DIR__ . '/Chat/Chat.routes.php');
 
-    Route::prefix('contact-me')                       ->group(__DIR__ . '/ContactMe/ContactMe.routes.php');
+    Route::prefix('contact-me')                 ->group(__DIR__ . '/ContactMe/ContactMe.routes.php');
 
     Route::prefix('friendship')                 ->group(__DIR__ . '/Friendship/Friendship.routes.php');
 
