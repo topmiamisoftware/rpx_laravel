@@ -83,4 +83,12 @@ class UserController extends Controller
         return $user->sendCode($request);
     }
 
+    public function facebookLogin(User $user, Request $request){
+        return $user->facebookLogin($request);
+    }   
+
+    public function googleLogin(User $user, Request $request){
+        return $user->googleLogin($request);
+    } 
+
 }   
