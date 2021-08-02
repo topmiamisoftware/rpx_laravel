@@ -308,7 +308,7 @@ class User extends Authenticatable implements JWTSubject
         if($fbUser){
 
             $user_id = $fbUser->user_id;
-            $user = $this->select('id')->where('id', $user_id)->first();
+            $user = $this->select('id', 'username')->where('id', $user_id)->first();
 
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
@@ -386,7 +386,7 @@ class User extends Authenticatable implements JWTSubject
             DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
 
                 $user->save();
-                $user->username =  $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
+                $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
                 $user->save();
 
                 $newSpotbieUser->id = $user->id;
