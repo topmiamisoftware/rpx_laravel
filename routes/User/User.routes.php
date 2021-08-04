@@ -34,6 +34,6 @@ Route::put('change-password',     [UserController::class, 'changePassword']);
 
 Route::post('unique-email',       [UserController::class, 'uniqueEmail']);
 
-Route::post('send-code',           [UserController::class, 'sendCode']);
+Route::post('send-code',          [UserController::class, 'sendCode']);
 
-Route::post('check-confirm',       [UserController::class, 'checkConfirm']);
+Route::post('check-confirm',      [UserController::class, 'checkConfirm']);

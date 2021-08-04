@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangePasswordInUsersTable extends Migration
+class ChangeUsernameInUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class ChangePasswordInUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            //Make passwords nullable to allow for social media logins.
-            $table->string('password', 255)->nullable()->change();
+            //Make usernames longer to allow for google social media logins.
+            $table->string('username', 135)->nullable()->change();
         });
     }
 
