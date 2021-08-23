@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GoogleUser;
+use App\Models\ItemLedger;
 use Illuminate\Http\Request;
 
-class GoogleUserController extends Controller
+class ItemLedgerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class GoogleUserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param  \App\Models\ItemLedger  $itemLedger
      * @return \Illuminate\Http\Response
      */
-    public function show(GoogleUser $googleUser)
+    public function show(ItemLedger $itemLedger)
     {
         //
     }
@@ -52,10 +52,10 @@ class GoogleUserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param  \App\Models\ItemLedger  $itemLedger
      * @return \Illuminate\Http\Response
      */
-    public function edit(GoogleUser $googleUser)
+    public function edit(ItemLedger $itemLedger)
     {
         //
     }
@@ -64,10 +64,10 @@ class GoogleUserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param  \App\Models\ItemLedger  $itemLedger
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, GoogleUser $googleUser)
+    public function update(Request $request, ItemLedger $itemLedger)
     {
         //
     }
@@ -75,12 +75,11 @@ class GoogleUserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param  \App\Models\ItemLedger  $itemLedger
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GoogleUser $googleUser)
+    public function destroy(ItemLedger $itemLedger)
     {
         //
     }
-    
 }

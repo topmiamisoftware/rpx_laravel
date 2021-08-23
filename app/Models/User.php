@@ -95,6 +95,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\ContactMe');
     }
 
+    public function placeToEat(){
+        return $this->hasOne('App\Models\PlaceToEat', 'user_id');
+    }
+
     public function spotbieUser(){        
         return $this->hasOne('App\Models\SpotbieUser', 'id');
     }
@@ -401,12 +405,16 @@ class User extends Authenticatable implements JWTSubject
 
                 $fbUser->save();
 
-            });
+            });            
+
+            $newSpotbieUser = $user->spotbieUser;
 
             //Start the session
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
             
+            $this->sendConfirmationEmail();
+
             if($remember_me == '1'){
                 Auth::user()->remember_token = $token;
             } else {
@@ -419,7 +427,7 @@ class User extends Authenticatable implements JWTSubject
                 'token_info' => $this->respondWithToken($token),
                 'message' => 'success',
                 'user' => $user,
-                'spotbie_user' => $spotbieUser
+                'spotbie_user' => $newSpotbieUser
             );    
 
         }
@@ -558,12 +566,16 @@ class User extends Authenticatable implements JWTSubject
 
             });
 
-            $remember_me = $validatedData['remember_me'];
+            $newSpotbieUser = $user->spotbieUser;
+
+            $remember_me = $validatedData['remember_me'];            
 
             //Start the session
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
             
+            $this->sendConfirmationEmail();
+
             if($remember_me == '1'){
                 Auth::user()->remember_token = $token;
             } else {
@@ -576,7 +588,7 @@ class User extends Authenticatable implements JWTSubject
                 'token_info' => $this->respondWithToken($token),
                 'message' => 'success',
                 'user' => $user,
-                'spotbie_user' => $spotbieUser
+                'spotbie_user' => $newSpotbieUser
             );    
 
         }
@@ -670,19 +682,43 @@ class User extends Authenticatable implements JWTSubject
 
         $spotbieUserSettings = $user
         ->spotbieUser()
-        ->select('first_name', 'last_name', 'animal', 'ghost_mode', 'privacy')
+        ->select('user_type', 'first_name', 'last_name', 'animal', 'ghost_mode', 'privacy')
         ->get()[0];
+
+        $placeToEat = $user
+        ->placeToEat()
+        ->select('id', 'user_id', 'name', 'description', 'address', 'loc_x', 'loc_y', 'created_at', 'updated_at')
+        ->get();
+
+        if(count($placeToEat) > 0) 
+            $placeToEat = $placeToEat[0];
+        else
+            $placeToEat = null;
 
         $settingsResponse = array(
             'message' => 'success',
             'user' => $userSettings,
-            'spotbie_user' => $spotbieUserSettings
+            'spotbie_user' => $spotbieUserSettings,
+            'place_to_eat' => $placeToEat
         );
 
         return response($settingsResponse);
 
     }
     
+    public function savePlaceSettings(Request $request){
+
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'origin_description' => 'required|string',
+            'origin_title' => 'required|string',
+            'origin_x' => 'required|string',
+            'origin_y' => 'required|string'
+        ]);
+
+    }
+
     public function saveSettings(Request $request){
         
         $user = Auth::user();
@@ -696,7 +732,7 @@ class User extends Authenticatable implements JWTSubject
                 'last_name' => ['required', new LastName],
                 'ghost_mode' => 'required|boolean',
                 'privacy' => 'required|boolean',
-                'animal' => 'required|string'
+                'account_type' => 'required|string'
             ]);
 
         } else {
@@ -708,7 +744,7 @@ class User extends Authenticatable implements JWTSubject
                 'last_name' => ['required', new LastName],
                 'ghost_mode' => 'required|boolean',
                 'privacy' => 'required|boolean',
-                'animal' => 'required|string'
+                'account_type' => 'required|string'
             ]);
 
         }
@@ -725,6 +761,19 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->animal = $validatedData['animal'];
         
         $user->spotbieUser->save();
+
+        if($validatedData['account_type'] == 'PLACE TO EAT'){
+
+            $user->placeToEat->description = $validatedData['origin_description'];
+            $user->placeToEat->address = $validatedData['origin_address'];
+            $user->placeToEat->title = $validatedData['origin_title'];
+            $user->placeToEat->loc_x = $validatedData['origin_x'];
+            $user->placeToEat->loc_y = $validatedData['origin_y'];
+
+            $user->save();
+
+        }
+        
 
         $response = array(
             'success' => true

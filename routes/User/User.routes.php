@@ -22,6 +22,8 @@ Route::post('logout',             [UserController::class, 'logOut'])->middleware
 
 Route::put('update',              [UserController::class, 'update'])->middleware('auth');
 
+Route::put('update_place',        [UserController::class, 'updatePlace '])->middleware('auth');
+
 Route::post('settings',           [UserController::class, 'settings'])->middleware('auth');
 
 Route::get('{user:username}',     [UserController::class, 'getUser']);
