@@ -10,7 +10,7 @@ class StreamPostSeeder extends Seeder
     public function run()
     {
         
-        $link = mysqli_connect(config('database.connections.mysql_spotbie_old.host'), 
+        /*$link = mysqli_connect(config('database.connections.mysql_spotbie_old.host'), 
                                 config('database.connections.mysql_spotbie_old.username'), 
                                 config('database.connections.mysql_spotbie_old.password'), 
                                 config('database.connections.mysql_spotbie_old.database'));
@@ -44,6 +44,6 @@ class StreamPostSeeder extends Seeder
             echo mysqli_error($con);
             die();
         }        
-
+        */
     }
 }

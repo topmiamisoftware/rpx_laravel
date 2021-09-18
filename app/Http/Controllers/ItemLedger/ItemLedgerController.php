@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ItemLedger;
 
 use App\Models\ItemLedger;
 use Illuminate\Http\Request;

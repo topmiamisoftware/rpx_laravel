@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\FacebookUser;
 
 use App\Models\FacebookUser;
 use Illuminate\Http\Request;

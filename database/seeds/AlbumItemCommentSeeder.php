@@ -9,7 +9,7 @@ class AlbumItemCommentSeeder extends Seeder
 {
     public function run()
     {
-        
+        /*
         $link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
     
         if(!$link) {die('Failed to connect to server: ' . mysqli_connect_error() . " Line Number: " . __LINE__ . " File Name: " . __FILE__);}
@@ -38,5 +38,6 @@ class AlbumItemCommentSeeder extends Seeder
             echo mysqli_error($con);
             die();
         } 
+        */
     }
 }

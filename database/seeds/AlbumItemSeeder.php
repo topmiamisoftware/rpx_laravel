@@ -9,7 +9,7 @@ class AlbumItemSeeder extends Seeder
 {
     public function run()
     {
-        
+        /*
         $link = mysqli_connect(config('database.connections.mysql_spotbie_old.host'), 
                                 config('database.connections.mysql_spotbie_old.username'), 
                                 config('database.connections.mysql_spotbie_old.password'), 
@@ -41,5 +41,6 @@ class AlbumItemSeeder extends Seeder
             echo mysqli_error($con);
             die();
         } 
+        */
     }
 }

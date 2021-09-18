@@ -30,7 +30,7 @@ class CreateSpotbieUsersTable extends Migration
             $table->boolean('privacy')->default(false);
             $table->boolean('ads')->default(false);
             $table->boolean('mature')->default(false);
-            $table->string('phone_number', 35);
+            $table->string('phone_number', 35)->nullable()->default(null);
             $table->boolean('phone_is_confirmed')->default(false);
             $table->unsignedInteger('phone_confirm_attempts')->default(0);
             $table->timestamps();

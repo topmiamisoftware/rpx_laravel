@@ -21,6 +21,9 @@ class CreatePlaceToEatsTable extends Migration
             $table->string('address', 100)->nullable(false);
             $table->float('loc_x', 8, 6)->nullable();
             $table->float('loc_y', 8, 6)->nullable();                        
+            $table->string('photo', 650)->nullable(false)->default('');  
+            $table->boolean('is_verified')->nullable(false)->default(false);
+            $table->string('qr_code_link', 135)->nullable(false);      
             $table->timestamps();
             $table->softDeletes();
         });

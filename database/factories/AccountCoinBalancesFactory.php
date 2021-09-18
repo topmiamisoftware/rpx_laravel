@@ -2,18 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\AccountCoinBalance;
+use App\Models\LoyaltyPointBalance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class AccountCoinBalancesFactory extends Factory
+class LoyaltyPointBalancesFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = AccountCoinBalance::class;
+    protected $model = LoyaltyPointBalance::class;
 
     /**
      * Define the model's default state.

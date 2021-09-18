@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\GoogleUser;
 
 use App\Models\GoogleUser;
 use Illuminate\Http\Request;

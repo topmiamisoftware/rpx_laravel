@@ -48,3 +48,9 @@
     Route::prefix('ads')                        ->group(__DIR__ . '/Ads/Ads.routes.php');
 
     Route::prefix('bugs')                       ->group(__DIR__ . '/Bugs/Bugs.routes.php');
+
+    Route::prefix('place-to-eat')               ->group(__DIR__ . '/PlaceToEat/PlaceToEat.routes.php');
+
+    Route::prefix('place-to-eat-item')         ->group(__DIR__ . '/PlaceToEatItems/PlaceToEatItems.routes.php');
+
+    Route::prefix('loyalty-points')             ->group(__DIR__ . '/LoyaltyPoints/loyalty-points.routes.php');    

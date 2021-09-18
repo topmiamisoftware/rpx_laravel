@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountCoinBalancesTable extends Migration
+class LoyaltyPointLedger extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateAccountCoinBalancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('account_coin_balances', function (Blueprint $table) {
+        Schema::create('loyalty_point_ledger', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->references('id')->on('users');
-            $table->float('coin_cost')->nullable(false)->default(0); 
+            $table->unsignedBigInteger('user_id')->references('user_id')->on('loyalty_point_balances');
+            $table->float('loyalty_amount')->nullable(false)->default(0); 
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +29,6 @@ class CreateAccountCoinBalancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('account_coin_balances');
+        //
     }
 }

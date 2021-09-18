@@ -15,8 +15,9 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.5",
         "laravel/framework": "^8.0",
-        "laravel/tinker": "^2.0",
+        "laravel/tinker": "^2.6",
         "reliese/laravel": "^0.0.16",
+        "simplesoftwareio/simple-qrcode": "~4",
         "twilio/sdk": "^6.9",
         "tymon/jwt-auth": "^1.0"
     },
