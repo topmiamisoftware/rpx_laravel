@@ -153,7 +153,7 @@ class PlaceToEatItem extends Model
         $placeToEatItems = null;
         $loyalty_point_dollar_percent_value = null;
 
-        if(!is_null($validatedData['qrCodeLink']) && !is_null($validatedData['userHash']) ){
+        if( isset($validatedData['qrCodeLink']) && isset($validatedData['userHash']) ){
             
             $businessUser = User::where('uuid', $validatedData['userHash'])->get()[0];
 
