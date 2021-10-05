@@ -15,7 +15,7 @@ class CreateUserLocationsTable extends Migration
     {
         Schema::create('user_locations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id')->references('id')->on('users')->unique();
+            $table->unsignedInteger('user_id')->references('id')->on('users')->unique()->onDelete('cascade');
             $table->float('loc_x', 8, 6)->nullable();
             $table->float('loc_y', 8, 6)->nullable();
             $table->string('ip_address', 36)->nullable();

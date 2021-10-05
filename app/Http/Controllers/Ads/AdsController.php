@@ -13,4 +13,9 @@ class AdsController extends Controller
     public function getSingleAdBanner(Ads $ads){
         return $ads->getSingleAdBanner();
     }
+
+    public function index(Ads $ads){
+        return $ads->index();
+    }
+
 }

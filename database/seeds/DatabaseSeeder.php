@@ -11,12 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //$this->call(StreamSeeder::class);
-        //$this->call(StreamPostSeeder::class);
-        //$this->call(AlbumsSeeder::class);
-        //$this->call(AlbumItemSeeder::class); 
-        //$this->call(ExtraMediaSeeder::class);
         $this->call(UserSeeder::class);
-        $this->call(PlaceToEatSeeder::class);
+        $this->call(BusinessSeeder::class);
     }
 }

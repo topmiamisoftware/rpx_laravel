@@ -8,5 +8,5 @@
         'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api.spotbie.com/backgrounds/'),
         'business_pass_key' => env('SPOTBIE_BUSINESS_PASSKEY'),
         'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api.spotbie.com/rewards-media/images/'),
-        'my_place_to_eat_categories' => ['Barbeque', 'Burgers', 'Brunch']
+        'my_business_categories' => ['Barbeque', 'Burgers', 'Brunch']
     ];

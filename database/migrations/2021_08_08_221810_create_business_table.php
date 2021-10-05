@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlaceToEatsTable extends Migration
+class CreateBusinessTable extends Migration
 {
 
     private $allowedCategories = ['Asian Fusion', 'Bagels', 'Bakery', 'Bar', 'Barbeque', 'Breakfast', 'British',
@@ -22,7 +22,7 @@ class CreatePlaceToEatsTable extends Migration
      */
     public function up()
     {
-        Schema::create('places_to_eat', function (Blueprint $table) {
+        Schema::create('business', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->references('id')->on('users');
             $table->string('name', 100)->nullable(false);

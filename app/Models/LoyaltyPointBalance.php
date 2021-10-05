@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\DB;
 
-use App\Models\PlaceToEatItem;
-
-use App\Models\ItemLedger;
+use App\Models\Reward;
+use App\Models\Business;
+use App\Models\LoyaltyPointLedger;
 
 use Carbon\Carbon;
 use Dotenv\Loader\Loader;
@@ -108,7 +108,7 @@ class LoyaltyPointBalance extends Model
 
         $user = Auth::user();
 
-        $qrTokenHash = PlaceToEat::select('id')
+        $qrTokenHash = Business::select('id')
         ->where('qr_code_link', $validatedData['qr_code_link'])        
         ->get()[0];
 
@@ -123,12 +123,12 @@ class LoyaltyPointBalance extends Model
             $businessId = $qrTokenOwner->id;
 
             //Insert reward into ledger
-            $insertReward = new ItemLedger();
+            $insertReward = new LoyaltyPointLedger();
             $insertReward->user_id = $user->id;
             $insertReward->loyalty_amount = abs( floatval($loyaltyPointReward) );
 
             //Insert expense into ledger
-            $insertExpense = new ItemLedger();
+            $insertExpense = new LoyaltyPointLedger();
             $insertExpense->user_id = $businessId;
             $insertExpense->loyalty_amount = ( - abs(floatval($loyaltyPointReward)) );
 

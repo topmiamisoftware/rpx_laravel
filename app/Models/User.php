@@ -27,6 +27,8 @@ use App\Rules\LastName;
 use App\Rules\Password;
 use App\Rules\Username;
 
+use Carbon\Carbon;
+
 class User extends Authenticatable implements JWTSubject
 {
     
@@ -82,20 +84,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\UserLocation');
     }
 
-    public function streamPosts(){
-        return $this->hasMany('App\Models\StreamPost');
-    }
-
-    public function webOptions(){
-        return $this->hasOne('App\Models\WebOptions');
-    }
-
-    public function contactMe(){
-        return $this->hasOne('App\Models\ContactMe');
-    }
-
-    public function placeToEat(){
-        return $this->hasOne('App\Models\PlaceToEat', 'user_id');
+    public function business(){
+        return $this->hasOne('App\Models\Business', 'user_id');
     }
 
     public function spotbieUser(){        
@@ -110,14 +100,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\GoogleUser', 'id');
     }
 
-    public function relationships(){                
-        return $this->hasMany('App\Models\Friendship');
-    }    
-
-    public function albums(){
-        return $this->hasMany('App\Models\Album');
-    }
-
     public function defaultImages(){
         return $this->hasMany('App\Models\DefaultImages');
     }
@@ -129,7 +111,7 @@ class User extends Authenticatable implements JWTSubject
     public function loyaltyPointBalance(){
         return $this->hasOne('App\Models\LoyaltyPointBalance', 'user_id');
     }
-
+    
     public function signUp(Request $request){
 
         $validatedData = $request->validate([
@@ -163,17 +145,29 @@ class User extends Authenticatable implements JWTSubject
         $newSpotbieUser->last_known_ip_address = $request->ip;
 
         DB::transaction(function () use ($user, $newSpotbieUser){
+
             $user->save();
             $newSpotbieUser->id = $user->id;
             $newSpotbieUser->save();
 
             $loyaltyPointBalance = new LoyaltyPointBalance();
             $loyaltyPointBalance->user_id = $user->id;
-            $loyaltyPointBalance->balance = 1000;//One key can make the difference.
+            $loyaltyPointBalance->balance = 1000;
+
+            if( $newSpotbieUser->user_type == '1' || 
+                $newSpotbieUser->user_type == '2' || 
+                $newSpotbieUser->user_type == '3' ){
+                
+                $loyaltyPointBalance->reset_balance = 1000;
+                $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
+ 
+            }
 
             $loyaltyPointBalance->save();
 
         });
+        
+        $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
         //Start the session
         Auth::login($user);
@@ -187,7 +181,7 @@ class User extends Authenticatable implements JWTSubject
         ->first();
 
         $signUpResponse = array(
-            'tokenInfo' => $this->respondWithToken(Auth::refresh()),
+            'token_info' => $this->respondWithToken(Auth::refresh()),
             'message' => 'success',
             'user' => $user,
             'spotbie_user' => $newSpotbieUser
@@ -390,11 +384,10 @@ class User extends Authenticatable implements JWTSubject
                 Auth::login($user, $remember_me);
                 $token = Auth::refresh();
                 
-                if($remember_me == '1'){
+                if($remember_me == '1')
                     Auth::user()->remember_token = $token;
-                } else {
-                    Auth::user()->remember_token = null;
-                }
+                else
+                    Auth::user()->remember_token = null;                
 
                 Auth::user()->save();
 
@@ -450,9 +443,14 @@ class User extends Authenticatable implements JWTSubject
                 $fbUser->facebook_user_id = $validatedData["userID"];
                 $fbUser->user_id = $user->id;
 
-                $LoyaltyPointBalance = new LoyaltyPointBalance();
-                $LoyaltyPointBalance->user_id = $user->id;
-                $LoyaltyPointBalance->balance = 0;
+                $loyaltyPointBalance = new LoyaltyPointBalance();
+                $loyaltyPointBalance->user_id = $user->id;
+                $loyaltyPointBalance->balance = 1000;
+
+                if($newSpotbieUser->user_type == '1' || $newSpotbieUser->user_type == '2' || $newSpotbieUser->user_type == '3'){
+                    $loyaltyPointBalance->reset_balance = 1000;
+                    $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
+                }
 
                 $LoyaltyPointBalance->save();
 
@@ -760,24 +758,24 @@ class User extends Authenticatable implements JWTSubject
 
         $spotbieUserSettings = $user
         ->spotbieUser()
-        ->select('user_type', 'first_name', 'last_name', 'animal', 'ghost_mode', 'privacy', 'phone_number')
+        ->select('user_type', 'first_name', 'last_name', 'phone_number')
         ->get()[0];
 
-        $placeToEat = $user
-        ->placeToEat()
+        $business = $user
+        ->business()
         ->select('id', 'user_id', 'name', 'description', 'address', 'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
         ->get();
 
-        if(count($placeToEat) > 0) 
-            $placeToEat = $placeToEat[0];
+        if(count($business) > 0) 
+            $business = $business[0];
         else
-            $placeToEat = null;
+            $business = null;
 
         $settingsResponse = array(
             'message' => 'success',
             'user' => $userSettings,
             'spotbie_user' => $spotbieUserSettings,
-            'place_to_eat' => $placeToEat
+            'business' => $business
         );
 
         return response($settingsResponse);
@@ -795,8 +793,6 @@ class User extends Authenticatable implements JWTSubject
                 'email' => 'required|email',
                 'first_name' => ['required', new FirstName],
                 'last_name' => ['required', new LastName],
-                'ghost_mode' => 'boolean',
-                'privacy' => 'boolean',
                 'account_type' => 'required|numeric',
                 'phone_number' => 'string|max:35|nullable'
             ]);
@@ -808,8 +804,6 @@ class User extends Authenticatable implements JWTSubject
                 'email' => 'required|email',
                 'first_name' => ['required', new FirstName],
                 'last_name' => ['required', new LastName],
-                'ghost_mode' => 'boolean',
-                'privacy' => 'boolean',
                 'account_type' => 'required|numeric',
                 'phone_number' => 'string|max:35|nullable'
             ]);
@@ -825,11 +819,6 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->phone_number = $validatedData['phone_number'];
 
         $user->spotbieUser->user_type = $validatedData['account_type'];
-
-        if($validatedData['account_type'] === 4){
-            $user->spotbieUser->ghost_mode = $validatedData['ghost_mode'];
-            $user->spotbieUser->privacy = $validatedData['privacy'];
-        }
         
         DB::transaction(function () use ($user){
             $user->save();
@@ -872,16 +861,15 @@ class User extends Authenticatable implements JWTSubject
     public function getUser(Request $request){
 
         $user = $this->only('id', 'username');
+
         $spotbieUser = $this->spotbieUser()->select('first_name', 'last_name', 'description', 'default_picture')->first();
 
-        $webOptions = $this->webOptions()->select('bg_color', 'spotmee_bg', 'time_zone')->first();
         $defaultImages = $this->defaultImages()->select('default_image_url')->get();
 
         $response = array(
             'message' => 'success',
             'user' => $user,
             'spotbie_user' => $spotbieUser,
-            'web_options' => $webOptions,
             'default_images' => $defaultImages
         );
 

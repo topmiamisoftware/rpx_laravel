@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
     {
 
         User::factory()
-        ->count(150)
+        ->count(20)
         ->hasSpotbieUser(1)
         ->hasDefaultImages(1,function (array $attributes, User $user) {
             return ['default_image_url' => $user->spotbieUser->default_picture];
@@ -26,25 +26,24 @@ class UserSeeder extends Seeder
         ->create();
 
         /*
+        
+        Uncomment this if you want to Create a custom user.
+
         User::factory()
         ->hasSpotbieUser(1,[
-            'first_name' => 'Franco',
-            'last_name' => 'Petitfour',
-            'description' => 'Hello my name is Franco Petitfour. Welcome to my SpotBie profile!',
+            'first_name' => 'YourName',
+            'last_name' => 'YourLastName',
+            'description' => 'Hello my name is YourName YourLastName. Welcome to my SpotBie profile!',
         ])
         ->hasUserLocation(1)
-        ->hasWebOptions(1)
-        ->hasContactMe(1)
         ->hasDefaultImages(1,function (array $attributes, User $user) {
             return ['default_image_url' => $user->spotbieUser->default_picture];
         })
         ->create([
-            'username' => '0456fra', 
-            'email' => 'franco.petitfour001@gmail.com', 
+            'username' => 'yourusernam3', 
+            'email' => 'youremail@gmail.com', 
             'password' => Hash::make('HelloWorld33!')
         ]);*/
-
-        Friendship::factory()->count(150)->create();
 
     }
 }

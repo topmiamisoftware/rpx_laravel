@@ -10,20 +10,24 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Http\Request;
 
-use App\Models\PlaceToEatItem;
+use App\Models\Reward;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class PlaceToEat extends Model
+class Business extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = 'places_to_eat';
+    public $table = 'business';
 
-    public function placeToEatItems(){
-        return $this->hasMany('App\Models\PlaceToEatItem', 'place_to_eat_id', 'id');
+    public function rewards(){
+        return $this->hasMany('App\Models\Reward', 'business_id', 'id');
     }    
+
+    public function ads(){
+        return $this->hasMany('App\Models\Ads', 'business_id');
+    }
 
     public function user(){
         return $this->belongsTo('App\Models\User', 'user_id', 'id');
@@ -38,6 +42,7 @@ class PlaceToEat extends Model
             'photo' => 'required|string|max:650|min:1',
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
+            'categories' => 'required|string',
             'passkey' => 'required|string|max:6|min:6'
         ]);
 
@@ -55,41 +60,41 @@ class PlaceToEat extends Model
         $user->spotbieUser->user_type = 1;
 
         //check if the place to eat already exists.
-        $existingPlaceToEat = $user->placeToEat;        
+        $existingBusiness = $user->business;        
 
-        if(!is_null($existingPlaceToEat)){
-            $placeToEat = $user->placeToEat;       
+        if(!is_null($existingBusiness)){
+            $business = $user->business;       
         } else {
-            $placeToEat = new PlaceToEat();
+            $business = new Business();
         }    
 
-        $placeToEat->user_id = $user->id;
-        $placeToEat->name = $validatedData['name'];
-        $placeToEat->description = $validatedData['description'];
-        $placeToEat->address = $validatedData['address'];
-        $placeToEat->photo = $validatedData['photo'];
-        $placeToEat->loc_x = $validatedData['loc_x'];
-        $placeToEat->loc_y = $validatedData['loc_y'];
-        $placeToEat->is_verified = 1;
+        $business->user_id = $user->id;
+        $business->name = $validatedData['name'];
+        $business->description = $validatedData['description'];
+        $business->address = $validatedData['address'];
+        $business->photo = $validatedData['photo'];
+        $business->loc_x = $validatedData['loc_x'];
+        $business->loc_y = $validatedData['loc_y'];
+        $business->categories = json_encode($validatedData['categories']);
+        $business->is_verified = 1;
 
-        $placeToEat->qr_code_link = Str::uuid();
+        $business->qr_code_link = Str::uuid();
 
-        if($existingPlaceToEat){
-            DB::transaction(function () use ($placeToEat, $user){
-                $user->placeToEat->save();
+        if($existingBusiness){
+            DB::transaction(function () use ($business, $user){
+                $user->business->save();
                 $user->spotbieUser->save();
             });
         } else {
-            DB::transaction(function () use ($placeToEat, $user){
-                $placeToEat->save();
+            DB::transaction(function () use ($business, $user){
+                $business->save();
                 $user->spotbieUser->save();
             });            
         }
 
-
         $response = array(
             'message' => 'success',
-            'newPlaceToEat' => $placeToEat
+            'business' => $business
         ); 
 
         return response($response);

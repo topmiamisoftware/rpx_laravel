@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers\Business;
+
+use App\Http\Controllers\Controller;
+
+use App\Models\Business;
+use Illuminate\Http\Request;
+
+class BusinessController extends Controller
+{
+
+    public function verify(Request $request, Business $business)
+    {
+        return $business->verify($request);
+    }
+
+    public function getGooglePlacesToEat(Request $request, Business $business)
+    {
+        return $business->getGooglePlacesToEat($request);
+    }
+
+}

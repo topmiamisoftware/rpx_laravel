@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Business;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -20,8 +22,8 @@ class Reward extends Model
 
     public $table = "rewards";
 
-    public function placeToEat(){
-        return $this->belongsTo('App\Models\PlaceToEat', 'business_id', 'id');
+    public function business(){
+        return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     } 
 
     public function uploadMedia(Request $request){
@@ -74,26 +76,26 @@ class Reward extends Model
         $user = Auth::user();
 
         if($user){
-            $placeToEat = $user->placeToEat;
+            $business = $user->business;
         }
 
-        $placeToEatReward = new PlaceToEatItem();
+        $businessReward = new Reward();
 
-        $placeToEatReward->place_to_eat_id = $placeToEat->id;
-        $placeToEatReward->name = $validatedData['name'];
-        $placeToEatReward->description = $validatedData['description'];
-        $placeToEatReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
-        $placeToEatReward->type = $validatedData['type'];
-        $placeToEatReward->point_cost = $validatedData['point_cost'];
+        $businessReward->business_id = $business->id;
+        $businessReward->name = $validatedData['name'];
+        $businessReward->description = $validatedData['description'];
+        $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
+        $businessReward->type = $validatedData['type'];
+        $businessReward->point_cost = $validatedData['point_cost'];
 
-        DB::transaction(function () use ($placeToEatReward){
-            $placeToEatReward->save();
+        DB::transaction(function () use ($businessReward){
+            $businessReward->save();
         });  
 
         
         $response = array(
             'success' => true,
-            'newPlaceToEat' => $placeToEat
+            'newBusiness' => $business
         ); 
 
         return response($response);
@@ -114,25 +116,25 @@ class Reward extends Model
         $user = Auth::user();
 
         if($user){
-            $placeToEat = $user->placeToEat;
+            $business = $user->business;
         }
 
-        $placeToEatReward = $placeToEat->placeToEatItems()->find($validatedData['id']);
+        $businessReward = $business->rewards()->find($validatedData['id']);
         
-        $placeToEatReward->place_to_eat_id = $placeToEat->id;
-        $placeToEatReward->name = $validatedData['name'];
-        $placeToEatReward->description = $validatedData['description'];
-        $placeToEatReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
-        $placeToEatReward->type = $validatedData['type'];
-        $placeToEatReward->point_cost = $validatedData['point_cost'];
+        $businessReward->business_id = $business->id;
+        $businessReward->name = $validatedData['name'];
+        $businessReward->description = $validatedData['description'];
+        $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
+        $businessReward->type = $validatedData['type'];
+        $businessReward->point_cost = $validatedData['point_cost'];
 
-        DB::transaction(function () use ($placeToEatReward){
-            $placeToEatReward->save();
+        DB::transaction(function () use ($businessReward){
+            $businessReward->save();
         });  
         
         $response = array(
             'success' => true,
-            'newPlaceToEat' => $placeToEat
+            'newBusiness' => $business
         ); 
 
         return response($response);
@@ -147,39 +149,39 @@ class Reward extends Model
 
         $user = Auth::user();
 
-        $placeToEat = $user->placeToEat;
+        $business = $user->business;
 
-        $placeToEatItems = null;
+        $rewards = null;
         $loyalty_point_dollar_percent_value = null;
 
         if( isset($validatedData['qrCodeLink']) && isset($validatedData['userHash']) ){
             
             $businessUser = User::where('uuid', $validatedData['userHash'])->get()[0];
 
-            $placeToEat = PlaceToEat::where('user_id', $businessUser->id)->get()[0]; 
+            $business = Business::where('user_id', $businessUser->id)->get()[0]; 
 
-            $businessMenu = PlaceToEatItem::select('*')
-            ->where('place_to_eat_id', $placeToEat->id)
+            $businessMenu = Reward::select('*')
+            ->where('business_id', $business->id)
             ->get();
 
-            $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('user_id', $placeToEat->id)
+            $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('user_id', $business->id)
             ->get()[0]->loyalty_point_dollar_percent_value;
 
             if( !is_null($businessMenu) )
-                $placeToEatItems = $businessMenu;
+                $rewards = $businessMenu;
             
         } else {
 
-            if( !is_null($placeToEat) )
-                $placeToEatItems = $placeToEat->placeToEatItems()->select('*')->get();
+            if( !is_null($business) )
+                $rewards = $business->rewards()->select('*')->get();
             else 
-                $placeToEatItems = [];
+                $rewards = [];
         }        
 
         $response = array(
             'success' => true,
-            'placeToEatRewards' => $placeToEatItems,
-            'placeToEatName' => $placeToEat->name,
+            'rewards' => $rewards,
+            'name' => $business->name,
             'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value
         ); 
 
@@ -199,7 +201,7 @@ class Reward extends Model
         if($user){
             
             DB::transaction(function () use ($user, $reward_id){
-                PlaceToEatItem::where('id', $reward_id)->delete();
+                Reward::where('id', $reward_id)->delete();
             });            
 
         }

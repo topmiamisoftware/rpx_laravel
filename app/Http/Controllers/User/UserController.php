@@ -43,9 +43,7 @@ class UserController extends Controller
         return $user->closeBrowser($request);
     }
 
-    public function myStream(User $user, Request $request){
-        return $user->getMyStream($request);
-    }
+
 
     public function checkAuth(User $user){
         return $user->checkIfLoggedIn();

@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Auth;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
 class Ads extends Model
@@ -26,5 +29,32 @@ class Ads extends Model
 
         return response($response);
 
-    }    
+    }   
+    
+    public function index(){
+
+        $user = Auth::user();
+
+        if(!$user){
+
+            $response = array(
+                "success" => false,
+                "message" => "You are not authorized to view this content." 
+            );
+    
+            return response($response); 
+
+        } 
+
+        $adList = $user->business->ads()->get();
+
+        $response = array(
+            "success" => true,
+            "adList" => $adList 
+        );
+
+        return response($response);
+
+    }
+
 }

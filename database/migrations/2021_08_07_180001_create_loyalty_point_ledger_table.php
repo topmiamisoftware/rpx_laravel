@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDefaultImagesTable extends Migration
+class CreateLoyaltyPointLedgerTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateDefaultImagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('default_images', function (Blueprint $table) {
+        Schema::create('loyalty_point_ledger', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('default_image_url', 135);
+            $table->unsignedBigInteger('user_id')->references('user_id')->on('loyalty_point_balances');
+            $table->float('loyalty_amount')->nullable(false)->default(0); 
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +29,6 @@ class CreateDefaultImagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_default_pictures');
+        //
     }
 }

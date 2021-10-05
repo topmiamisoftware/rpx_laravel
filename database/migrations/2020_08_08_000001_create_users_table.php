@@ -18,12 +18,10 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable(false)->default(Str::uuid());
-            $table->string('username', 35)->nullable()->unique();
+            $table->string('username', 235)->nullable()->unique();
             $table->string('email', 235)->unique();
             $table->string('password', 255)->nullable();
-            $table->string('remember_token', 100)->nullable();
-            $table->boolean('status')->default(true);            
-            $table->string('confirm', 160)->default();
+            $table->string('remember_token', 2500)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
