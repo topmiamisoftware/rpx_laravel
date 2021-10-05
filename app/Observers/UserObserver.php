@@ -22,12 +22,12 @@ class UserObserver
         $userLocation->createUserLocation($user);
 
         //Create User WebOptions
-        $webOptions = new WebOptions();
-        $webOptions->createWebOptions($user);
+        //$webOptions = new WebOptions();
+        //$webOptions->createWebOptions($user);
 
         //Create user ContactMe Options
-        $contactMe = new ContactMe();
-        $contactMe->createContactMe($user);
+        //$contactMe = new ContactMe();
+        //$contactMe->createContactMe($user);
     }
 
     /**

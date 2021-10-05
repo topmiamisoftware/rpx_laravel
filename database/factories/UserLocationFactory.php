@@ -23,8 +23,8 @@ class UserLocationFactory extends Factory
     public function definition()
     {
         return [
-            'loc_x' => "25.858726", 
-            'loc_y' => "-80.302813", 
+            'loc_x' => config("spotbie.my_loc_x"), 
+            'loc_y' => config("spotbie.my_loc_y"), 
             'ip_address' => '0'
         ];
     }

@@ -20,9 +20,6 @@ class UserSeeder extends Seeder
         User::factory()
         ->count(150)
         ->hasSpotbieUser(1)
-        ->hasUserLocation(1)
-        ->hasWebOptions(1)
-        ->hasContactMe(1)
         ->hasDefaultImages(1,function (array $attributes, User $user) {
             return ['default_image_url' => $user->spotbieUser->default_picture];
         })
@@ -47,10 +44,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('HelloWorld33!')
         ]);*/
 
-        for($i = 0; $i < 150; $i++){
-            Friendship::factory()
-            ->create();
-        }
+        Friendship::factory()->count(150)->create();
 
     }
 }

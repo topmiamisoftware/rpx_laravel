@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         //$this->call(AlbumItemSeeder::class); 
         //$this->call(ExtraMediaSeeder::class);
         $this->call(UserSeeder::class);
+        $this->call(PlaceToEatSeeder::class);
     }
 }

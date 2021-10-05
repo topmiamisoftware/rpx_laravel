@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlaceToEatItemsTable extends Migration
+class CreateBusinessRewardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreatePlaceToEatItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('place_to_eat_items', function (Blueprint $table) {
+        Schema::create('business', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('place_to_eat_id')->references('id')->on('places_to_eat');
+            $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->smallInteger('type');
             $table->string('name', 50);
             $table->string('description', 150);   
@@ -36,6 +36,6 @@ class CreatePlaceToEatItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('place_to_eat_items');
+        Schema::dropIfExists('business_rewards');
     }
 }

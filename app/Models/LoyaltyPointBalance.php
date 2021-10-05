@@ -182,4 +182,42 @@ class LoyaltyPointBalance extends Model
         return response($response);
 
     }
+
+    public function reset(){
+
+        $user = Auth::user();
+        $success = false;
+
+        $newUserBalance = 0;
+
+        if($user){
+
+            $user->loyaltyPointBalance->balance = $user->loyaltyPointBalance->reset_balance;
+
+            DB::transaction(function () use ($user){
+                $user->loyaltyPointBalance->save();
+            });  
+            
+            $loyaltyPointBalance = $user->loyaltyPointBalance()
+            ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
+            ->get()[0];
+
+            $success = true;
+
+        } else {
+
+            $loyaltyPointBalance = 0;
+            $success = false;
+
+        }
+
+        $response = array(
+            'success' => $success,
+            'loyalty_points' => $loyaltyPointBalance
+        );
+
+        return response($response);
+
+    }
+
 }

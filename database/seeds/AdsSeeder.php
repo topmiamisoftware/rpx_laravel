@@ -2,10 +2,12 @@
 
 use Illuminate\Database\Seeder;
 
+use App\Models\Ads;
+
 // composer require laracasts/testdummy
 use Laracasts\TestDummy\Factory as TestDummy;
 
-class PlacesToEatsSeederTableSeeder extends Seeder
+class AdsTableSeeder extends Seeder
 {
     public function run()
     {

@@ -81,10 +81,10 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('defaults') => storage_path('app/defaults'),
-        public_path('backgrounds') => storage_path('app/backgrounds'),
-        public_path('albums') => storage_path('app/albums'),
-        public_path('extra-media') => storage_path('app/extra-media'),
-        public_path('place-to-eat-items-media') => storage_path('app/place-to-eat-items-media/')
+        //public_path('backgrounds') => storage_path('app/backgrounds'),
+        //public_path('albums') => storage_path('app/albums'),
+        //public_path('extra-media') => storage_path('app/extra-media'),
+        public_path('rewards-media') => storage_path('app/rewards-media/')
     ],
 
 ];

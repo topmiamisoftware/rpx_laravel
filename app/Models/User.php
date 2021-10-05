@@ -135,9 +135,16 @@ class User extends Authenticatable implements JWTSubject
         $validatedData = $request->validate([
             'username' => ['required', 'unique:users', 'max:35', 'min:1', new Username],
             'email' => ['required', 'unique:users', 'email'],
-            'password' => ['required', new Password]
+            'password' => ['required', new Password],
+            'route' => ['required', 'string']
         ]);
         
+        if($validatedData['route'] == '/business'){
+            $accountType = '1';
+        } else {
+            $accountType = '4';
+        }
+
         $user = new User();
         
         $user->username = $validatedData['username'];
@@ -146,11 +153,11 @@ class User extends Authenticatable implements JWTSubject
         
         $newSpotbieUser = new SpotbieUser();
         
-        $newSpotbieUser->first_name = null;
-        $newSpotbieUser->last_name = null;
+        $newSpotbieUser->first_name = '';
+        $newSpotbieUser->last_name = '';
+        $newSpotbieUser->user_type = $accountType;
 
-        $fullName = $validatedData['first_name'] . ' ' . $validatedData['last_name'];
-        $description = "Hello my name is $fullName. Welcome to my Spotbie profile."; 
+        $description = "Welcome to my Spotbie profile."; 
 
         $newSpotbieUser->description = $description;
         $newSpotbieUser->last_known_ip_address = $request->ip;
@@ -311,9 +318,16 @@ class User extends Authenticatable implements JWTSubject
             'lastName' => ['required', new LastName],
             'email' => ['required', 'email'],
             'photoUrl' => ['required', 'string'],
-            'remember_me' => ['required', 'string']
+            'remember_me' => ['required', 'string'],
+            'route' => ['required', 'string']
         ]);
         
+        if($validatedData['route'] == '/business'){
+            $accountType = '1';
+        } else {
+            $accountType = '4';
+        }
+
         //Let's deny user the FbLogin if their FB email is already in use with our system.
         $userEmailInUse = $this->select('id', 'email')->where('email', $validatedData['email'])->first();
 
@@ -358,7 +372,7 @@ class User extends Authenticatable implements JWTSubject
                 
                 $spotbieUser->first_name = $validatedData['firstName'];
                 $spotbieUser->last_name = $validatedData['lastName'];
-                
+
                 $spotbieUser->default_picture = $validatedData['photoUrl'];
 
                 $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
@@ -413,7 +427,7 @@ class User extends Authenticatable implements JWTSubject
             
             $newSpotbieUser->first_name = $validatedData['firstName'];
             $newSpotbieUser->last_name = $validatedData['lastName'];
-
+            $newSpotbieUser->user_type = $accountType;
             $newSpotbieUser->default_picture = $validatedData['photoUrl'];
 
             $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
@@ -485,9 +499,16 @@ class User extends Authenticatable implements JWTSubject
             'lastName' => ['required', new LastName],
             'email' => ['required', 'email'],
             'photoUrl' => ['required', 'string'],
-            'remember_me' => ['required', 'string']
+            'remember_me' => ['required', 'string'],
+            'route' => ['required', 'string']
         ]);
         
+        if($validatedData['route'] == '/business'){
+            $accountType = '1';
+        } else {
+            $accountType = '4';
+        }
+
         //Let's deny user the FbLogin if their FB email is already in use with our system.
         $userEmailInUse = $this->select('id', 'email')->where('email', $validatedData['email'])->first();
         
@@ -534,7 +555,7 @@ class User extends Authenticatable implements JWTSubject
                 $spotbieUser->first_name = $validatedData['firstName'];
                 $spotbieUser->last_name = $validatedData['lastName'];
                 
-                $spotbieUser->default_picture = $validatedData['photoUrl'];
+                $spotbieUser->default_picture = $validatedData['photoUrl'];                
 
                 $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
 
@@ -588,6 +609,8 @@ class User extends Authenticatable implements JWTSubject
             
             $newSpotbieUser->first_name = $validatedData['firstName'];
             $newSpotbieUser->last_name = $validatedData['lastName'];
+
+            $newSpotbieUser->user_type = $accountType;
 
             $newSpotbieUser->default_picture = $validatedData['photoUrl'];
 

@@ -9,3 +9,5 @@ Route::post('show', [LoyaltyPointBalanceController::class, 'show'])->middleware(
 Route::post('store', [LoyaltyPointBalanceController::class, 'store'])->middleware('auth');
 
 Route::post('add', [LoyaltyPointBalanceController::class, 'add'])->middleware('auth');
+
+Route::post('reset', [LoyaltyPointBalanceController::class, 'reset'])->middleware('auth');

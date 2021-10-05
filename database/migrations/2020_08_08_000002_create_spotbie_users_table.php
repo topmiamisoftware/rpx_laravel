@@ -17,8 +17,8 @@ class CreateSpotbieUsersTable extends Migration
             $table->unsignedBigInteger('id')->references('id')->on('users');
             $table->integer('user_type', false, true)->default('0');
             $table->string('default_picture', 100)->default(config('spotbie.default_images_path').'user.png');
-            $table->string('first_name', 72);
-            $table->string('last_name', 72);
+            $table->string('first_name', 72)->nullabe();
+            $table->string('last_name', 72)->nullabe();
             $table->unsignedInteger('stream_id', true)->unique();
             $table->timestamp('last_log_in')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->string('animal', 30)->default('Panda');

@@ -18,6 +18,7 @@ class CreateGoogleUsersTable extends Migration
             $table->unsignedBigInteger('user_id')->references('id')->on('users');
             $table->string('google_user_id', 100)->unique();                     
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -124,8 +124,8 @@ class UserLocation extends Model
         $userLocation = new UserLocation();
 
         $userLocation->user_id = $user->id;
-        $userLocation->loc_x = 0;
-        $userLocation->loc_y = 0;
+        $userLocation->loc_x = config('spotbie.my_loc_x');
+        $userLocation->loc_y = config('spotbie.my_loc_y');
         $userLocation->ip_address = 0;
 
         $userLocation->save();

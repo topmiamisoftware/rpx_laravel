@@ -14,14 +14,14 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
 
-class PlaceToEatItem extends Model
+class Reward extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = "place_to_eat_items";
+    public $table = "rewards";
 
     public function placeToEat(){
-        return $this->belongsTo('App\Models\PlaceToEat', 'place_to_eat_id', 'id');
+        return $this->belongsTo('App\Models\PlaceToEat', 'business_id', 'id');
     } 
 
     public function uploadMedia(Request $request){
@@ -35,7 +35,6 @@ class PlaceToEatItem extends Model
 
         $user = Auth::user();
         
-        $placeToEatItemsImagesPath = config('spotbie.place_to_eat_items_images_path');
         $hashedFileName = $validatedData['image']->hashName();
 
         $newFile = Image::make($request->file('image'))->resize(1200, null, function ($constraint) {
@@ -46,7 +45,7 @@ class PlaceToEatItem extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = 'place-to-eat-items-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
 
         Storage::put($imagePath, $newFile);
 
@@ -119,7 +118,7 @@ class PlaceToEatItem extends Model
         }
 
         $placeToEatReward = $placeToEat->placeToEatItems()->find($validatedData['id']);
-
+        
         $placeToEatReward->place_to_eat_id = $placeToEat->id;
         $placeToEatReward->name = $validatedData['name'];
         $placeToEatReward->description = $validatedData['description'];
@@ -166,11 +165,15 @@ class PlaceToEatItem extends Model
             $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('user_id', $placeToEat->id)
             ->get()[0]->loyalty_point_dollar_percent_value;
 
-            if(!is_null($businessMenu))
+            if( !is_null($businessMenu) )
                 $placeToEatItems = $businessMenu;
             
         } else {
-            $placeToEatItems = $placeToEat->placeToEatItems()->select('*')->get();
+
+            if( !is_null($placeToEat) )
+                $placeToEatItems = $placeToEat->placeToEatItems()->select('*')->get();
+            else 
+                $placeToEatItems = [];
         }        
 
         $response = array(
