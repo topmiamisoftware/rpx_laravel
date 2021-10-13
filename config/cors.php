@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://spotbie.com', 'https://localhost:4200', 'https://friendly-payne-b8da89.netlify.app', 'https://192.168.1.65:4200'],
+    'allowed_origins' => ['https://spotbie.com', 
+                            'https://localhost:4200',
+                            'https://friendly-payne-b8da89.netlify.app', 
+                            'https://192.168.1.65:4200'
+                        ],
 
     'allowed_origins_patterns' => [],
 
