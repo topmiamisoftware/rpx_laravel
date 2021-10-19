@@ -6,7 +6,7 @@ use App\Models\LoyaltyPointBalance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class LoyaltyPointBalancesFactory extends Factory
+class LoyaltyPointBalanceFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
@@ -23,7 +23,9 @@ class LoyaltyPointBalancesFactory extends Factory
     public function definition()
     {
         return [
-            //
+            "balance" => 0,
+            "reset_balance" => 0,
+            "end_of_month" => null,            
         ];
     }
 }

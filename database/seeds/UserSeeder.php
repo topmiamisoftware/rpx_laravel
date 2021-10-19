@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
         ->hasDefaultImages(1,function (array $attributes, User $user) {
             return ['default_image_url' => $user->spotbieUser->default_picture];
         })
+        ->hasLoyaltyPointBalance(1)
         ->create();
 
         /*
