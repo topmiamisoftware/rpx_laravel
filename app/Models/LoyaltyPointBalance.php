@@ -63,13 +63,15 @@ class LoyaltyPointBalance extends Model
             $loyaltyPointBalance->save(); 
 
             $success = true;
+            $loyaltyPointBalance = $loyaltyPointBalance->refresh();
 
         } else
             $success = false;
             
 
         $response = array(
-            'success' => $success
+            'success' => $success,
+            'lp_balance' => $loyaltyPointBalance
         );
 
         return response($response);        
