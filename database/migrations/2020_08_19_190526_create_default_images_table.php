@@ -14,8 +14,7 @@ class CreateDefaultImagesTable extends Migration
     public function up()
     {
         Schema::create('default_images', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedInteger('id')->references('id')->on('users')->onDelete('cascade')->id;
             $table->string('default_image_url', 135);
             $table->timestamps();
             $table->softDeletes();

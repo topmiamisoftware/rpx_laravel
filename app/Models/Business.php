@@ -26,11 +26,11 @@ class Business extends Model
     }    
 
     public function ads(){
-        return $this->hasMany('App\Models\Ads', 'business_id');
+        return $this->hasMany('App\Models\Ads', 'id');
     }
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'user_id', 'id');
+        return $this->belongsTo('App\Models\User', 'id');
     } 
 
     public function verify(Request $request){
@@ -68,7 +68,7 @@ class Business extends Model
             $business = new Business();
         }    
 
-        $business->user_id = $user->id;
+        $business->id = $user->id;
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
         $business->address = $validatedData['address'];

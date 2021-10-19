@@ -24,6 +24,7 @@ class SpotbieUserFactory extends Factory
     {
         $randomNumber = rand(0 , 1025);
         return [
+            'user_type' => 0,
             'first_name' => $this->faker->firstName,
             'default_picture' => "https://picsum.photos/id/$randomNumber/200/300",
             'last_name' => $this->faker->lastName,

@@ -20,7 +20,7 @@ class Friendship extends Pivot
     use HasFactory, SoftDeletes; 
     
     public function initiatingUser(){
-        return $this->belongsTo('App\Models\User', 'user_id', 'id');
+        return $this->belongsTo('App\Models\User', 'id', 'user_id');
     }
 
     public function user(){

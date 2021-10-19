@@ -39,7 +39,7 @@ class BusinessFactory extends Factory
         $description = $this->faker->unique()->realText(150);
 
         return [
-            'user_id' => $userId,
+            'id' => $userId,
             'name' => $name,
             'description' => $description,
             'loc_x' => config("spotbie.my_loc_x"),

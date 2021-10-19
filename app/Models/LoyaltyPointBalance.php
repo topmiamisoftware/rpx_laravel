@@ -24,37 +24,43 @@ class LoyaltyPointBalance extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $fillable = ['balance'];
+    public $table = "loyalty_point_balances";
+
+    public $fillable = ['balance', 'loyalty_point_dollar_percent_valu', 'end_of_month'];
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'id');
     }  
 
     public function store(Request $request){
 
         $validatedData = $request->validate([
-            'businessLoyaltyPoints' => ['numeric'],
-            'businessCoinPercentage' => ['numeric']
+            'businessLoyaltyPoints' => ['required', 'numeric'],
+            'businessCoinPercentage' => ['required', 'numeric']
         ]);
 
         $success = false;
-
+        
         $user = Auth::user();
 
         if($user){
             
-            $user->loyaltyPointBalance->reset_balance = $validatedData['businessLoyaltyPoints']; 
+            $loyaltyPointBalance = $user
+            ->loyaltyPointBalance;   
 
-            if($user->loyaltyPointBalance->end_of_month === null){
-                $user->loyaltyPointBalance->end_of_month = Carbon::now();
-                $user->loyaltyPointBalance->balance = $validatedData['businessLoyaltyPoints']; 
-            }
+            $reset_balance = doubleval($validatedData['businessLoyaltyPoints']); 
+            $balance = $reset_balance; 
+
+            $end_of_month = Carbon::now();
             
-            $user->loyaltyPointBalance->loyalty_point_dollar_percent_value = $validatedData['businessCoinPercentage'];
+            $loyalty_point_dollar_percent_value = $validatedData['businessCoinPercentage'];
 
-            DB::transaction(function () use ($user){
-                $user->loyaltyPointBalance->save();
-            });  
+            $loyaltyPointBalance->balance = $balance;
+            $loyaltyPointBalance->reset_balance = $reset_balance;
+            $loyaltyPointBalance->end_of_month = $end_of_month;
+            $loyaltyPointBalance->loyalty_point_dollar_percent_value = $loyalty_point_dollar_percent_value;
+
+            $loyaltyPointBalance->save(); 
 
             $success = true;
 
@@ -75,16 +81,27 @@ class LoyaltyPointBalance extends Model
         $success = false;
 
         $user = Auth::user();
-
+        
         $loyaltyPoints = $user
         ->loyaltyPointBalance()
         ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
-        ->get()[0];
+        ->get();
 
-        if($loyaltyPoints)
+        if( $loyaltyPoints ){
+
             $success = true;
-        else
+            $loyaltyPoints = $loyaltyPoints[0];
+
+        } else {
+
             $success = false;
+            $loyaltyPoints = new LoyaltyPointBalance();
+            $loyaltyPoints->balance = 0;
+            $loyaltyPoints->reset_balance = 0;
+            $loyaltyPoints->loyalty_point_dollar_percent_value = 0;
+            $loyaltyPoints->end_of_month = null;
+
+        }
 
         $response = array(
             'success' => $success,

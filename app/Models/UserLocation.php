@@ -16,11 +16,11 @@ class UserLocation extends Model
     use HasFactory, SoftDeletes;
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'id');
     }
 
     public function spotbieUser(){
-        return $this->belongsTo('App\Models\SpotbieUser', 'user_id', 'id');
+        return $this->belongsTo('App\Models\SpotbieUser', 'id', 'id');
     }
 
     public function getMyLocation(){
@@ -88,7 +88,7 @@ class UserLocation extends Model
             switch($search_type){
                 case "0":
                 case "1":
-                    $xr = "user_locations.user_id != '".$user['id']."' AND";
+                    $xr = "user_locations.id != '".$user['id']."' AND";
                     break;
                 default:
                     $xr = "";                    
@@ -97,11 +97,11 @@ class UserLocation extends Model
         }
         
         $surrounding_object_list = DB::table('user_locations')
-        ->join('spotbie_users', 'user_locations.user_id', 'spotbie_users.id')
+        ->join('spotbie_users', 'user_locations.id', 'spotbie_users.id')
         ->join('users', 'spotbie_users.id', 'users.id')
         ->select('spotbie_users.default_picture', 'spotbie_users.description', 'users.username')
-        ->whereRaw("((($xr user_locations.user_id != 0 AND user_locations.loc_x = $loc_x AND user_locations.loc_y = $loc_y)
-        OR ($xr user_locations.user_id != 0 
+        ->whereRaw("((($xr user_locations.id != 0 AND user_locations.loc_x = $loc_x AND user_locations.loc_y = $loc_y)
+        OR ($xr user_locations.id != 0 
         AND (ABS(SQRT(((POWER((user_locations.loc_x - $loc_x), 2)) + (POWER ((user_locations.loc_y - $loc_y), 2))))) <= 0.01)))
         AND spotbie_users.user_type = '$search_type')")
         ->offset(0)
@@ -121,7 +121,7 @@ class UserLocation extends Model
         
         $userLocation = new UserLocation();
 
-        $userLocation->user_id = $user->id;
+        $userLocation->id = $user->id;
         $userLocation->loc_x = config('spotbie.my_loc_x');
         $userLocation->loc_y = config('spotbie.my_loc_y');
         $userLocation->ip_address = 0;

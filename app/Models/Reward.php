@@ -23,7 +23,7 @@ class Reward extends Model
     public $table = "rewards";
 
     public function business(){
-        return $this->belongsTo('App\Models\Business', 'business_id', 'id');
+        return $this->belongsTo('App\Models\Business', 'id', 'business_id');
     } 
 
     public function uploadMedia(Request $request){
@@ -158,13 +158,13 @@ class Reward extends Model
             
             $businessUser = User::where('uuid', $validatedData['userHash'])->get()[0];
 
-            $business = Business::where('user_id', $businessUser->id)->get()[0]; 
+            $business = Business::where('id', $businessUser->id)->get()[0]; 
 
             $businessMenu = Reward::select('*')
             ->where('business_id', $business->id)
             ->get();
 
-            $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('user_id', $business->id)
+            $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('id', $business->id)
             ->get()[0]->loyalty_point_dollar_percent_value;
 
             if( !is_null($businessMenu) )
