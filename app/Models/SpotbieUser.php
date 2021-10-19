@@ -17,13 +17,9 @@ class SpotbieUser extends Model
     }
 
     public function userLocation(){
-        return $this->hasOne('App\Models\UserLocation', 'user_id');
+        return $this->hasOne('App\Models\UserLocation', 'id');
     }
     
-    public function streamPost(){
-        return $this->hasMany('App\Models\StreamPost', 'user_id');
-    }
-
     public function store(){
         
     }

@@ -14,8 +14,7 @@ class CreateLoyaltyPointsTable extends Migration
     public function up()
     {
         Schema::create('loyalty_point_balances', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('id')->references('id')->on('users')->id()->unique();
             $table->float('balance')->nullable(false)->default(0); 
             $table->float('reset_balance')->nullable(false)->default(0); 
             $table->float('loyalty_point_dollar_percent_value', 6, 2)->nullable(false)->default(0);    

@@ -15,7 +15,7 @@ class CreatePlaceConfirmationsTable extends Migration
     {
         Schema::create('place_confirmations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->references('user_id')->on('places_to_eat');
+            $table->unsignedBigInteger('user_id')->references('id')->on('business');
             $table->string('confirmation_code', 10)->nullable(false);
             $table->boolean('confirmed')->default(false);
             $table->timestamps();

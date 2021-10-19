@@ -13,6 +13,6 @@ class Report extends Model
     protected $fillable = ['user_id', 'peer_id', 'report_reason', 'created_at', 'updated_at'];
 
     public function user(){
-        return $this->belongsTo('App\Models\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'id');
     }
 }
