@@ -26,7 +26,7 @@ class LoyaltyPointBalance extends Model
 
     public $table = "loyalty_point_balances";
 
-    public $fillable = ['balance', 'loyalty_point_dollar_percent_valu', 'end_of_month'];
+    public $fillable = ['balance', 'loyalty_point_dollar_percent_value', 'end_of_month'];
 
     public function user(){
         return $this->belongsTo('App\Models\User', 'id');
@@ -68,7 +68,6 @@ class LoyaltyPointBalance extends Model
         } else
             $success = false;
             
-
         $response = array(
             'success' => $success,
             'lp_balance' => $loyaltyPointBalance
@@ -118,7 +117,6 @@ class LoyaltyPointBalance extends Model
         
         $validatedData = $request->validate([
             'qr_code_link' => ['required', 'string'],
-            'user_hash' => ['required', 'string'],
             'loyaltyPointReward' => ['required', 'numeric'],
             'totalSpent' => ['required', 'numeric']
         ]);
@@ -131,15 +129,11 @@ class LoyaltyPointBalance extends Model
         ->where('qr_code_link', $validatedData['qr_code_link'])        
         ->get()[0];
 
-        $qrTokenOwner = User::select(['id', 'uuid'])
-        ->where('uuid', $validatedData['user_hash'])
-        ->get()[0];
-
         $loyaltyPointReward = $validatedData['loyaltyPointReward'];
 
-        if( !is_null($qrTokenHash) && !is_null($qrTokenOwner) ){            
+        if( !is_null($qrTokenHash) ){            
             
-            $businessId = $qrTokenOwner->id;
+            $businessId = $qrTokenHash->id;
 
             //Insert reward into ledger
             $insertReward = new LoyaltyPointLedger();
@@ -192,9 +186,13 @@ class LoyaltyPointBalance extends Model
 
         }
 
+        $loyaltyPointBalance = $user->loyaltyPointBalance()
+        ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
+        ->get()[0];
+
         $response = array(
             'success' => $success,
-            'newBalance' => $newUserBalance,
+            'loyalty_points' => $loyaltyPointBalance,
             'loyaltyPointReward' => $loyaltyPointReward
         );
 

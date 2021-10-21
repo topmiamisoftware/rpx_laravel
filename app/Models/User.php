@@ -112,6 +112,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\LoyaltyPointBalance', 'id');
     }
     
+    public function redeemables(){
+        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'user_id');
+    }
+
+    public function redeemed(){
+        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'redeemer_id');
+    }
+
     public function signUp(Request $request){
 
         $validatedData = $request->validate([
@@ -153,7 +161,7 @@ class User extends Authenticatable implements JWTSubject
             $newSpotbieUser->save();
             
             $loyaltyPointBalance->id = $user->id;
-            $loyaltyPointBalance->balance = 1000;
+            $loyaltyPointBalance->balance = 0;
 
             if( $newSpotbieUser->user_type == '0' ){
                 

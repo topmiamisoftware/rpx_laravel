@@ -15,6 +15,7 @@ class CreateRewardsTable extends Migration
     {
         Schema::create('rewards', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->nullable(false)->default(Str::uuid());
             $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->smallInteger('type');
             $table->string('name', 50);
