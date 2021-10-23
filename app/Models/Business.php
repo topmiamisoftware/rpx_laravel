@@ -14,6 +14,7 @@ use App\Models\Reward;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PDO;
 
 class Business extends Model
 {
@@ -62,11 +63,11 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;        
 
-        if(!is_null($existingBusiness)){
+        if(!is_null($existingBusiness))
             $business = $user->business;       
-        } else {
+        else
             $business = new Business();
-        }    
+        
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];
@@ -81,15 +82,19 @@ class Business extends Model
         $business->qr_code_link = Str::uuid();
 
         if($existingBusiness){
+            
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
                 $user->spotbieUser->save();
             });
+
         } else {
+
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
-            });            
+            });  
+
         }
 
         $response = array(

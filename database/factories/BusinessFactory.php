@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Business;
 use App\Models\User;
 use App\Models\Models;
+use App\Models\SpotbieUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

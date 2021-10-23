@@ -8,6 +8,9 @@ use App\Services\SurroundingsApi;
 
 use Illuminate\Http\Request;
 
+use App\Models\Business;
+use App\Models\LoyaltyPointBalance;
+
 class SurroundingsController extends Controller
 {
 
@@ -69,6 +72,45 @@ class SurroundingsController extends Controller
         );
 
         return response($response);         
+
+    }
+
+    public function getSbCommunityMembers(Request $request){
+        
+        $response = array(
+            'success' => true,
+            'data' => $this->nearByBusinessList($request)
+        );
+
+        return response($response); 
+
+    }
+
+    public function nearByBusinessList(Request $request){
+
+        $validatedData = $request->validate([
+            'loc_x' => 'required|max:90|min:-90|numeric',
+            'loc_y' => 'required|max:180|min:-180|numeric',
+            'categories' => 'required|max:180|string'
+        ]);
+        
+        $categories = [];
+        
+        array_push($categories, $validatedData['categories']);
+        
+        $data = Business::select(
+            'business.name', 'business.categories', 'business.description', 'business.photo', 'business.qr_code_link',
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'
+        )
+        ->join('loyalty_point_balances', function ($join){
+            $join->on('business.id', '=', 'loyalty_point_balances.id')
+            ->where('loyalty_point_balances.balance', '>', 0)
+            ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+        })
+        ->whereJsonContains('business.categories', $categories)        
+        ->paginate(8);
+
+        return $data;
 
     }
 

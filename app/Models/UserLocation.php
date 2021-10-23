@@ -102,7 +102,7 @@ class UserLocation extends Model
         ->select('spotbie_users.default_picture', 'spotbie_users.description', 'users.username')
         ->whereRaw("((($xr user_locations.id != 0 AND user_locations.loc_x = $loc_x AND user_locations.loc_y = $loc_y)
         OR ($xr user_locations.id != 0 
-        AND (ABS(SQRT(((POWER((user_locations.loc_x - $loc_x), 2)) + (POWER ((user_locations.loc_y - $loc_y), 2))))) <= 0.01)))
+        AND (ABS(SQRT(((POWER((user_locations.loc_x - $loc_x), 2)) + (POWER ((user_locations.loc_y - $loc_y), 2))))) <= 0.06)))
         AND spotbie_users.user_type = '$search_type')")
         ->offset(0)
         ->limit(200)

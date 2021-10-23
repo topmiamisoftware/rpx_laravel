@@ -47,7 +47,7 @@ class RedeemableLoyaltyPoint extends Model
             $lpToDollarRatio = $user->loyaltyPointBalance->loyalty_point_dollar_percent_value;
 
             $redeemable = new RedeemableLoyaltyPoint();
-            $redeemable->user_id = $user->id;
+            $redeemable->business_id = $user->id;
             $redeemable->uuid = Str::uuid();
             $redeemable->amount  = $validatedData['amount'];
             $redeemable->total_spent  = $validatedData['total_spent'];
@@ -108,7 +108,7 @@ class RedeemableLoyaltyPoint extends Model
 
             //Insert expense into ledger
             $insertExpense = new LoyaltyPointLedger();
-            $insertExpense->user_id = $redeemable->user_id;
+            $insertExpense->user_id = $redeemable->business_id;
             $insertExpense->loyalty_amount = ( - abs(floatval($redeemable->amount)) );
 
             //save these variabels for later use.
@@ -120,7 +120,7 @@ class RedeemableLoyaltyPoint extends Model
             $newUserBalance = $userCurrentBalance + $reward;
 
             //Reflect the expense into the business balance.
-            $businessCurrentBalance = LoyaltyPointBalance::find( $redeemable->user_id )->balance;
+            $businessCurrentBalance = LoyaltyPointBalance::find( $redeemable->business_id )->balance;
             $newBusinessBalance = $businessCurrentBalance + $expense;                                                         
             
             //Check if the business has enough LP to let the user Redeem
@@ -144,7 +144,7 @@ class RedeemableLoyaltyPoint extends Model
                 $insertExpense->save();                
                 $redeemable->save();
                 
-                $balanceRemove = LoyaltyPointBalance::find($redeemable->user_id)
+                $balanceRemove = LoyaltyPointBalance::find($redeemable->business_id)
                 ->update([
                     "balance" => $newBusinessBalance
                 ]);
@@ -185,11 +185,11 @@ class RedeemableLoyaltyPoint extends Model
         if($user->spotbieUser->user_type == 4){
 
             $redeemedList = $user->redeemed()
-            ->join('spotbie_users', 'redeemable_loyalty_points.user_id', '=', 'spotbie_users.id')
-            ->join('users', 'redeemable_loyalty_points.user_id', '=', 'users.id')
-            ->join('business', 'redeemable_loyalty_points.user_id', '=', 'business.id')
+            ->join('spotbie_users', 'redeemable_loyalty_points.business_id', '=', 'spotbie_users.id')
+            ->join('users', 'redeemable_loyalty_points.business_id', '=', 'users.id')
+            ->join('business', 'redeemable_loyalty_points.business_id', '=', 'business.id')
             ->select(
-                'redeemable_loyalty_points.uuid', 'redeemable_loyalty_points.user_id', 'redeemable_loyalty_points.amount', 
+                'redeemable_loyalty_points.uuid', 'redeemable_loyalty_points.business_id', 'redeemable_loyalty_points.amount', 
                 'redeemable_loyalty_points.total_spent', 'redeemable_loyalty_points.dollar_value', 'redeemable_loyalty_points.loyalty_point_dollar_percent_value', 
                 'redeemable_loyalty_points.redeemed', 'redeemable_loyalty_points.updated_at',                
                 'spotbie_users.default_picture', 'spotbie_users.user_type',
@@ -202,8 +202,8 @@ class RedeemableLoyaltyPoint extends Model
         } else {
 
             $redeemedList = DB::table('redeemable_loyalty_points')
-            ->join('spotbie_users', 'redeemable_loyalty_points.user_id', '=', 'spotbie_users.id')
-            ->join('users', 'redeemable_loyalty_points.user_id', '=', 'users.id')
+            ->join('spotbie_users', 'redeemable_loyalty_points.business_id', '=', 'spotbie_users.id')
+            ->join('users', 'redeemable_loyalty_points.business_id', '=', 'users.id')
             ->select(
                 'redeemable_loyalty_points.uuid', 'redeemable_loyalty_points.redeemer_id', 'redeemable_loyalty_points.amount', 
                 'redeemable_loyalty_points.total_spent', 'redeemable_loyalty_points.dollar_value', 'redeemable_loyalty_points.loyalty_point_dollar_percent_value', 
@@ -211,7 +211,7 @@ class RedeemableLoyaltyPoint extends Model
                 'users.username',
                 'spotbie_users.default_picture', 'spotbie_users.user_type'    
             )
-            ->where('redeemable_loyalty_points.user_id', $user->id)
+            ->where('redeemable_loyalty_points.business_id', $user->id)
             ->orderBy('redeemable_loyalty_points.id', 'desc')
             ->paginate(5);
 

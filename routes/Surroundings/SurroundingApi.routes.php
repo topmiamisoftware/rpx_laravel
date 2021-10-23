@@ -15,3 +15,5 @@ Route::post('search-businesses',  [SurroundingsController::class, 'searchBusines
 Route::post('pull-info-object',   [SurroundingsController::class, 'pullInfoObject']);
 
 Route::post('get-event',          [SurroundingsController::class, 'getEvent']);
+
+Route::post('get-community-members', [SurroundingsController::class, 'getSbCommunityMembers']);

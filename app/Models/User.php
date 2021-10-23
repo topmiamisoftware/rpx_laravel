@@ -113,7 +113,7 @@ class User extends Authenticatable implements JWTSubject
     }
     
     public function redeemables(){
-        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'user_id');
+        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'business_id');
     }
 
     public function redeemed(){
@@ -323,9 +323,13 @@ class User extends Authenticatable implements JWTSubject
             'route' => ['required', 'string']
         ]);
         
+        $remember_me = $validatedData['remember_me'];
+
         if($validatedData['route'] == '/business'){
+            //Set account to not set and let the user pick their business account type later on.
             $accountType = '0';
         } else {
+            //Set the account type to personal.
             $accountType = '4';
         }
 
@@ -384,9 +388,7 @@ class User extends Authenticatable implements JWTSubject
                     $user->save();
                     $spotbieUser->save();
                 });
-
-                $remember_me = $validatedData['remember_me'];
-
+            
                 //Start the session
                 Auth::login($user, $remember_me);
                 $token = Auth::refresh();
@@ -462,7 +464,7 @@ class User extends Authenticatable implements JWTSubject
                     $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
                 }
 
-                $LoyaltyPointBalance->save();
+                $loyaltyPointBalance->save();
 
                 $fbUser->save();
 

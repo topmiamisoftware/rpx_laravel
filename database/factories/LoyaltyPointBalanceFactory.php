@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\LoyaltyPointBalance;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -21,11 +22,15 @@ class LoyaltyPointBalanceFactory extends Factory
      * @return array
      */
     public function definition()
-    {
-        return [
-            "balance" => 0,
-            "reset_balance" => 0,
-            "end_of_month" => null,            
+    {  
+        
+        $balance = rand(0, 35000);
+        $loyalty_point_dollar_percent_value = $this->faker->randomFloat(2, 0, 5);
+        return [            
+            "balance" => $balance,
+            "reset_balance" => $balance,
+            "loyalty_point_dollar_percent_value" => $loyalty_point_dollar_percent_value,
+            "end_of_month" => Carbon::now()->addMonth()         
         ];
     }
 }

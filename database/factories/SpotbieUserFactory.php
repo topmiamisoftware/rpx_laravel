@@ -23,8 +23,13 @@ class SpotbieUserFactory extends Factory
     public function definition()
     {
         $randomNumber = rand(0 , 1025);
+
+        $accountTypes = [0, 4];
+
+        $key = array_rand($accountTypes);
+
         return [
-            'user_type' => 0,
+            'user_type' => $accountTypes[$key],
             'first_name' => $this->faker->firstName,
             'default_picture' => "https://picsum.photos/id/$randomNumber/200/300",
             'last_name' => $this->faker->lastName,

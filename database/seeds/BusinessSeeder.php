@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Business;
+use App\Models\SpotbieUser;
 use Illuminate\Database\Seeder;
 
 // composer require laracasts/testdummy
@@ -12,7 +13,21 @@ class BusinessSeeder extends Seeder
     {
         Business::factory()
         ->hasRewards(5)
-        ->count(5)
+        ->count(10)
         ->create();        
+
+        $businessList = Business::select('id')
+        ->get();
+        
+        foreach ($businessList as $business) {            
+            
+            DB::table('spotbie_users')
+            ->where('id', $business->id)
+            ->update([
+                'user_type' => rand(1,2)
+            ]);            
+
+        }
+
     }
 }

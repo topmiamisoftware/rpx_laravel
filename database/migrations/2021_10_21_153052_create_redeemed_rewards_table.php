@@ -4,9 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Support\Str;
-
-class CreateRedeemableLoyaltyPointsTable extends Migration
+class CreateRedeemedRewardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +13,7 @@ class CreateRedeemableLoyaltyPointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('redeemable_loyalty_points', function (Blueprint $table) {
+        Schema::create('redeemed_rewards', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('users')->onDelete('cascade');
@@ -24,7 +22,6 @@ class CreateRedeemableLoyaltyPointsTable extends Migration
             $table->float('total_spent')->nullable(false)->default(0);
             $table->float('dollar_value')->nullable(false)->default(0);
             $table->float('loyalty_point_dollar_percent_value')->nullable(false)->default(0);
-            $table->boolean('redeemed')->nullable(false)->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -37,6 +34,6 @@ class CreateRedeemableLoyaltyPointsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('redeemable_loyalty_points');
+        Schema::dropIfExists('redeemed_rewards');
     }
 }
