@@ -13,6 +13,7 @@ class BusinessSeeder extends Seeder
     {
         Business::factory()
         ->hasRewards(5)
+        ->hasAds(4)
         ->count(10)
         ->create();        
 

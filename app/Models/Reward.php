@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Business;
 
+use App\Helpers\UrlHelper;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,7 @@ class Reward extends Model
     public $table = "rewards";
 
     public function business(){
-        return $this->belongsTo('App\Models\Business', 'id', 'business_id');
+        return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     } 
 
     public function uploadMedia(Request $request){
@@ -47,11 +49,11 @@ class Reward extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = '/rewards-media/images/' . $user->id. '/' . $hashedFileName;
 
         Storage::put($imagePath, $newFile);
 
-        $imagePath = 'http://localhost:8000/' . $imagePath;
+        $imagePath = UrlHelper::getServerUrl() . $imagePath;
 
         $response = array(
             'success' => $success,
@@ -143,22 +145,18 @@ class Reward extends Model
     public function index(Request $request){
 
         $validatedData = $request->validate([
-            'qrCodeLink' => 'string',
-            'userHash' => 'string',
+            'qrCodeLink' => 'string'
         ]);
-
-        $user = Auth::user();
-
-        $business = $user->business;
 
         $rewards = null;
         $loyalty_point_dollar_percent_value = null;
 
-        if( isset($validatedData['qrCodeLink']) && isset($validatedData['userHash']) ){
+        if( isset($validatedData['qrCodeLink']) ){
             
-            $businessUser = User::where('uuid', $validatedData['userHash'])->get()[0];
-
-            $business = Business::where('id', $businessUser->id)->get()[0]; 
+            $business = Business::                    
+            select('id', 'name', 'description', 'address', 'qr_code_link', 'loc_x', 'loc_y', 'is_verified', 'categories', 'updated_at')
+            ->where('qr_code_link', $validatedData['qrCodeLink'])
+            ->get()[0]; 
 
             $businessMenu = Reward::select('*')
             ->where('business_id', $business->id)
@@ -172,16 +170,21 @@ class Reward extends Model
             
         } else {
 
+            $user = Auth::user();
+
+            $business = $user->business;
+
             if( !is_null($business) )
                 $rewards = $business->rewards()->select('*')->get();
             else 
                 $rewards = [];
+
         }        
 
         $response = array(
             'success' => true,
             'rewards' => $rewards,
-            'name' => $business->name,
+            'business' => $business,
             'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value
         ); 
 

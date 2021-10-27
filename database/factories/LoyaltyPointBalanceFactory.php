@@ -24,8 +24,8 @@ class LoyaltyPointBalanceFactory extends Factory
     public function definition()
     {  
         
-        $balance = rand(0, 35000);
-        $loyalty_point_dollar_percent_value = $this->faker->randomFloat(2, 0, 5);
+        $balance = rand(12000, 35000);
+        $loyalty_point_dollar_percent_value = $this->faker->randomFloat(2, 1, 3);
         return [            
             "balance" => $balance,
             "reset_balance" => $balance,

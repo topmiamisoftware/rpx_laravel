@@ -27,12 +27,16 @@ class Business extends Model
     }    
 
     public function ads(){
-        return $this->hasMany('App\Models\Ads', 'id');
+        return $this->hasMany('App\Models\Ads', 'business_id');
     }
 
     public function user(){
         return $this->belongsTo('App\Models\User', 'id');
     } 
+
+    public function spotbieUser(){
+        return $this->belongsTo('App\Models\SpotbieUser', 'id');
+    }
 
     public function verify(Request $request){
 

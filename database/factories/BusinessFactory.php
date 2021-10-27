@@ -20,6 +20,12 @@ class BusinessFactory extends Factory
 
     private $alreadyAddedIds = array();
 
+    public $placeImageList = array(
+        "assets/images/def/places-to-eat/sample_place_to_eat_1.jpg",
+        "assets/images/def/places-to-eat/sample_place_to_eat_2.jpg",
+        "assets/images/def/places-to-eat/sample_place_to_eat_3.jpg"
+    );
+
     /**
      * Define the model's default state.
      *
@@ -28,8 +34,12 @@ class BusinessFactory extends Factory
     public function definition()
     {
 
-        $userId = User::inRandomOrder()->first()->id;
+        $user = User::inRandomOrder()->first();
 
+        $userId = $user->id;
+
+        $userType = $user->spotbieUser->user_type;
+        
         while(  in_array($userId, $this->alreadyAddedIds) ){
             $userId = User::inRandomOrder()->first()->id;
         }
@@ -38,6 +48,8 @@ class BusinessFactory extends Factory
 
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);
+
+        $businessPhoto = config('spotbie.spotbie_dev_front_end_ip') . $this->placeImageList[rand(0,2)];
 
         return [
             'id' => $userId,
@@ -48,6 +60,7 @@ class BusinessFactory extends Factory
             'address' => config("spotbie.my_address"),
             'categories' => json_encode(config("spotbie.my_business_categories")),
             'is_verified' => true,
+            'photo' => $businessPhoto,
             'qr_code_link' => Str::uuid()
         ];
         

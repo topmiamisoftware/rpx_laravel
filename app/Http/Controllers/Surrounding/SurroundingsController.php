@@ -96,18 +96,38 @@ class SurroundingsController extends Controller
         
         $categories = [];
         
+        $loc_x = $validatedData['loc_x'];
+        $loc_y = $validatedData['loc_y'];
+        
         array_push($categories, $validatedData['categories']);
         
         $data = Business::select(
-            'business.name', 'business.categories', 'business.description', 'business.photo', 'business.qr_code_link',
-            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'
+            'business.qr_code_link', 'business.name', 'business.categories', 'business.description', 
+            'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
+            'spotbie_users.user_type',
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',            
         )
+        ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', function ($join){
             $join->on('business.id', '=', 'loyalty_point_balances.id')
             ->where('loyalty_point_balances.balance', '>', 0)
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
-        ->whereJsonContains('business.categories', $categories)        
+        ->whereJsonContains('business.categories', $categories)
+        ->whereRaw("( 
+            (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+            OR (    
+                    ABS ( 
+                            SQRT    (   
+                                        (POWER ( (business.loc_x - $loc_x), 2) ) +
+                                        (POWER ( (business.loc_y - $loc_y), 2) ) 
+                                    ) 
+                        ) 
+                    <= 0.06
+                )
+        )")
+        ->has("rewards")  
+        ->inRandomOrder()      
         ->paginate(8);
 
         return $data;

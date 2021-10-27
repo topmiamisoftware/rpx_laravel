@@ -16,7 +16,7 @@ class CreateSpotbieUsersTable extends Migration
         Schema::create('spotbie_users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
             $table->integer('user_type', false, true)->default('0');
-            $table->string('default_picture', 100)->default(config('spotbie.default_images_path').'user.png');
+            $table->string('default_picture', 100)->default( 'assets/images/guest-spotbie-user-01.svg' );
             $table->string('first_name', 72)->nullabe();
             $table->string('last_name', 72)->nullabe();
             $table->timestamp('last_log_in')->default(DB::raw('CURRENT_TIMESTAMP'));

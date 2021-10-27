@@ -130,7 +130,7 @@ class LoyaltyPointBalance extends Model
         ->get()[0];
 
         $loyaltyPointReward = $validatedData['loyaltyPointReward'];
-
+        https://spotbie.com/events/community/de05ee0c-8c43-40b9-9ff8-93d4378ebf65
         if( !is_null($qrTokenHash) ){            
             
             $businessId = $qrTokenHash->id;

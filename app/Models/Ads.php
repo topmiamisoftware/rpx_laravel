@@ -13,6 +13,10 @@ class Ads extends Model
 
     use HasFactory, SoftDeletes; 
 
+    public function business(){
+        return $this->belongsTo('App\Models\Business', 'business_id', 'id');
+    }
+
     public function getSingleAdBanner(){
 
         $ad = $this

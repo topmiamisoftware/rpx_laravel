@@ -43,8 +43,6 @@ class UserController extends Controller
         return $user->closeBrowser($request);
     }
 
-
-
     public function checkAuth(User $user){
         return $user->checkIfLoggedIn();
     }

@@ -807,29 +807,26 @@ class User extends Authenticatable implements JWTSubject
         
         $user = Auth::user();
 
-        if($user->username === $request->username) {
+        if($user->username === $request->username)
+            $usernameValidators = 'required|string|max:35|min:1';
+        else
+            $usernameValidators = 'required|string|unique:users|max:35|min:1';
+        
 
-            $validatedData = $request->validate([
-                'username' => 'required|string|max:35|min:1',
-                'email' => 'required|email',
-                'first_name' => ['required', new FirstName],
-                'last_name' => ['required', new LastName],
-                'account_type' => 'required|numeric',
-                'phone_number' => 'string|max:35|nullable'
-            ]);
+        if($user->email === $request->email)
+            $emailValidators = 'required|email';
+        else
+            $emailValidators = 'required|email|unique:users';
+        
 
-        } else {
-
-            $validatedData = $request->validate([
-                'username' => 'required|string|unique:users|max:35|min:1',
-                'email' => 'required|email',
-                'first_name' => ['required', new FirstName],
-                'last_name' => ['required', new LastName],
-                'account_type' => 'required|numeric',
-                'phone_number' => 'string|max:35|nullable'
-            ]);
-
-        }
+        $validatedData = $request->validate([
+            'username' => $usernameValidators,
+            'email' => $emailValidators,
+            'first_name' => ['required', new FirstName],
+            'last_name' => ['required', new LastName],
+            'account_type' => 'required|numeric',
+            'phone_number' => 'string|max:35|nullable'
+        ]);
 
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];

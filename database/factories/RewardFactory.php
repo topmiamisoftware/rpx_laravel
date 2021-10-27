@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Reward;
+use App\Models\Business;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -17,11 +19,11 @@ class RewardFactory extends Factory
     protected $model = Reward::class;
 
     public $rewardImageList = array(
-        "https://localhost:4200/assets/images/def/rewards/sample_image_0.jpg",
-        "https://localhost:4200/assets/images/def/rewards/sample_image_1.jpg",
-        "https://localhost:4200/assets/images/def/rewards/sample_image_2.jpg",
-        "https://localhost:4200/assets/images/def/rewards/sample_image_3.jpg",
-        "https://localhost:4200/assets/images/def/rewards/sample_image_4.jpg"
+        "assets/images/def/rewards/sample_image_0.jpg",
+        "assets/images/def/rewards/sample_image_1.jpg",
+        "assets/images/def/rewards/sample_image_2.jpg",
+        "assets/images/def/rewards/sample_image_3.jpg",
+        "assets/images/def/rewards/sample_image_4.jpg"
     );
 
     /**
@@ -35,9 +37,9 @@ class RewardFactory extends Factory
         $name = $this->faker->unique()->realText(50);
         $description = $this->faker->unique()->realText(150);
 
-        $images = $this->rewardImageList[rand(0,4)];
+        $images = config('spotbie.spotbie_dev_front_end_ip') . $this->rewardImageList[rand(0,4)];
 
-        $point_cost = rand(1, 500);
+        $point_cost = rand(450, 1200);
 
         $monthly_times_available = rand(1, 200);
         $times_claimed_this_month = rand(1, 200);
@@ -54,4 +56,17 @@ class RewardFactory extends Factory
             'times_claimed_this_month' => $times_claimed_this_month           
         ];
     }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Reward $reward) {
+            
+            $randomBusinessId = DB::table('business')->inRandomOrder()->get()[0]->id;
+
+            $reward->business_id = $randomBusinessId;
+            
+            $reward->save();
+
+        });
+    }    
 }

@@ -21,7 +21,7 @@ Route::prefix('user-location')              ->group(__DIR__ . '/UserLocation/Use
 
 Route::prefix('surroundings')               ->group(__DIR__ . '/Surroundings/SurroundingApi.routes.php');
 
-Route::prefix('ads')                        ->group(__DIR__ . '/Ads/Ads.routes.php');
+Route::prefix('in-house')                   ->group(__DIR__ . '/Ads/Ads.routes.php');
 
 Route::prefix('bugs')                       ->group(__DIR__ . '/Bugs/Bugs.routes.php');
 
