@@ -21,7 +21,8 @@ return [
 
     'allowed_origins' => ['https://spotbie.com', 
                             'https://localhost:4200',
-                            'https://friendly-payne-b8da89.netlify.app', 
+                            'https://spotbie-master.netlify.app',
+                            'https://spotbie-staging.netlify.app',
                             'https://192.168.1.65:4200'
                         ],
 
