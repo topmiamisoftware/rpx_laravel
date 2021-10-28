@@ -49,7 +49,7 @@ class BusinessFactory extends Factory
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);
 
-        $businessPhoto = config('spotbie.spotbie_dev_front_end_ip') . $this->placeImageList[rand(0,2)];
+        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $this->placeImageList[rand(0,2)];
 
         return [
             'id' => $userId,

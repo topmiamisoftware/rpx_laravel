@@ -37,7 +37,7 @@ class RewardFactory extends Factory
         $name = $this->faker->unique()->realText(50);
         $description = $this->faker->unique()->realText(150);
 
-        $images = config('spotbie.spotbie_dev_front_end_ip') . $this->rewardImageList[rand(0,4)];
+        $images = config('spotbie.spotbie_front_end_ip') . $this->rewardImageList[rand(0,4)];
 
         $point_cost = rand(450, 1200);
 

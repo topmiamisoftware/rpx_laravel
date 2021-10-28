@@ -36,7 +36,7 @@ class AdsFactory extends Factory
     public function definition()
     {
 
-        $randomImage = config('spotbie.spotbie_dev_front_end_ip') . $this->adImageList[rand(0,2)];
+        $randomImage = config('spotbie.spotbie_front_end_ip') . $this->adImageList[rand(0,2)];
 
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);
