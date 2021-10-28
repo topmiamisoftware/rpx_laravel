@@ -12,12 +12,12 @@
         $frontEndIp = env('SPOTBIE_DEV_FRONT_END_IP', 'https://192.168.1.65:4200/');
     }
 
-    if (App::environment(['staging'])) {
+    if (App::environment('staging')) {
         // The environment is staging...
-        $frontEndIp = env('SPOTBIE_STAGING_FRONT_END_IP', 'https://192.168.1.65:4200/');
+        $frontEndIp = env('SPOTBIE_STAGING_FRONT_END_IP', 'https://spotbie-staging.netlify.app/');
     }
 
-    if (App::environment(['production'])) {
+    if (App::environment('production')) {
         // The environment is production...
         $frontEndIp = env('SPOTBIE_PROD_FRONT_END_IP', 'https://spotbie.com/');
     }
