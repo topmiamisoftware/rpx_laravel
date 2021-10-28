@@ -1,5 +1,8 @@
 /node_modules
 /public/storage
+public/.htaccess
+public/.htaccess_prod
+public/.htaccess_staging
 /storage/*.key
 /vendor
 .env
