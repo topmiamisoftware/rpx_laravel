@@ -51,12 +51,22 @@ class BusinessFactory extends Factory
 
         $businessPhoto = config('spotbie.spotbie_front_end_ip') . $this->placeImageList[rand(0,2)];
 
+        $minX = floatval( config("spotbie.my_loc_x") ) - .001;
+        $maxX = floatval( config("spotbie.my_loc_x") ) + .001;
+
+        $minY = floatval( config("spotbie.my_loc_y") ) - .001;
+        $maxY = floatval( config("spotbie.my_loc_y") ) + .001;
+
+        $randomLocX = $this->faker->randomFloat(6, $minX, $maxX);
+
+        $randomLocY = $this->faker->randomFloat(6, $minY, $maxY);
+
         return [
             'id' => $userId,
             'name' => $name,
             'description' => $description,
-            'loc_x' => config("spotbie.my_loc_x"),
-            'loc_y' => config("spotbie.my_loc_y"),
+            'loc_x' => $randomLocX,
+            'loc_y' => $randomLocY,
             'address' => config("spotbie.my_address"),
             'categories' => json_encode(config("spotbie.my_business_categories")),
             'is_verified' => true,
