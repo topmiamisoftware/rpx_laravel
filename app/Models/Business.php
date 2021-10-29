@@ -20,8 +20,6 @@ class Business extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_type'];
-
     public $table = 'business';
 
     public function rewards(){
