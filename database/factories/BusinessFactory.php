@@ -9,6 +9,8 @@ use App\Models\SpotbieUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\DB;
+
 class BusinessFactory extends Factory
 {
     /**
@@ -80,4 +82,6 @@ class BusinessFactory extends Factory
         ];
         
     }
+
+
 }

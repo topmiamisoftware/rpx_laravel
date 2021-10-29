@@ -13,7 +13,6 @@ class BusinessSeeder extends Seeder
 {
     public function run()
     {
-        
         Business::factory()
         ->hasRewards(5)
         ->hasAds(4)
@@ -25,22 +24,15 @@ class BusinessSeeder extends Seeder
         
         foreach ($businessList as $business) {            
             
-            $this->updateUser($business);
+            $userType = rand(1,2);
 
+            DB::table('spotbie_users')
+            ->where('id', $business->id)
+            ->update([
+                'user_type' => $userType
+            ]);            
+            
         }
 
     }
-
-    public function updateUser($business){
-
-        $userType = rand(1,2);
-        
-        DB::table('spotbie_users')
-        ->where('id', $business->id)
-        ->update([
-            'user_type' => $userType
-        ]); 
-
-    }
-
 }
