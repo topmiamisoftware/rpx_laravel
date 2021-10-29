@@ -19,7 +19,9 @@ class BusinessSeeder extends Seeder
         ->create();        
 
         if($createBusiness){
-         
+            
+            error_log("total business: " );
+
             $businessList = Business::select('id')
             ->get();
             
@@ -38,7 +40,8 @@ class BusinessSeeder extends Seeder
                 
             }
 
+        } else {
+            error_log("total business: 2"  );
         }
-
     }
 }
