@@ -14,7 +14,6 @@ use App\Models\Reward;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use PDO;
 
 class Business extends Model
 {
