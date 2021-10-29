@@ -30,15 +30,18 @@ class BusinessFactory extends Factory
     public function definition()
     {
 
-        $user = User::inRandomOrder()->first();
+        $businessUserTypeList = [1, 2];
+
+        $user = SpotbieUser::whereIn('user_type', $businessUserTypeList)->inRandomOrder()->first();
 
         $userId = $user->id;
-
-        $userType = $user->spotbieUser->user_type;
         
         while(  in_array($userId, $this->alreadyAddedIds) ){
-            $userId = User::inRandomOrder()->first()->id;
+            $user = SpotbieUser::whereIn('user_type', $businessUserTypeList)->inRandomOrder()->first();
+            $userId = $user->id;
         }
+
+        $userType = $user->user_type;
 
         array_push($this->alreadyAddedIds, $userId);
 

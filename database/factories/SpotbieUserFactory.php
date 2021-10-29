@@ -24,9 +24,9 @@ class SpotbieUserFactory extends Factory
     {
         $randomNumber = rand(0 , 1025);
 
-        $accountTypes = [0, 4];
+        $accountTypes = ['1', '2', '4'];
 
-        $key = array_rand($accountTypes);
+        $key = rand(0,2);
 
         return [
             'user_type' => $accountTypes[$key],
