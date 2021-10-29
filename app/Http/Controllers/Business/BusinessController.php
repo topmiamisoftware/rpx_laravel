@@ -20,4 +20,10 @@ class BusinessController extends Controller
         return $business->getGooglePlacesToEat($request);
     }
 
+    public function show(Request $request, Business $business)
+    {
+        return $business->show($request);
+    }
+
+
 }

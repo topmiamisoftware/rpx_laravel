@@ -24,7 +24,8 @@ class CreateBusinessTable extends Migration
     {
         Schema::create('business', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->references('id')->on('users')->id()->unique();
-            $table->string('name', 100)->nullable(false);
+            $table->string('name', 25)->nullable(false);
+            $table->string('slug', 200)->nullable(false);
             $table->string('description', 500)->nullable(false);
             $table->string('address', 100)->nullable(false);
             $table->json('categories')->nullable(false);

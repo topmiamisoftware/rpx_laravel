@@ -20,12 +20,6 @@ class BusinessFactory extends Factory
 
     private $alreadyAddedIds = array();
 
-    public $placeImageList = array(
-        "assets/images/def/places-to-eat/sample_place_to_eat_1.jpg",
-        "assets/images/def/places-to-eat/sample_place_to_eat_2.jpg",
-        "assets/images/def/places-to-eat/sample_place_to_eat_3.jpg"
-    );
-
     /**
      * Define the model's default state.
      *
@@ -47,23 +41,34 @@ class BusinessFactory extends Factory
         array_push($this->alreadyAddedIds, $userId);
 
         $name = $this->faker->unique()->realText(25);
-        $description = $this->faker->unique()->realText(150);
+        $description = $this->faker->unique()->realText(150);        
 
-        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $this->placeImageList[rand(0,2)];
+        $minX = floatval( config("spotbie.my_loc_x") ) - .06;
+        $maxX = floatval( config("spotbie.my_loc_x") ) + .06;
 
-        $minX = floatval( config("spotbie.my_loc_x") ) - .001;
-        $maxX = floatval( config("spotbie.my_loc_x") ) + .001;
-
-        $minY = floatval( config("spotbie.my_loc_y") ) - .001;
-        $maxY = floatval( config("spotbie.my_loc_y") ) + .001;
+        $minY = floatval( config("spotbie.my_loc_y") ) - .06;
+        $maxY = floatval( config("spotbie.my_loc_y") ) + .06;
 
         $randomLocX = $this->faker->randomFloat(6, $minX, $maxX);
 
         $randomLocY = $this->faker->randomFloat(6, $minY, $maxY);
 
+        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+
+        if($userType == '1'){
+            $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+        } else if($userType == '2'){
+            $businessPhotoFolder = 'assets/images/def/events/';
+        } else if($userType == '3'){
+            $businessPhotoFolder = 'assets/images/def/shopping/';
+        }
+
+        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
+
         return [
             'id' => $userId,
             'name' => $name,
+            'slug' => Str::slug($name),
             'description' => $description,
             'loc_x' => $randomLocX,
             'loc_y' => $randomLocY,
