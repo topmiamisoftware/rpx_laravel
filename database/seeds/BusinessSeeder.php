@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 
 use Illuminate\Support\Facades\DB;
 
-// composer require laracasts/testdummy
+
 use Laracasts\TestDummy\Factory as TestDummy;
 
 class BusinessSeeder extends Seeder
@@ -24,11 +24,18 @@ class BusinessSeeder extends Seeder
         
         foreach ($businessList as $business) {            
             
-            DB::table('spotbie_users')
-            ->where('id', $business->id)
-            ->update([
-                'user_type' => rand(1,2)
-            ]);            
+            $userType = rand(1,2);
+
+            try {
+                DB::table('spotbie_users')
+                ->where('id', $business->id)
+                ->update([
+                    'user_type' => $userType
+                ]); 
+            } catch(Exception $e){
+                throw $e;
+            }
+
 
         }
 
