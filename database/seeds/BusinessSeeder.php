@@ -12,28 +12,32 @@ class BusinessSeeder extends Seeder
 {
     public function run()
     {
-        Business::factory()
+        $createBusiness = Business::factory()
         ->hasRewards(5)
         ->hasAds(4)
         ->count(10)
         ->create();        
 
-        $businessList = Business::select('id')
-        ->get();
-        
-        error_log("total business: " . count($businessList) );
-
-        foreach ($businessList as $business) {            
+        if($createBusiness){
+         
+            $businessList = Business::select('id')
+            ->get();
             
-            error_log("business id" . $business->id );
+            error_log("total business: " . count($businessList) );
+    
+            foreach ($businessList as $business) {            
+                
+                error_log("business id" . $business->id );
+    
+                $userType = rand(1,2);
+    
+                SpotbieUser::where('id', $business->id)
+                ->update([
+                    'user_type' => $userType
+                ]);            
+                
+            }
 
-            $userType = rand(1,2);
-
-            SpotbieUser::where('id', $business->id)
-            ->update([
-                'user_type' => $userType
-            ]);            
-            
         }
 
     }
