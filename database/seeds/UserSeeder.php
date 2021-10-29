@@ -20,9 +20,6 @@ class UserSeeder extends Seeder
         User::factory()
         ->count(20)
         ->hasSpotbieUser(1)
-        ->hasDefaultImages(1,function (array $attributes, User $user) {
-            return ['default_image_url' => $user->spotbieUser->default_picture];
-        })
         ->hasLoyaltyPointBalance(1)
         ->create();
 
