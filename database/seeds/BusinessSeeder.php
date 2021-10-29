@@ -24,20 +24,22 @@ class BusinessSeeder extends Seeder
         
         foreach ($businessList as $business) {            
             
-            $userType = rand(1,2);
-
-            try {
-                DB::table('spotbie_users')
-                ->where('id', $business->id)
-                ->update([
-                    'user_type' => $userType
-                ]); 
-            } catch(Exception $e){
-                throw $e;
-            }
-
+            $this->updateUser($business);
 
         }
 
     }
+
+    public function updateUser($business){
+
+        $userType = rand(1,2);
+
+        DB::table('spotbie_users')
+        ->where('id', $business->id)
+        ->update([
+            'user_type' => $userType
+        ]); 
+
+    }
+
 }
