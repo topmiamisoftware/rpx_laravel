@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 
 use Illuminate\Support\Facades\DB;
 
-
 use Laracasts\TestDummy\Factory as TestDummy;
 
 class BusinessSeeder extends Seeder
@@ -27,7 +26,7 @@ class BusinessSeeder extends Seeder
             $userType = rand(1,2);
 
             DB::table('spotbie_users')
-            ->where('id', $business->id)
+            ->where('user_type', 0)
             ->update([
                 'user_type' => $userType
             ]);            
