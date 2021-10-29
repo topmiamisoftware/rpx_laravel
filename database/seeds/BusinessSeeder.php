@@ -1,12 +1,7 @@
 <?php
 
 use App\Models\Business;
-use App\Models\SpotbieUser;
 use Illuminate\Database\Seeder;
-
-use Illuminate\Support\Facades\DB;
-
-use Laracasts\TestDummy\Factory as TestDummy;
 
 class BusinessSeeder extends Seeder
 {
