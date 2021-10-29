@@ -26,7 +26,7 @@ class BusinessSeeder extends Seeder
             $userType = rand(1,2);
 
             DB::table('spotbie_users')
-            ->where('user_type', 0)
+            ->where('id', $business->id)
             ->update([
                 'user_type' => $userType
             ]);            
