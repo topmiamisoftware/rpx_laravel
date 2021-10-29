@@ -4,6 +4,8 @@ use App\Models\Business;
 use App\Models\SpotbieUser;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\DB;
+
 // composer require laracasts/testdummy
 use Laracasts\TestDummy\Factory as TestDummy;
 
