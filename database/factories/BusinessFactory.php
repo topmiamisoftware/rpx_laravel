@@ -27,8 +27,6 @@ class BusinessFactory extends Factory
      */
     public function definition()
     {
-
-        $businessUserTypeList = [1, 2];
         
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);        
@@ -69,33 +67,7 @@ class BusinessFactory extends Factory
                 'user_type' => $userType
             ]);
 
-            $business->photo = $this->getBusinessPhoto($userType);
-
-            $business->save();
-
         });
-
-    }
-
-    public function getBusinessPhoto($userType){
-
-        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-
-        switch($userType){
-            case '1':
-                $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-                break;
-            case '2':
-                $businessPhotoFolder = 'assets/images/def/shopping/';
-                break;
-            case '3':
-                $businessPhotoFolder = 'assets/images/def/events/';
-                break;   
-        }
-
-        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
-
-        return $businessPhoto;
 
     }
 
