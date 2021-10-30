@@ -1,19 +1,23 @@
 <?php
 
-use App\Models\Business;
-use Illuminate\Database\Seeder;
+namespace Database\Seeders;
 
-// composer require laracasts/testdummy
-use Laracasts\TestDummy\Factory as TestDummy;
+use Illuminate\Database\Seeder;
+use App\Models\Business;
 
 class BusinessSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
     public function run()
     {
         $createBusiness = Business::factory()
         ->hasRewards(5)
         ->hasAds(4)
         ->count(10)
-        ->create();       
+        ->create(); 
     }
 }
