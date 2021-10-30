@@ -9,7 +9,7 @@ use App\Models\Business;
 
 use Illuminate\Support\Facades\DB;
 
-class BusinessSeeder extends Seeder
+class BusinessTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,7 +18,6 @@ class BusinessSeeder extends Seeder
      */
     public function run()
     {
-
         DB::transaction(function(){
 
             Business::factory()
@@ -28,6 +27,5 @@ class BusinessSeeder extends Seeder
             ->create(); 
            
         });
-
     }
 }
