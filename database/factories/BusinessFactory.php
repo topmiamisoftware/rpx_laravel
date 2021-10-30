@@ -69,10 +69,6 @@ class BusinessFactory extends Factory
                 'user_type' => $userType
             ]);
 
-            $business->photo = $this->getBusinessPhoto($userType);
-
-            $business->save();
-
         });
 
     }
