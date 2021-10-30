@@ -21,6 +21,8 @@ class Business extends Model
 
     public $table = 'business';
 
+    protected $fillable = ['photo'];
+
     public function rewards(){
         return $this->hasMany('App\Models\Reward', 'business_id', 'id');
     }    
