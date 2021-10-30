@@ -59,7 +59,7 @@ class BusinessFactory extends Factory
 
     public function configure(){
 
-        return $this->afterMaking(function (Business $business) {
+        return $this->afterCreating(function (Business $business) {
             
             $userType = rand(1,2);
 
@@ -68,6 +68,10 @@ class BusinessFactory extends Factory
             ->update([
                 'user_type' => $userType
             ]);
+
+            $business->photo = $this->getBusinessPhoto($userType);
+
+            $business->save();
 
         });
 
