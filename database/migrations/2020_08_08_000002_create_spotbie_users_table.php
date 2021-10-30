@@ -14,7 +14,7 @@ class CreateSpotbieUsersTable extends Migration
     public function up()
     {
         Schema::create('spotbie_users', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
+            $table->id()->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
             $table->smallInteger('user_type')->default('0');
             $table->string('default_picture', 100)->default( 'assets/images/guest-spotbie-user-01.svg' );
             $table->string('first_name', 72)->nullabe();
