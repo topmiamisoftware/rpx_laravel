@@ -2,15 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\Business;
-use App\Models\User;
-use App\Models\Models;
-use App\Models\SpotbieUser;
-use Database\Seeders\BusinessTableSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\DB;
+
+use App\Models\Business;
+use App\Models\SpotbieUser;
+
 
 class BusinessFactory extends Factory
 {
