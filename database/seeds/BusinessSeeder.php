@@ -7,6 +7,8 @@ use Database\Factories\BusinessFactory;
 use Illuminate\Database\Seeder;
 use App\Models\Business;
 
+use Illuminate\Support\Facades\DB;
+
 class BusinessSeeder extends Seeder
 {
     /**
@@ -16,10 +18,16 @@ class BusinessSeeder extends Seeder
      */
     public function run()
     {
-        $createBusiness = Business::factory()
-        ->hasRewards(5)
-        ->hasAds(4)
-        ->count(10)
-        ->create(); 
+
+        DB::transaction(function(){
+
+            Business::factory()
+            ->hasRewards(5)
+            ->hasAds(4)
+            ->count(10)
+            ->create(); 
+           
+        });
+
     }
 }
