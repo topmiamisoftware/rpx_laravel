@@ -28,7 +28,7 @@ class CreateBusinessTable extends Migration
             $table->string('slug', 200)->nullable(false);
             $table->string('description', 500)->nullable(false);
             $table->string('address', 100)->nullable(false);
-            $table->json('categories')->nullable(false);
+            $table->json('categories')->nullable(true);
             $table->float('loc_x', 8, 6)->nullable();
             $table->float('loc_y', 8, 6)->nullable();                        
             $table->string('photo', 650)->nullable(false)->default('');  
