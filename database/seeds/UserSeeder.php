@@ -2,13 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Reward;
-use App\Models\SpotbieUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Database\Factories\UserFactory;
 
 use App\Models\User;
+use App\Models\Business;
 
 // composer require laracasts/testdummy
 use Laracasts\TestDummy\Factory as TestDummy;
