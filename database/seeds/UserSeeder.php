@@ -36,8 +36,8 @@ class UserSeeder extends Seeder
                 'user_type' => $businessAcccountTypes[$key],
             ];                        
         })
-        ->hasLoyaltyPointBalance(1)
         ->hasBusiness(1)
+        ->hasLoyaltyPointBalance(1)
         ->create();
     }
     
