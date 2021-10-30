@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\Reward;
+use App\Models\SpotbieUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Database\Factories\UserFactory;
 
 use App\Models\User;
-use App\Models\SpotbieUser;
-use App\Models\Friendship;
-use App\Models\ContactMe;
 
 // composer require laracasts/testdummy
 use Laracasts\TestDummy\Factory as TestDummy;
@@ -20,30 +19,28 @@ class UserSeeder extends Seeder
     {
 
         User::factory()
-        ->count(20)
-        ->hasSpotbieUser(1)
+        ->count(10)
+        ->hasSpotbieUser(1, function (array $attributes){
+            return [
+                'user_type' => 4,
+            ]; 
+        })
         ->hasLoyaltyPointBalance(1)
         ->create();
 
-        /*
-        
-        Uncomment this if you want to Create a custom user.
+        $businessAcccountTypes = ['1', '2'];
 
         User::factory()
-        ->hasSpotbieUser(1,[
-            'first_name' => 'YourName',
-            'last_name' => 'YourLastName',
-            'description' => 'Hello my name is YourName YourLastName. Welcome to my SpotBie profile!',
-        ])
-        ->hasUserLocation(1)
-        ->hasDefaultImages(1,function (array $attributes, User $user) {
-            return ['default_image_url' => $user->spotbieUser->default_picture];
+        ->count(10)
+        ->hasSpotbieUser(1, function (array $attributes) use ($businessAcccountTypes){
+            $key = rand(0,1);
+            return [
+                'user_type' => $businessAcccountTypes[$key],
+            ];                        
         })
-        ->create([
-            'username' => 'yourusernam3', 
-            'email' => 'youremail@gmail.com', 
-            'password' => Hash::make('HelloWorld33!')
-        ]);*/
-
+        ->hasLoyaltyPointBalance(1)
+        ->hasBusiness(1)
+        ->create();
     }
+    
 }

@@ -6,6 +6,7 @@ use App\Models\Business;
 use App\Models\User;
 use App\Models\Models;
 use App\Models\SpotbieUser;
+use Database\Seeders\BusinessTableSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -20,8 +21,6 @@ class BusinessFactory extends Factory
      */
     protected $model = Business::class;
 
-    private $alreadyAddedIds = array();
-
     /**
      * Define the model's default state.
      *
@@ -31,20 +30,7 @@ class BusinessFactory extends Factory
     {
 
         $businessUserTypeList = [1, 2];
-
-        $user = SpotbieUser::whereIn('user_type', $businessUserTypeList)->inRandomOrder()->first();
-
-        $userId = $user->id;
         
-        while(  in_array($userId, $this->alreadyAddedIds) ){
-            $user = SpotbieUser::whereIn('user_type', $businessUserTypeList)->inRandomOrder()->first();
-            $userId = $user->id;
-        }
-
-        $userType = $user->user_type;
-
-        array_push($this->alreadyAddedIds, $userId);
-
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);        
 
@@ -58,20 +44,7 @@ class BusinessFactory extends Factory
 
         $randomLocY = $this->faker->randomFloat(6, $minY, $maxY);
 
-        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-
-        if($userType == '1'){
-            $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-        } else if($userType == '2'){
-            $businessPhotoFolder = 'assets/images/def/events/';
-        } else if($userType == '3'){
-            $businessPhotoFolder = 'assets/images/def/shopping/';
-        }
-
-        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
-
         return [
-            'id' => $userId,
             'name' => $name,
             'slug' => Str::slug($name),
             'description' => $description,
@@ -79,12 +52,52 @@ class BusinessFactory extends Factory
             'loc_y' => $randomLocY,
             'address' => config("spotbie.my_address"),
             'categories' => json_encode(config("spotbie.my_business_categories")),
-            'is_verified' => true,
-            'photo' => $businessPhoto,
+            'is_verified' => true,        
             'qr_code_link' => Str::uuid()
         ];
         
     }
 
+    public function configure(){
+
+        return $this->afterMaking(function (Business $business) {
+            
+            $userType = rand(1,2);
+
+            //Let's update the userType
+            SpotbieUser::where('id', '=', $business->id)
+            ->update([
+                'user_type' => $userType
+            ]);
+
+            $business->photo = $this->getBusinessPhoto($userType);
+
+            $business->save();
+
+        });
+
+    }
+
+    public function getBusinessPhoto($userType){
+
+        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+
+        switch($userType){
+            case '1':
+                $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+                break;
+            case '2':
+                $businessPhotoFolder = 'assets/images/def/shopping/';
+                break;
+            case '3':
+                $businessPhotoFolder = 'assets/images/def/events/';
+                break;   
+        }
+
+        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
+
+        return $businessPhoto;
+
+    }
 
 }

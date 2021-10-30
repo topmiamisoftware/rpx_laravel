@@ -56,17 +56,5 @@ class RewardFactory extends Factory
             'times_claimed_this_month' => $times_claimed_this_month           
         ];
     }
-
-    public function configure()
-    {
-        return $this->afterCreating(function (Reward $reward) {
-            
-            $randomBusinessId = DB::table('business')->inRandomOrder()->get()[0]->id;
-
-            $reward->business_id = $randomBusinessId;
-            
-            $reward->save();
-
-        });
-    }    
+  
 }

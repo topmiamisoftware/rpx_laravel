@@ -23,7 +23,7 @@ class CreateBusinessTable extends Migration
     public function up()
     {
         Schema::create('business', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->references('id')->on('users')->id()->unique();
+            $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
             $table->string('name', 25)->nullable(false);
             $table->string('slug', 200)->nullable(false);
             $table->string('description', 500)->nullable(false);
