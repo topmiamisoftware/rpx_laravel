@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Database\Factories\BusinessFactory;
+
 use Illuminate\Database\Seeder;
 use App\Models\Business;
 
