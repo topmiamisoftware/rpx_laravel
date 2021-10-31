@@ -7,7 +7,9 @@ use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Ads;
 use App\Models\Business;
+use App\Models\Reward;
 use App\Models\SpotbieUser;
 
 
@@ -71,8 +73,18 @@ class BusinessFactory extends Factory
             ]);
 
             $business->photo = $this->getBusinessPhoto($userType);
-
+            
             $business->save();
+
+            Reward::factory()
+            ->count(7)
+            ->for($business)
+            ->create();
+
+            Ads::factory()
+            ->count(3)
+            ->for($business)
+            ->create();
 
         });
 
