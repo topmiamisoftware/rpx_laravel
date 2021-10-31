@@ -72,6 +72,8 @@ class BusinessFactory extends Factory
 
             $business->photo = $this->getBusinessPhoto($userType);
 
+            $categories = '';
+
             switch($userType){
                 case '1':
                     $categories = config("spotbie.my_business_categories_food");

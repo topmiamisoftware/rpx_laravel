@@ -10,6 +10,6 @@
         'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api.spotbie.com/rewards-media/images/'),
         'my_business_categories_food' => ['Barbeque', 'Burgers', 'Brunch'],
         'my_business_categories_shopping' => ['Baby Gear', 'Bridal', 'Clothing'],
-        'my_business_categories_events' => ['Music'],        
+        'my_business_categories_events' => 'Music',        
         'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie-staging.netlify.app/')
     ];
