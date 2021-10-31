@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         ->create();
 
         User::factory()
-        ->count(10)
+        ->count(20)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'user_type' => rand(1,2),
