@@ -64,7 +64,7 @@ class UserSeeder extends Seeder
         ->state([
             'email' => 'agent000@spotbie.com',
             'username' => 'agent000',
-            'password' => 'HelloWorld33!'
+            'password' => Hash::make('HelloWorld33!')
         ])
         ->count(1)
         ->hasSpotbieUser(1, function (array $attributes){
@@ -83,7 +83,7 @@ class UserSeeder extends Seeder
         ->state([
             'email' => 'agent001@spotbie.com',
             'username' => 'agent001',
-            'password' => 'HelloWorld33!'
+            'password' => Hash::make('HelloWorld33!')
         ])        
         ->count(1)
         ->hasSpotbieUser(1, function (array $attributes){
