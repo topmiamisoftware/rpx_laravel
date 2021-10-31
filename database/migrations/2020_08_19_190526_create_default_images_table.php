@@ -28,6 +28,6 @@ class CreateDefaultImagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_default_pictures');
+        Schema::dropIfExists('default_images');
     }
 }

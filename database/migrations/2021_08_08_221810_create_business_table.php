@@ -7,14 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class CreateBusinessTable extends Migration
 {
 
-    private $allowedCategories = ['Asian Fusion', 'Bagels', 'Bakery', 'Bar', 'Barbeque', 'Breakfast', 'British',
-    'Brunch', 'Buffets', 'Burgers', 'Cajun/Creole', 'Caribbean', 'Coffee/Espresso', 'Country Food', 'Cuban',
-    'Deli', 'Doughnuts', 'Family Fare', 'Fast Food', 'Fine Dining', 'Food Trucks', 'French', 'German',
-    'Gluten-free', 'Greek', 'Happy Hour', 'Hot Dogs', 'Ice Cream', 'Indian', 'Irish', 'Italian',
-    'Japanese', 'Latin American', 'Live Entertainment', 'Mediterranean', 'Mexican', 'Nouvelle', 'Pancakes/Waffles', 'Pizza',
-    'Polish', 'Sandwiches', 'Seafood', 'Soul Food', 'Soup & Salad', 'Southern', 'Spanish',
-    'Sports Bar', 'Steaks', 'Sushi', 'Tapas', 'Thai', 'Vegan Friendly', 'Vegetarian'];
-
     /**
      * Run the migrations.
      *
@@ -46,5 +38,6 @@ class CreateBusinessTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('business');
     }
 }

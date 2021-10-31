@@ -29,6 +29,6 @@ class CreateLoyaltyPointLedgerTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('loyalty_point_ledger');
     }
 }

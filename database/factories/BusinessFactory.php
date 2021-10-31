@@ -50,7 +50,7 @@ class BusinessFactory extends Factory
             'loc_x' => $randomLocX,
             'loc_y' => $randomLocY,
             'address' => config("spotbie.my_address"),
-            'categories' => null,
+            'categories' => json_encode(config("spotbie.my_business_categories")),
             'photo' => '',
             'is_verified' => true,        
             'qr_code_link' => Str::uuid()
