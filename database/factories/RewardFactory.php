@@ -47,6 +47,7 @@ class RewardFactory extends Factory
         $type = rand(0, 1);
 
         return [
+            'uuid' => Str::uuid(),
             'type' => $type,
             'name' => $name,
             'description' => $description,

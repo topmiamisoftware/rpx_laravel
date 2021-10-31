@@ -22,12 +22,6 @@ class AdsFactory extends Factory
      */
     protected $model = Ads::class;
 
-    public $adImageList = array(
-        "assets/images/def/places-to-eat/sample_place_to_eat_1.jpg",
-        "assets/images/def/places-to-eat/sample_place_to_eat_2.jpg",
-        "assets/images/def/places-to-eat/sample_place_to_eat_3.jpg"
-    );
-
     /**
      * Define the model's default state.
      *

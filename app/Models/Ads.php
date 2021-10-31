@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Auth;
 
+use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -107,10 +109,13 @@ class Ads extends Model
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
 
-        $ad = $this
+        $ad = Ads::
+        select('uuid', 'business_id', 'type', 'name', 'description', 'images', 'is_live')
         ->where('type', 0)
         ->where('business_id', '=', $nearbyBusiness->id)
-        ->inRandomOrder()
+        ->where('ends_at', '>', Carbon::now() )
+        ->where('is_live', '=', true)
+        ->orderBy('clicks', 'asc')
         ->limit(1)
         ->get()[0];
 
@@ -144,10 +149,13 @@ class Ads extends Model
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
 
-        $ad = $this
+        $ad = Ads::
+        select('uuid', 'business_id', 'type', 'name', 'description', 'images', 'is_live')
         ->where('type', 0)
         ->where('business_id', '=', $nearbyBusiness->id)
-        ->inRandomOrder()
+        ->where('ends_at', '>', Carbon::now() )
+        ->where('is_live', '=', true)
+        ->orderBy('clicks', 'asc')
         ->limit(1)
         ->get()[0];
 

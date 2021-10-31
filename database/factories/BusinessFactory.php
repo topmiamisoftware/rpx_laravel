@@ -51,8 +51,7 @@ class BusinessFactory extends Factory
             'description' => $description,
             'loc_x' => $randomLocX,
             'loc_y' => $randomLocY,
-            'address' => config("spotbie.my_address"),
-            'categories' => json_encode(config("spotbie.my_business_categories")),
+            'address' => config("spotbie.my_address"),            
             'photo' => '',
             'is_verified' => true,        
             'qr_code_link' => Str::uuid()
@@ -63,17 +62,29 @@ class BusinessFactory extends Factory
     public function configure(){
 
         return $this->afterCreating(function (Business $business) {
-            
-            $userType = rand(1,2);
 
             //Let's update the userType
-            SpotbieUser::where('id', '=', $business->id)
-            ->update([
-                'user_type' => $userType
-            ]);
+            $spotbieUser = SpotbieUser::select('user_type')
+            ->where('id', '=', $business->id)
+            ->get()[0];
+
+            $userType = $spotbieUser->user_type;
 
             $business->photo = $this->getBusinessPhoto($userType);
-            
+
+            switch($userType){
+                case '1':
+                    $categories = config("spotbie.my_business_categories_food");
+                    break;
+                case '2':
+                    $categories = config("spotbie.my_business_categories_shopping");
+                    break; 
+                case '3':
+                    $categories = config("spotbie.my_business_categories_events");
+            }
+
+            $business->categories = json_encode($categories);
+
             $business->save();
 
             Reward::factory()

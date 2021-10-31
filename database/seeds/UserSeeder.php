@@ -27,15 +27,38 @@ class UserSeeder extends Seeder
         ->create();
 
         User::factory()
-        ->count(20)
+        ->count(10)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
-                'user_type' => rand(1,2),
+                'user_type' => 1,
             ];                        
         })
         ->hasBusiness(1)
         ->hasLoyaltyPointBalance(1)
         ->create();
+
+        User::factory()
+        ->count(10)
+        ->hasSpotbieUser(1, function (array $attributes){
+            return [
+                'user_type' => 2,
+            ];                        
+        })
+        ->hasBusiness(1)
+        ->hasLoyaltyPointBalance(1)
+        ->create();  
+        
+        User::factory()
+        ->count(10)
+        ->hasSpotbieUser(1, function (array $attributes){
+            return [
+                'user_type' => 3,
+            ];                        
+        })
+        ->hasBusiness(1)
+        ->hasLoyaltyPointBalance(1)
+        ->create();  
+
     }
     
 }
