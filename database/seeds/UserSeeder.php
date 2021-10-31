@@ -60,16 +60,13 @@ class UserSeeder extends Seeder
         ->create();  
 
         /* Account #1 */
-        User::factory(
-            function (array $attributes){
-                return [
-                    'email' => 'agent000@spotbie.com',
-                    'username' => 'agent000',
-                    'password' => 'HelloWorld33!'
-                ];                        
-            }            
-        )
-        ->count(10)
+        User::factory()
+        ->state([
+            'email' => 'agent000@spotbie.com',
+            'username' => 'agent000',
+            'password' => 'HelloWorld33!'
+        ])
+        ->count(1)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'first_name' => 'Franco',
@@ -82,16 +79,13 @@ class UserSeeder extends Seeder
         ->create();  
 
         /* Account #2 */
-        User::factory(
-            function (array $attributes){
-                return [
-                    'email' => 'agent001@spotbie.com',
-                    'username' => 'agent001',
-                    'password' => 'HelloWorld33!'
-                ];                        
-            }
-        )
-        ->count(10)
+        User::factory()
+        ->state([
+            'email' => 'agent001@spotbie.com',
+            'username' => 'agent001',
+            'password' => 'HelloWorld33!'
+        ])        
+        ->count(1)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'first_name' => 'Andres',
