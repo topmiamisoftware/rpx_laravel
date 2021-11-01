@@ -94,8 +94,28 @@ class BusinessFactory extends Factory
             ->for($business)
             ->create();
 
+            //Let's make 3 ads of each type for the business.
             Ads::factory()
-            ->count(3)
+            ->state([
+                "type" => 0
+            ])
+            ->count(1)
+            ->for($business)
+            ->create();
+
+            Ads::factory()
+            ->state([
+                "type" => 1
+            ])            
+            ->count(1)
+            ->for($business)
+            ->create();
+
+            Ads::factory()
+            ->state([
+                "type" => 2
+            ])            
+            ->count(1)
             ->for($business)
             ->create();
 
