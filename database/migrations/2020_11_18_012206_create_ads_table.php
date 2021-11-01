@@ -26,7 +26,7 @@ class CreateAdsTable extends Migration
             $table->integer('views')->nullable(false)->default(0);
             $table->boolean('is_subscription')->nullable(false)->default(false);
             $table->boolean('failed_subscription')->nullable(false)->default(false);
-            $table->boolean('is_live')->nullable(false)->default(true);
+            $table->boolean('is_live')->nullable(false)->default(false);
             $table->timestamps();
             $table->timestamp('ends_at')->nullable();
             $table->softDeletes();

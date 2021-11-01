@@ -44,10 +44,10 @@ class AdsFactory extends Factory
                 $dollar_cost = 15.99;
                 break;
             case 1:
-                $dollar_cost = 13.99;
+                $dollar_cost = 8.99;
                 break;
             case 2:
-                $dollar_cost = 6.99;
+                $dollar_cost = 10.99;
                 break;                                
         }
 
@@ -60,9 +60,10 @@ class AdsFactory extends Factory
             'dollar_cost' => $dollar_cost,
             'clicks' => rand(0,500),
             'views' => rand(0,1500),
-            'is_subscription' => 1,
-            'failed_subscription' => 1,
-            'ends_at' => Carbon::now()->addHour(),
+            'is_subscription' => true,
+            'failed_subscription' => true,
+            'is_live' => true,
+            'ends_at' => Carbon::now()->addMonth(),
         ];
         
     }
