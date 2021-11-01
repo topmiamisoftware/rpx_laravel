@@ -67,19 +67,4 @@ class AdsFactory extends Factory
         
     }
 
-    public function configure()
-    {
-        return $this->afterCreating(function (Ads $ad) {
-            
-            $randomBusinessId = DB::table('business')
-            ->inRandomOrder()
-            ->get()[0]->id;
-
-            $ad->business_id = $randomBusinessId;
-
-            $ad->save();
-
-        });
-    }
-
 }

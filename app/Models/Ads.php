@@ -189,6 +189,9 @@ class Ads extends Model
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
 
+        while($ad){
+
+        }
         $ad = $this
         ->where('type', 1)
         ->inRandomOrder()
