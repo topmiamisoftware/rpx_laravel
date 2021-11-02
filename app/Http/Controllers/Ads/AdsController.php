@@ -42,5 +42,8 @@ class AdsController extends Controller
         return $ads->deleteModel($request);
     }
 
+    public function makePayment(Request $request){
+        return $request->user()->redirectToBillingPortal();
+    }
 
 }

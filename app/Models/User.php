@@ -28,11 +28,12 @@ use App\Rules\Password;
 use App\Rules\Username;
 
 use Carbon\Carbon;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements JWTSubject
 {
     
-    use Notifiable, HasFactory, SoftDeletes;  
+    use Notifiable, HasFactory, SoftDeletes, Billable;  
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

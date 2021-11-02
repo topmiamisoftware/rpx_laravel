@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Http\Request;
 
+use Laravel\Cashier\Billable;
+
 use App\Models\Business;
 use App\Models\Reward;
 
@@ -24,7 +26,7 @@ use Illuminate\Support\Facades\DB;
 class Ads extends Model
 {
 
-    use HasFactory, SoftDeletes; 
+    use HasFactory, SoftDeletes, Billable; 
 
     public function business(){
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
@@ -341,12 +343,61 @@ class Ads extends Model
 
     public function create(Request $request){
 
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:75|min:1',
+            'description' => 'required|string|max:350|min:1',
+            'images' => 'required|string|max:500|min:1',
+            'type' => 'required|numeric|max:6'
+        ]);
+
+        $user = Auth::user();
+
+        if($user){
+            $business = $user->business;
+        }
+
+        $businessAd = new Ads();
+
+        $businessAd->business_id = $business->id;
+
+        $businessAd->name = $validatedData['name'];
+        $businessAd->description = $validatedData['description'];
+        $businessAd->images = $validatedData['images'];
+        $businessAd->type = $validatedData['type'];
+        $businessAd->is_subscription = true;
+        $businessAd->is_live = false;
+        $businessAd->failed_subscription = true;
+        
+        switch($businessAd->type){
+            case 0:
+                $businessAd->dollar_cost = 15.99;
+                break;
+            case 1:
+                $businessAd->dollar_cost = 13.99;
+                break;
+            case 2:
+                $businessAd->dollar_cost = 10.99;
+                break;                                    
+        }
+
+        DB::transaction(function () use ($businessAd){
+            $businessAd->save();
+        });  
+
+        
+        $response = array(
+            'success' => true,
+            'newAd' => $businessAd
+        ); 
+
+        return response($response);
+
     }
 
     public function updateModel(Request $request){
 
         $validatedData = $request->validate([
-            'id' => 'required|numeric|min:1',
+            'id' => 'required|numeric',
             'name' => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
             'images' => 'required|string|max:500|min:1',
@@ -384,7 +435,7 @@ class Ads extends Model
     public function deleteModel(Request $request){
 
         $validatedData = $request->validate([
-            'id' => 'required|string|max:11'
+            'id' => 'required|numeric'
         ]); 
 
         $user = Auth::user();

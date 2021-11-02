@@ -58,6 +58,7 @@ class AdsFactory extends Factory
             'description' => $description,
             'images' => $images,
             'dollar_cost' => $dollar_cost,
+            'stripe_price' => $dollar_cost,
             'clicks' => rand(0,500),
             'views' => rand(0,1500),
             'is_subscription' => true,
@@ -66,6 +67,16 @@ class AdsFactory extends Factory
             'ends_at' => Carbon::now()->addMonth(),
         ];
         
+    }
+
+    public function configure(){
+
+        return $this->afterCreating(function (Ads $ad) {
+
+            $ad->createAsStripeCustomer();
+            
+        });
+
     }
 
 }

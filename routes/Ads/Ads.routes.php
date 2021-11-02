@@ -10,6 +10,8 @@ Route::post('single-ad-list', [AdsController::class, 'singleAdList']);
 
 Route::post('featured-ad-list', [AdsController::class, 'featuredAdList']);
 
+Route::post('make-payment', [AdsController::class, 'makePayment']);
+
 Route::post('upload-media', [AdsController::class, 'uploadMedia']);
 
 Route::post('create', [AdsController::class, 'create'])->middleware('auth');

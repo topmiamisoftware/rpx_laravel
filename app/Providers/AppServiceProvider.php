@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Ads;
 use App\Observers\UserObserver;
 use App\Models\User;
 
 use Illuminate\Support\ServiceProvider;
+
+use Laravel\Cashier\Cashier;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
+        Cashier::useSubscriptionItemModel(Ads::class);
+        Cashier::calculateTaxes();
     }
 }

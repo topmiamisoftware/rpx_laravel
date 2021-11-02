@@ -11,7 +11,7 @@ use App\Models\Ads;
 use App\Models\Business;
 use App\Models\Reward;
 use App\Models\SpotbieUser;
-
+use App\Models\User;
 
 class BusinessFactory extends Factory
 {
@@ -61,6 +61,8 @@ class BusinessFactory extends Factory
 
         return $this->afterCreating(function (Business $business) {
 
+            $user = User::find($business->id);
+            
             $spotbieUser = SpotbieUser::select('user_type')
             ->where('id', '=', $business->id)
             ->get()[0];
