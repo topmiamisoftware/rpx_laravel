@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Auth;
+use Image;
 
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +18,8 @@ use App\Models\Business;
 use App\Models\Reward;
 
 use App\Helpers\UrlHelper;
+
+use Illuminate\Support\Facades\DB;
 
 class Ads extends Model
 {
@@ -96,11 +100,33 @@ class Ads extends Model
 
     public function headerBanner(Request $request){
 
-        $validatedData = $request->validate([
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string|numeric',
+        $validatedData = $request->validate([            
+            'loc_x' => 'max:90|min:-90|numeric',
+            'loc_y' => 'max:180|min:-180|numeric',
+            'categories' => 'string|numeric',
+            'id' => 'numeric',
         ]); 
+
+        if(isset($validatedData['id'])){
+
+            $ad = Ads::find($validatedData['id']);
+
+            $business = Business::find($ad->business_id);
+
+            $totalRewards = count(Reward::select('business_id')
+            ->where('business_id', '=', $business->id)
+            ->get());
+    
+            $response = array(
+                "success" => true,
+                "business" => $business,
+                "ad" => $ad,
+                "totalRewards" => $totalRewards
+            );
+    
+            return response($response);
+
+        }
 
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
@@ -136,11 +162,33 @@ class Ads extends Model
 
     public function singleAdList(Request $request){
 
-        $validatedData = $request->validate([
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string|numeric',
+        $validatedData = $request->validate([            
+            'loc_x' => 'max:90|min:-90|numeric',
+            'loc_y' => 'max:180|min:-180|numeric',
+            'categories' => 'string|numeric',
+            'id' => 'numeric'
         ]); 
+
+        if(isset($validatedData['id'])){
+
+            $ad = Ads::find($validatedData['id']);
+
+            $business = Business::find($ad->business_id);
+
+            $totalRewards = count(Reward::select('business_id')
+            ->where('business_id', '=', $business->id)
+            ->get());
+    
+            $response = array(
+                "success" => true,
+                "business" => $business,
+                "ad" => $ad,
+                "totalRewards" => $totalRewards
+            );
+    
+            return response($response);
+
+        }
 
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
@@ -148,7 +196,7 @@ class Ads extends Model
 
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
-
+        
         $ad = Ads::
         select('uuid', 'business_id', 'type', 'name', 'description', 'images', 'is_live')
         ->where('type', 0)
@@ -174,47 +222,35 @@ class Ads extends Model
         
     }
 
-    public function nearbyCategoryAd(Request $request){
+    public function featuredAdList(Request $request){
 
         $validatedData = $request->validate([
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
+            'loc_x' => 'max:90|min:-90|numeric',
+            'loc_y' => 'max:180|min:-180|numeric',
+            'categories' => 'string',
+            'id' => 'numeric'
         ]); 
 
-        $loc_x = $validatedData['loc_x'];
-        $loc_y = $validatedData['loc_y'];
-        $categories = json_encode($validatedData['categories']);
+        if(isset($validatedData['id'])){
 
-        //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
+            $ad = Ads::find($validatedData['id']);
 
-        while($ad){
+            $business = Business::find($ad->business_id);
+
+            $totalRewards = count(Reward::select('business_id')
+            ->where('business_id', '=', $business->id)
+            ->get());
+    
+            $response = array(
+                "success" => true,
+                "business" => $business,
+                "ad" => $ad,
+                "totalRewards" => $totalRewards
+            );
+    
+            return response($response);
 
         }
-        $ad = $this
-        ->where('type', 1)
-        ->inRandomOrder()
-        ->limit(1)
-        ->get()[0];
-
-        $response = array(
-            "success" => true,
-            "ad" => $ad,
-            "business" => $nearbyBusiness
-        );
-
-        return response($response);
-
-    }   
-
-    public function featuredNearbyAd(Request $request){
-
-        $validatedData = $request->validate([
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
-        ]); 
 
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
@@ -261,7 +297,7 @@ class Ads extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = '/rewards-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = '/ad-media/images/' . $user->id. '/' . $hashedFileName;
 
         Storage::put($imagePath, $newFile);
 
@@ -309,9 +345,65 @@ class Ads extends Model
 
     public function updateModel(Request $request){
 
+        $validatedData = $request->validate([
+            'id' => 'required|numeric|min:1',
+            'name' => 'required|string|max:75|min:1',
+            'description' => 'required|string|max:350|min:1',
+            'images' => 'required|string|max:500|min:1',
+            'type' => 'required|numeric|max:6'
+        ]);
+
+        $user = Auth::user();
+
+        if($user){
+            $business = $user->business;
+        }
+
+        $businessAd = $business->ads()->find($validatedData['id']);
+        
+        $businessAd->business_id = $business->id;
+        $businessAd->name = $validatedData['name'];
+        $businessAd->description = $validatedData['description'];
+        
+        $businessAd->images = $validatedData['images'];
+
+        $businessAd->type = $validatedData['type'];
+
+        DB::transaction(function () use ($businessAd){
+            $businessAd->save();
+        });  
+        
+        $response = array(
+            'success' => true,
+            'newAd' => $businessAd
+        ); 
+
+        return response($response);
     }
 
     public function deleteModel(Request $request){
+
+        $validatedData = $request->validate([
+            'id' => 'required|string|max:11'
+        ]); 
+
+        $user = Auth::user();
+
+        $adToDelete = $validatedData['id']; 
+
+        if($user){
+            
+            DB::transaction(function () use ($user, $adToDelete){
+                Ads::where('id', $adToDelete)->delete();
+            });            
+
+        }
+
+        $response = array(
+            'success' => true
+        ); 
+
+        return response($response);
 
     }
 

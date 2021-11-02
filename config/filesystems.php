@@ -84,7 +84,8 @@ return [
         //public_path('backgrounds') => storage_path('app/backgrounds'),
         //public_path('albums') => storage_path('app/albums'),
         //public_path('extra-media') => storage_path('app/extra-media'),
-        public_path('rewards-media') => storage_path('app/rewards-media/')
+        public_path('rewards-media') => storage_path('app/rewards-media/'),
+        public_path('ad-media') => storage_path('app/ad-media/')
     ],
 
 ];

@@ -30,6 +30,7 @@
         'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api.spotbie.com/backgrounds/'),
         'business_pass_key' => env('SPOTBIE_BUSINESS_PASSKEY'),
         'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api.spotbie.com/rewards-media/images/'),
+        'ad_images_path' => env('AD_IMAGES_PATH', 'https://api.spotbie.com/ad-media/images/'),
         'my_business_categories_food' => $foodCategories,
         'my_business_categories_shopping' => $shoppingCategories,
         'my_business_categories_events' => $eventCategories,        

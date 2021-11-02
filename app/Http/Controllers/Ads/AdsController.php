@@ -18,8 +18,16 @@ class AdsController extends Controller
         return $ads->singleAdList($request);
     }
 
+    public function featuredAdList(Ads $ads, Request $request){
+        return $ads->featuredAdList($request);
+    }
+
     public function index(Ads $ads){
         return $ads->index();
+    }
+
+    public function uploadMedia(Ads $ads, Request $request){
+        return $ads->uploadMedia($request);
     }
 
     public function create(Ads $ads, Request $request){
