@@ -29,8 +29,6 @@ class BusinessFactory extends Factory
      */
     public function definition()
     {
-
-        $businessUserTypeList = [1, 2];
         
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);        
@@ -63,7 +61,6 @@ class BusinessFactory extends Factory
 
         return $this->afterCreating(function (Business $business) {
 
-            //Let's update the userType
             $spotbieUser = SpotbieUser::select('user_type')
             ->where('id', '=', $business->id)
             ->get()[0];
@@ -72,20 +69,24 @@ class BusinessFactory extends Factory
 
             $business->photo = $this->getBusinessPhoto($userType);
 
-            $categories = '';
+            if($business->categories == null){
 
-            switch($userType){
-                case '1':
-                    $categories = config("spotbie.my_business_categories_food");
-                    break;
-                case '2':
-                    $categories = config("spotbie.my_business_categories_shopping");
-                    break; 
-                case '3':
-                    $categories = config("spotbie.my_business_categories_events");
+                $categories = '';
+    
+                switch($userType){
+                    case '1':
+                        $categories = array_rand(config("spotbie.my_business_categories_food"), 3);
+                        break;
+                    case '2':
+                        $categories = array_rand(config("spotbie.my_business_categories_shopping"), 3);
+                        break; 
+                    case '3':
+                        $categories = array_rand(config("spotbie.my_business_categories_events"), 3);
+                }
+    
+                $business->categories = json_encode($categories);                
+
             }
-
-            $business->categories = json_encode($categories);
 
             $business->save();
 

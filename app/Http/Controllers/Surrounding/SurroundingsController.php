@@ -91,15 +91,13 @@ class SurroundingsController extends Controller
         $validatedData = $request->validate([
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|max:180|string'
+            'categories' => 'required|string|numeric'
         ]);
         
-        $categories = [];
+        $categories = json_decode($validatedData['categories']);
         
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
-        
-        array_push($categories, $validatedData['categories']);
         
         $data = Business::select(
             'business.qr_code_link', 'business.name', 'business.categories', 'business.description', 
@@ -123,7 +121,7 @@ class SurroundingsController extends Controller
                                         (POWER ( (business.loc_y - $loc_y), 2) ) 
                                     ) 
                         ) 
-                    <= 0.06
+                    <= 0.1
                 )
         )")
         ->has("rewards")  

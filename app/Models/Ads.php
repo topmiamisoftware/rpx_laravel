@@ -99,7 +99,7 @@ class Ads extends Model
         $validatedData = $request->validate([
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
+            'categories' => 'required|string|numeric',
         ]); 
 
         $loc_x = $validatedData['loc_x'];
@@ -139,7 +139,7 @@ class Ads extends Model
         $validatedData = $request->validate([
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
+            'categories' => 'required|string|numeric',
         ]); 
 
         $loc_x = $validatedData['loc_x'];

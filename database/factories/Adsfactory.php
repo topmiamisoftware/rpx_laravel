@@ -44,7 +44,7 @@ class AdsFactory extends Factory
                 $dollar_cost = 15.99;
                 break;
             case 1:
-                $dollar_cost = 8.99;
+                $dollar_cost = 13.99;
                 break;
             case 2:
                 $dollar_cost = 10.99;

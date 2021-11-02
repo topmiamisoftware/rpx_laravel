@@ -13,11 +13,19 @@ use Laracasts\TestDummy\Factory as TestDummy;
 
 class UserSeeder extends Seeder
 {
+
     public function run()
     {
 
+        $numberOfBusinessUsers = 90;
+        $numberOfBusinessTypes = 3;//Events, Retail, Places to Eat, etc.
+
+        $businessesToCreate = $numberOfBusinessUsers / $numberOfBusinessTypes;
+
+        $personalAccountsToCreate = 10;
+
         User::factory()
-        ->count(10)
+        ->count($personalAccountsToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'user_type' => 4,
@@ -27,7 +35,7 @@ class UserSeeder extends Seeder
         ->create();
 
         User::factory()
-        ->count(10)
+        ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'user_type' => 1,
@@ -38,7 +46,7 @@ class UserSeeder extends Seeder
         ->create();
 
         User::factory()
-        ->count(10)
+        ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'user_type' => 2,
@@ -49,13 +57,35 @@ class UserSeeder extends Seeder
         ->create();  
         
         User::factory()
-        ->count(10)
+        ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
                 'user_type' => 3,
             ];                        
         })
         ->hasBusiness(1)
+        ->hasLoyaltyPointBalance(1)
+        ->create();  
+
+        $placeToEatCategories = config('spotbie.my_business_categories_food');
+
+        $indexOfBurgers = array_search('Burgers', $placeToEatCategories);
+
+        $placeToEatCategory = json_encode($indexOfBurgers);
+
+        //Let's create 8 Burger shops so that this category may always return full paged results.
+        User::factory()
+        ->count(8)
+        ->hasSpotbieUser(1, function (array $attributes){
+            return [
+                'user_type' => 1,
+            ];                        
+        })
+        ->hasBusiness(1, function (array $attributes) use ($placeToEatCategory){
+            return [
+                'categories' => $placeToEatCategory,
+            ];                        
+        })
         ->hasLoyaltyPointBalance(1)
         ->create();  
 
@@ -74,7 +104,6 @@ class UserSeeder extends Seeder
                 'user_type' => 4
             ];                        
         })
-        ->hasBusiness(1)
         ->hasLoyaltyPointBalance(1)
         ->create();  
 
@@ -93,7 +122,6 @@ class UserSeeder extends Seeder
                 'user_type' => 4
             ];                        
         })
-        ->hasBusiness(1)
         ->hasLoyaltyPointBalance(1)
         ->create();  
 
