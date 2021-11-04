@@ -908,24 +908,26 @@ class User extends Authenticatable implements JWTSubject
         ->where('email', $validatedData['email'])
         ->first();
 
-        $isGoogleUser = GoogleUser::find($user->id);
-        $isFacebookUser = FacebookUser::find($user->id);
-
-        if($isGoogleUser){
-        
-            $status = 'social_account';
-        
-        } else if($isFacebookUser){
-            
-            $status = 'social_account';
-
-        } else if($user !== null){
+        if($user !== null){
             
             $userId = $user->id;
 
             $status = IlluminatePassword::sendResetLink(
                 $request->only('email')
             );
+
+            $isGoogleUser = GoogleUser::find($user->id);
+            $isFacebookUser = FacebookUser::find($user->id);
+
+            if($isGoogleUser){
+            
+                $status = 'social_account';
+            
+            } else if($isFacebookUser){
+                
+                $status = 'social_account';
+
+            }
 
         } else {
         
