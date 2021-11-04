@@ -14,19 +14,22 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Http\Request;
 
-use Laravel\Cashier\Billable;
-
 use App\Models\Business;
 use App\Models\Reward;
 
 use App\Helpers\UrlHelper;
 
 use Illuminate\Support\Facades\DB;
+use Laravel\Cashier\Billable;
 
 class Ads extends Model
 {
-
+    
     use HasFactory, SoftDeletes, Billable; 
+
+    protected $fillable = ['business_id'];
+
+    public $table = "ads";
 
     public function business(){
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
@@ -106,7 +109,7 @@ class Ads extends Model
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string|numeric',
-            'id' => 'numeric',
+            'id' => 'nullable|numeric',
         ]); 
 
         if(isset($validatedData['id'])){
@@ -168,7 +171,7 @@ class Ads extends Model
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string|numeric',
-            'id' => 'numeric'
+            'id' => 'nullable|numeric'
         ]); 
 
         if(isset($validatedData['id'])){
@@ -230,7 +233,7 @@ class Ads extends Model
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string',
-            'id' => 'numeric'
+            'id' => 'nullable|numeric'
         ]); 
 
         if(isset($validatedData['id'])){
@@ -364,6 +367,7 @@ class Ads extends Model
         $businessAd->description = $validatedData['description'];
         $businessAd->images = $validatedData['images'];
         $businessAd->type = $validatedData['type'];
+
         $businessAd->is_subscription = true;
         $businessAd->is_live = false;
         $businessAd->failed_subscription = true;
@@ -371,17 +375,26 @@ class Ads extends Model
         switch($businessAd->type){
             case 0:
                 $businessAd->dollar_cost = 15.99;
+                $businessAd->stripe_price = 15.99;
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
+                $businessAd->stripe_price = 13.99;
                 break;
             case 2:
                 $businessAd->dollar_cost = 10.99;
+                $businessAd->stripe_price = 10.99;
                 break;                                    
         }
 
         DB::transaction(function () use ($businessAd){
-            $businessAd->save();
+
+            $options = array(
+                "invoice_prefix" => $businessAd->business_id
+            );
+
+            $businessAd->createAsStripeCustomer($options);
+
         });  
 
         
@@ -419,6 +432,25 @@ class Ads extends Model
         $businessAd->images = $validatedData['images'];
 
         $businessAd->type = $validatedData['type'];
+
+        $businessAd->is_subscription = true;
+        $businessAd->is_live = false;
+        $businessAd->failed_subscription = true;
+
+        switch($businessAd->type){
+            case 0:
+                $businessAd->dollar_cost = 15.99;
+                $businessAd->stripe_price = 15.99;
+                break;
+            case 1:
+                $businessAd->dollar_cost = 13.99;
+                $businessAd->stripe_price = 13.99;
+                break;
+            case 2:
+                $businessAd->dollar_cost = 10.99;
+                $businessAd->stripe_price = 10.99;
+                break;                                    
+        }
 
         DB::transaction(function () use ($businessAd){
             $businessAd->save();

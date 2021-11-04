@@ -77,6 +77,7 @@ class Business extends Model
         $business->id = $user->id;
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
+        $business->slug = Str::slug($business->name);
         $business->address = $validatedData['address'];
         $business->photo = $validatedData['photo'];
         $business->loc_x = $validatedData['loc_x'];

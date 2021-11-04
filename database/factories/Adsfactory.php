@@ -72,8 +72,6 @@ class AdsFactory extends Factory
     public function configure(){
 
         return $this->afterCreating(function (Ads $ad) {
-
-            $ad->createAsStripeCustomer();
             
         });
 

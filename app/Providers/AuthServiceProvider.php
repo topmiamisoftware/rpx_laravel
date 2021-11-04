@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Policies\AlbumPolicy;
-use App\Album;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -16,8 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
-        Album::class => AlbumPolicy::class,
+
     ];
 
     /**
@@ -28,6 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            $frontEnd = config('spotbie.spotbie_front_end_ip');
+            return  $frontEnd . 'password/reset/' . $token . '?email=' . urlencode($user->email);
+        });
 
     }
 }

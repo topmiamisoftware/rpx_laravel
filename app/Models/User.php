@@ -908,27 +908,30 @@ class User extends Authenticatable implements JWTSubject
         ->where('email', $validatedData['email'])
         ->first();
 
-        if($user === null){
+        $isGoogleUser = GoogleUser::find($user->id);
+        $isFacebookUser = FacebookUser::find($user->id);
 
-            $user = SpotbieUser::select('id')
-            ->where('email', $validatedData['email'])
-            ->first();
-
-            $user = User::select('id', 'email')
-            ->where('id', $user->id)
-            ->first();
+        if($isGoogleUser){
+        
+            $status = 'social_account';
+        
+        } else if($isFacebookUser){
             
+            $status = 'social_account';
+
+        } else if($user !== null){
+            
+            $userId = $user->id;
+
+            $status = IlluminatePassword::sendResetLink(
+                $request->only('email')
+            );
+
+        } else {
+        
+            $status = 'invalid_email';
+        
         }
-
-        $spotbieUser = SpotbieUser::select('id', 'email')
-        ->where('id', $user->id)
-        ->first();
-
-        $userId = $user->id;
-
-        $status = IlluminatePassword::sendResetLink(
-            $user->only('email')
-        );
 
         $success = true;
 
@@ -1113,7 +1116,6 @@ class User extends Authenticatable implements JWTSubject
         return true;
 
     }
-
 
     public function checkConfirmCode(CheckEmailConfirmCode $request){
 

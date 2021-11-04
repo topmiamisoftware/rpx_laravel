@@ -48,6 +48,6 @@ class CreateSubscriptionItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subscription_items');
+        Schema::dropIfExists('ads');
     }
 }

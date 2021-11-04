@@ -38,4 +38,6 @@ Route::post('unique-email',       [UserController::class, 'uniqueEmail']);
 
 Route::post('send-code',          [UserController::class, 'sendCode']);
 
+Route::post('send-pass-email',    [UserController::class, 'sendPassEmail']);
+
 Route::post('check-confirm',      [UserController::class, 'checkConfirm']);
