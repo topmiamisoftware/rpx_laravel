@@ -794,7 +794,10 @@ class User extends Authenticatable implements JWTSubject
 
         $business = $user
         ->business()
-        ->select('id', 'id', 'name', 'description', 'address', 'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
+        ->select(
+            'id', 'name', 'description', 'address', 
+            'city', 'country', 'line1', 'line2', 'postal_code', 'state', 'categories',
+            'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
         ->get();
 
         if(count($business) > 0) 

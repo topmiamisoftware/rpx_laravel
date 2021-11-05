@@ -157,7 +157,7 @@ class Ads extends Model
         ->where('type', 0)
         ->where('business_id', '=', $nearbyBusiness->id)
         ->where('is_live', '=', 1)
-        ->orderBy('clicks', 'asc')
+        ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
 
@@ -238,10 +238,10 @@ class Ads extends Model
         
         $ad = Ads::
         select('uuid', 'business_id', 'type', 'name', 'description', 'images')
-        ->where('type', 0)
+        ->where('type', 2)
         ->where('business_id', '=', $nearbyBusiness->id)
         ->where('is_live', '=', 1)
-        ->orderBy('clicks', 'asc')
+        ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
 
@@ -299,7 +299,7 @@ class Ads extends Model
 
         $ad = $this
         ->where('type', 2)
-        ->inRandomOrder()
+        ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
 
