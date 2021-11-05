@@ -21,6 +21,9 @@ class UserObserver
         $userLocation = new UserLocation();
         $userLocation->createUserLocation($user);
 
+        if($user->stripe_id == null)
+            $user->createAsStripeCustomer();
+
     }
 
     /**

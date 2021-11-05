@@ -18,6 +18,10 @@ class AdsController extends Controller
         return $ads->singleAdList($request);
     }
 
+    public function getByUuid(Ads $ads, Request $request){
+        return $ads->getByUuid($request);
+    }
+
     public function featuredAdList(Ads $ads, Request $request){
         return $ads->featuredAdList($request);
     }
@@ -42,11 +46,8 @@ class AdsController extends Controller
         return $ads->deleteModel($request);
     }
 
-    public function makePayment(Request $request){
-
-        return $request->user()->redirectToBillingPortal();
-    
-    
+    public function savePayment(Ads $ads, Request $request){
+        return $ads->savePayment($request);
     }
 
 }

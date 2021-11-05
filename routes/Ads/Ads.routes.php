@@ -8,9 +8,13 @@ Route::post('header-banner', [AdsController::class, 'headerBanner']);
 
 Route::post('single-ad-list', [AdsController::class, 'singleAdList']);
 
+Route::post('get-by-uuid', [AdsController::class, 'getByUuid']);
+
 Route::post('featured-ad-list', [AdsController::class, 'featuredAdList']);
 
-Route::post('upload-media', [AdsController::class, 'uploadMedia']);
+Route::post('save-payment', [AdsController::class, 'savePayment']);
+
+Route::post('upload-media', [AdsController::class, 'uploadMedia'])->middleware('auth');
 
 Route::post('create', [AdsController::class, 'create'])->middleware('auth');
 

@@ -285,6 +285,9 @@ class User extends Authenticatable implements JWTSubject
             )
             ->first();
 
+            if($user->stripe_id == null)
+                $user->createAsStripeCustomer();
+
             $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first(); 
 
             //Start the session
@@ -372,6 +375,9 @@ class User extends Authenticatable implements JWTSubject
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
                 
+                if($user->stripe_id == null)
+                    $user->createAsStripeCustomer();
+
                 $user->email = $validatedData['email'];
 
                 $spotbieUser = $user->spotbieUser;
@@ -559,6 +565,9 @@ class User extends Authenticatable implements JWTSubject
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
                 
+                if($user->stripe_id == null)
+                    $user->createAsStripeCustomer();
+
                 $user->email = $validatedData['email'];
 
                 $spotbieUser = $user->spotbieUser;

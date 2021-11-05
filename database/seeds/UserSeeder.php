@@ -92,7 +92,7 @@ class UserSeeder extends Seeder
         /* Account #1 */
         User::factory()
         ->state([
-            'email' => 'agent000@spotbie.com',
+            'email' => 'maindedeux@gmail.com',
             'username' => 'agent000',
             'password' => Hash::make('HelloWorld33!')
         ])

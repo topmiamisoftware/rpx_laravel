@@ -19,7 +19,16 @@ class CreateBusinessTable extends Migration
             $table->string('name', 25)->nullable(false);
             $table->string('slug', 200)->nullable(false);
             $table->string('description', 500)->nullable(false);
+            
             $table->string('address', 100)->nullable(false);
+
+            $table->string('city', 255)->nullable(false)->default(config('spotbie.my_city'));
+            $table->string('country', 255)->nullable(false)->default(config('spotbie.my_country'));
+            $table->string('line1', 255)->nullable(false)->default(config('spotbie.my_line_1'));
+            $table->string('line2', 255)->nullable();
+            $table->string('postal_code', 255)->nullable(false)->default(config('spotbie.my_zip_code'));
+            $table->string('state', 255)->nullable(false)->default(config('spotbie.my_state'));
+
             $table->json('categories')->nullable(true);
             $table->float('loc_x', 8, 6)->nullable();
             $table->float('loc_y', 8, 6)->nullable();                        

@@ -45,6 +45,12 @@ class Business extends Model
             'name' => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
             'address' => 'required|string|max:350|min:1',
+            'city' => 'required|string',
+            'country' => 'required|string',
+            'line1' => 'nullable|string',
+            'line2' => 'nullable|string',
+            'postal_code' => 'required|string',
+            'state' => 'required|string',            
             'photo' => 'required|string|max:650|min:1',
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
@@ -78,7 +84,16 @@ class Business extends Model
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
         $business->slug = Str::slug($business->name);
+        
         $business->address = $validatedData['address'];
+
+        $business->city = $validatedData['city'];
+        $business->country = $validatedData['country'];
+        $business->line1 = $validatedData['line1'];
+        $business->line2 = $validatedData['line2'];
+        $business->postal_code = $validatedData['postal_code'];
+        $business->state = $validatedData['state'];
+
         $business->photo = $validatedData['photo'];
         $business->loc_x = $validatedData['loc_x'];
         $business->loc_y = $validatedData['loc_y'];

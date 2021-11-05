@@ -58,13 +58,9 @@ class AdsFactory extends Factory
             'description' => $description,
             'images' => $images,
             'dollar_cost' => $dollar_cost,
-            'stripe_price' => $dollar_cost,
             'clicks' => rand(0,500),
             'views' => rand(0,1500),
-            'is_subscription' => true,
-            'failed_subscription' => true,
-            'is_live' => true,
-            'ends_at' => Carbon::now()->addMonth(),
+            'is_live' => 1
         ];
         
     }

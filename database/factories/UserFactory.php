@@ -35,7 +35,6 @@ class UserFactory extends Factory
 
         return $this->afterCreating(function (User $user) {
 
-
         });
 
     }    

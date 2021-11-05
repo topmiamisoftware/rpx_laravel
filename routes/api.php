@@ -31,6 +31,6 @@ Route::prefix('reward')                     ->group(__DIR__ . '/Reward/Reward.ro
 
 Route::prefix('my-favorites')               ->group(__DIR__ . '/MyFavorites/MyFavorites.routes.php');
 
-Route::prefix('loyalty-points')             ->group(__DIR__ . '/LoyaltyPoints/loyalty-points.routes.php');    
+Route::prefix('loyalty-points')             ->group(__DIR__ . '/LoyaltyPoints/LoyaltyPoints.routes.php');    
 
-Route::prefix('redeemable')                 ->group(__DIR__ . '/Redeemable/redeemable.routes.php');    
+Route::prefix('redeemable')                 ->group(__DIR__ . '/Redeemable/Redeemable.routes.php');    

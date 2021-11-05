@@ -25,14 +25,34 @@
     return [
         'my_loc_x' => env('MY_LOC_X', '0.0'),
         'my_loc_y' => env('MY_LOC_Y', '0.0'),
-        'my_address' => env('MY_ADDRESS', '55 North Pole Dr. 99th Igloo ave.'),
+
+        'my_address' => env('MY_ADDRESS', '4091 W. 9th Ln. Hialeah FL 33012'),
+        'my_city' => env('MY_CITY', 'Hialeah'),
+        'my_state' => env('MY_STATE', 'Florida'),
+        'my_country' => env('MY_COUNTRY', 'USA'),
+        'my_line_1' => env('MY_LINE_1', '4091 W. 9th Ln'),
+        'my_zip_code' => env('MY_ZIP_CODE', '33012'),
+
         'default_images_path' => env('DEFAULT_IMAGES_PATH', 'https://api.spotbie.com/defaults/'),
         'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api.spotbie.com/backgrounds/'),
-        'business_pass_key' => env('SPOTBIE_BUSINESS_PASSKEY'),
         'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api.spotbie.com/rewards-media/images/'),
         'ad_images_path' => env('AD_IMAGES_PATH', 'https://api.spotbie.com/ad-media/images/'),
+
+        'business_pass_key' => env('SPOTBIE_BUSINESS_PASSKEY'),
+
         'my_business_categories_food' => $foodCategories,
         'my_business_categories_shopping' => $shoppingCategories,
         'my_business_categories_events' => $eventCategories,        
-        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie-staging.netlify.app/')
+
+        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie-staging.netlify.app/'),
+
+        'header_banner_prod' => env('SPOTBIE_SUBSCRIPTION_0_STRIPE_ID'),
+        'header_banner_price' => env('SPOTBIE_SUBSCRIPTION_0_PRICE_ID'),
+
+        'featured_related_prod' => env('SPOTBIE_SUBSCRIPTION_1_STRIPE_ID'),
+        'featured_related_price' => env('SPOTBIE_SUBSCRIPTION_1_PRICE_ID'),
+
+        'footer_banner_prod' => env('SPOTBIE_SUBSCRIPTION_2_STRIPE_PRICE'),
+        'footer_banner_price' => env('SPOTBIE_SUBSCRIPTION_2_PRICE_ID'),     
+
     ];

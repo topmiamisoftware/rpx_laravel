@@ -20,12 +20,15 @@ use App\Models\Reward;
 use App\Helpers\UrlHelper;
 
 use Illuminate\Support\Facades\DB;
-use Laravel\Cashier\Billable;
+use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Subscription;
+
+use Illuminate\Support\Str;
 
 class Ads extends Model
 {
     
-    use HasFactory, SoftDeletes, Billable; 
+    use HasFactory, SoftDeletes; 
 
     protected $fillable = ['business_id'];
 
@@ -121,7 +124,16 @@ class Ads extends Model
             $totalRewards = count(Reward::select('business_id')
             ->where('business_id', '=', $business->id)
             ->get());
-    
+            
+            //Add click to ad.
+            DB::transaction(function () use ($ad) {
+                
+                $ad->clicks++;
+
+                $ad->save();
+
+            });
+
             $response = array(
                 "success" => true,
                 "business" => $business,
@@ -141,11 +153,10 @@ class Ads extends Model
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
 
         $ad = Ads::
-        select('uuid', 'business_id', 'type', 'name', 'description', 'images', 'is_live')
+        select('uuid', 'business_id', 'type', 'name', 'description', 'images')
         ->where('type', 0)
         ->where('business_id', '=', $nearbyBusiness->id)
-        ->where('ends_at', '>', Carbon::now() )
-        ->where('is_live', '=', true)
+        ->where('is_live', '=', 1)
         ->orderBy('clicks', 'asc')
         ->limit(1)
         ->get()[0];
@@ -164,6 +175,29 @@ class Ads extends Model
         return response($response);
 
     }   
+
+    public function getByUuid(Request $request){
+
+        $validatedData = $request->validate([   
+            'uuid' => 'required|string'
+        ]);
+        
+        $ad = Ads::select('*')
+        ->where('uuid', '=', $validatedData['uuid'])
+        ->first();
+
+        $business = Business::where('id', '=', $ad->business_id)
+        ->first();
+
+        $response = array(
+            "success" => true,
+            "business" => $business,
+            "ad" => $ad,
+        );
+
+        return response($response);
+
+    }
 
     public function singleAdList(Request $request){
 
@@ -203,11 +237,10 @@ class Ads extends Model
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
         
         $ad = Ads::
-        select('uuid', 'business_id', 'type', 'name', 'description', 'images', 'is_live')
+        select('uuid', 'business_id', 'type', 'name', 'description', 'images')
         ->where('type', 0)
         ->where('business_id', '=', $nearbyBusiness->id)
-        ->where('ends_at', '>', Carbon::now() )
-        ->where('is_live', '=', true)
+        ->where('is_live', '=', 1)
         ->orderBy('clicks', 'asc')
         ->limit(1)
         ->get()[0];
@@ -355,11 +388,11 @@ class Ads extends Model
 
         $user = Auth::user();
 
-        if($user){
-            $business = $user->business;
-        }
-
+        if($user) $business = $user->business;
+        
         $businessAd = new Ads();
+
+        $businessAd->uuid = Str::uuid();
 
         $businessAd->business_id = $business->id;
 
@@ -367,40 +400,111 @@ class Ads extends Model
         $businessAd->description = $validatedData['description'];
         $businessAd->images = $validatedData['images'];
         $businessAd->type = $validatedData['type'];
-
-        $businessAd->is_subscription = true;
         $businessAd->is_live = false;
-        $businessAd->failed_subscription = true;
-        
+
         switch($businessAd->type){
             case 0:
                 $businessAd->dollar_cost = 15.99;
-                $businessAd->stripe_price = 15.99;
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
-                $businessAd->stripe_price = 13.99;
                 break;
             case 2:
                 $businessAd->dollar_cost = 10.99;
-                $businessAd->stripe_price = 10.99;
                 break;                                    
         }
 
         DB::transaction(function () use ($businessAd){
 
-            $options = array(
-                "invoice_prefix" => $businessAd->business_id
-            );
-
-            $businessAd->createAsStripeCustomer($options);
+            $businessAd->save();
 
         });  
-
         
+        $newAd = $businessAd->refresh();
+
         $response = array(
             'success' => true,
-            'newAd' => $businessAd
+            'newAd' => $newAd,
+        ); 
+
+        return response($response);
+
+    }
+
+    public function savePayment(Request $request){
+        
+        $validatedData = $request->validate([
+            "ad" => [
+                "id" => ['required', 'string']
+            ],
+            "payment_method" => [
+                "id" => ['required', 'string']
+            ]
+        ]);
+
+        $adId = $validatedData['ad']['id'];
+        $paymentMethodId = $validatedData['payment_method']['id'];
+
+        $adSubscription = Ads::where('id', '=', $adId)
+        ->first();
+
+        $price_name = config('spotbie.header_banner_price');
+
+        switch($adSubscription->type){
+            case 0:
+                $price_name = ["price" => config('spotbie.header_banner_price')];
+                break;
+            case 1:
+                $price_name = ["price" => config('spotbie.featured_related_price')];
+                break;
+            case 2:
+                $price_name = [ "price" => config('spotbie.footer_banner_price')];
+                break;
+        }
+
+        if($adSubscription !== null){
+
+            $userId = $adSubscription->business_id;
+
+            $userStripeId = User::find($userId)->stripe_id;
+            
+            $user = Cashier::findBillable($userStripeId);
+
+            $user->updateDefaultPaymentMethod($paymentMethodId);
+
+            //Update the subscription if the user chose a different ad type.
+            $existingSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
+
+            if($existingSubscription !== null ){          
+
+                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
+                
+            } else {
+
+                //Create the subscription with the payment method provided by the user.
+                $user->newSubscription($adSubscription->id, [$price_name] )->create($paymentMethodId);
+
+            }
+
+            $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
+
+            DB::transaction(function () use ($adSubscription, $newSubscription){
+
+                $adSubscription->subscription_id = $newSubscription->id;
+                $adSubscription->is_live = 1;
+
+                $adSubscription->save();
+
+            });  
+
+        }
+
+        $businessAd = $adSubscription->refresh();
+
+        $response = array(
+            'success' => true,
+            'newAd' => $businessAd,
+            'user' => $user
         ); 
 
         return response($response);
@@ -419,9 +523,9 @@ class Ads extends Model
 
         $user = Auth::user();
 
-        if($user){
-            $business = $user->business;
-        }
+        $userBillable = Cashier::findBillable($user->stripe_id);
+
+        if($user) $business = $user->business;
 
         $businessAd = $business->ads()->find($validatedData['id']);
         
@@ -433,27 +537,24 @@ class Ads extends Model
 
         $businessAd->type = $validatedData['type'];
 
-        $businessAd->is_subscription = true;
-        $businessAd->is_live = false;
-        $businessAd->failed_subscription = true;
+        $price_name = config('spotbie.header_banner_prod');
 
         switch($businessAd->type){
             case 0:
                 $businessAd->dollar_cost = 15.99;
-                $businessAd->stripe_price = 15.99;
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
-                $businessAd->stripe_price = 13.99;
                 break;
             case 2:
                 $businessAd->dollar_cost = 10.99;
-                $businessAd->stripe_price = 10.99;
                 break;                                    
         }
 
         DB::transaction(function () use ($businessAd){
+
             $businessAd->save();
+
         });  
         
         $response = array(
@@ -476,8 +577,19 @@ class Ads extends Model
 
         if($user){
             
+            $userBillable = Cashier::findBillable($user->stripe_id);
+
+            $userBillable->subscription($adToDelete)->cancelNow();
+
             DB::transaction(function () use ($user, $adToDelete){
+
+                Ads::where('id', $adToDelete)
+                ->update([
+                    "is_live" => 0
+                ]);
+                
                 Ads::where('id', $adToDelete)->delete();
+            
             });            
 
         }
