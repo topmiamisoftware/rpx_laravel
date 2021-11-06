@@ -16,7 +16,7 @@ class CreateSubscriptionItemsTable extends Migration
         Schema::create('subscription_items', function (Blueprint $table) {
 
             $table->id();
-            $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->nullable();
+            $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade')->nullable();
             $table->string('stripe_id')->nullable();
             $table->string('stripe_product')->nullable();
             $table->string('stripe_price')->nullable(false);

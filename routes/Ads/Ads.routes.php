@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('header-banner', [AdsController::class, 'headerBanner']);
 
-Route::post('single-ad-list', [AdsController::class, 'singleAdList']);
+Route::post('footer-banner', [AdsController::class, 'footerBanner']);
 
 Route::post('get-by-uuid', [AdsController::class, 'getByUuid']);
 

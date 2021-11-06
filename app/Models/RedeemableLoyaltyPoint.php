@@ -57,7 +57,7 @@ class RedeemableLoyaltyPoint extends Model
             
             DB::transaction(function () use ($redeemable) {
                 $redeemable->save();
-            });
+            }, 3);
 
         }   
 
@@ -154,7 +154,7 @@ class RedeemableLoyaltyPoint extends Model
                     "balance" => $newUserBalance
                 ]);
 
-            });
+            }, 3);
 
             $success = true;
 

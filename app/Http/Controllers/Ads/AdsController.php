@@ -14,8 +14,8 @@ class AdsController extends Controller
         return $ads->headerBanner($request);
     }
 
-    public function singleAdList(Ads $ads, Request $request){
-        return $ads->singleAdList($request);
+    public function footerBanner(Ads $ads, Request $request){
+        return $ads->footerBanner($request);
     }
 
     public function getByUuid(Ads $ads, Request $request){

@@ -46,13 +46,16 @@
 
         'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie-staging.netlify.app/'),
 
-        'header_banner_prod' => env('SPOTBIE_SUBSCRIPTION_0_STRIPE_ID'),
-        'header_banner_price' => env('SPOTBIE_SUBSCRIPTION_0_PRICE_ID'),
+        'header_banner_product' => env('SPOTBIE_HEADER_AD_STRIPE_PRODUCT'),
+        'header_banner_price' => env('SPOTBIE_HEADER_AD_PRICE'),
 
-        'featured_related_prod' => env('SPOTBIE_SUBSCRIPTION_1_STRIPE_ID'),
-        'featured_related_price' => env('SPOTBIE_SUBSCRIPTION_1_PRICE_ID'),
+        'featured_related_product' => env('SPOTBIE_FEATURED_AD_STRIPE_PRODUCT'),
+        'featured_related_price' => env('SPOTBIE_FEATURED_AD_PRICE'),
 
-        'footer_banner_prod' => env('SPOTBIE_SUBSCRIPTION_2_STRIPE_PRICE'),
-        'footer_banner_price' => env('SPOTBIE_SUBSCRIPTION_2_PRICE_ID'),     
+        'featured_related_product' => env('SPOTBIE_FOOTER_AD_STRIPE_PRODUCT'),
+        'footer_banner_price' => env('SPOTBIE_FOOTER_AD_PRICE'),     
+
+        'business_subscription_product' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRODUCT'),
+        'business_subscription_price' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE'), 
 
     ];

@@ -176,7 +176,7 @@ class LoyaltyPointBalance extends Model
                     "balance" => $newUserBalance
                 ]);
 
-            });
+            }, 3);
 
             $success = true;
 
@@ -213,7 +213,7 @@ class LoyaltyPointBalance extends Model
 
             DB::transaction(function () use ($user){
                 $user->loyaltyPointBalance->save();
-            });  
+            }, 3);  
             
             $loyaltyPointBalance = $user->loyaltyPointBalance()
             ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')

@@ -132,7 +132,7 @@ class Ads extends Model
 
                 $ad->save();
 
-            });
+            }, 3);
 
             $response = array(
                 "success" => true,
@@ -199,7 +199,7 @@ class Ads extends Model
 
     }
 
-    public function singleAdList(Request $request){
+    public function footerBanner(Request $request){
 
         $validatedData = $request->validate([            
             'loc_x' => 'max:90|min:-90|numeric',
@@ -418,7 +418,7 @@ class Ads extends Model
 
             $businessAd->save();
 
-        });  
+        }, 3);  
         
         $newAd = $businessAd->refresh();
 
@@ -495,7 +495,7 @@ class Ads extends Model
 
                 $adSubscription->save();
 
-            });  
+            }, 3);  
 
         }
 
@@ -537,7 +537,7 @@ class Ads extends Model
 
         $businessAd->type = $validatedData['type'];
 
-        $price_name = config('spotbie.header_banner_prod');
+        $price_name = config('spotbie.header_banner_product');
 
         switch($businessAd->type){
             case 0:
@@ -555,7 +555,7 @@ class Ads extends Model
 
             $businessAd->save();
 
-        });  
+        }, 3);  
         
         $response = array(
             'success' => true,
@@ -590,7 +590,7 @@ class Ads extends Model
                 
                 Ads::where('id', $adToDelete)->delete();
             
-            });            
+            }, 3);            
 
         }
 

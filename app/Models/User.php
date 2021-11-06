@@ -35,6 +35,10 @@ class User extends Authenticatable implements JWTSubject
     
     use Notifiable, HasFactory, SoftDeletes, Billable;  
 
+    protected $casts = [
+        'trial_ends_at' => 'date',
+    ];
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -173,7 +177,7 @@ class User extends Authenticatable implements JWTSubject
 
             $loyaltyPointBalance->save();
 
-        });
+        }, 3);
         
         $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
@@ -394,7 +398,7 @@ class User extends Authenticatable implements JWTSubject
                 DB::transaction(function () use ($user, $spotbieUser){
                     $user->save();
                     $spotbieUser->save();
-                });
+                }, 3);
             
                 //Start the session
                 Auth::login($user, $remember_me);
@@ -475,7 +479,7 @@ class User extends Authenticatable implements JWTSubject
 
                 $fbUser->save();
 
-            });            
+            }, 3);            
 
             $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
@@ -584,7 +588,7 @@ class User extends Authenticatable implements JWTSubject
                 DB::transaction(function () use ($user, $spotbieUser){
                     $user->save();
                     $spotbieUser->save();
-                });
+                }, 3);
 
                 $remember_me = $validatedData['remember_me'];
 
@@ -670,7 +674,7 @@ class User extends Authenticatable implements JWTSubject
                 $loyaltyPointBalance->save();
                 $googleUser->save();
 
-            });
+            }, 3);
 
             $newSpotbieUser = $user->spotbieUser;
 
@@ -854,7 +858,7 @@ class User extends Authenticatable implements JWTSubject
         DB::transaction(function () use ($user){
             $user->save();
             $user->spotbieUser->save();
-        });
+        }, 3);
 
         $response = array(
             'success' => true,

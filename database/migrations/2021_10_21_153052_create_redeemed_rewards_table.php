@@ -17,7 +17,7 @@ class CreateRedeemedRewardsTable extends Migration
             $table->id();
             $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('redeemer_id')->references('id')->on('users')->nullable()->default(null)->onDelete('cascade');
+            $table->unsignedBigInteger('redeemer_id')->references('id')->on('users')->nullable()->default(null);
             $table->float('amount')->nullable(false)->default(0);
             $table->float('total_spent')->nullable(false)->default(0);
             $table->float('dollar_value')->nullable(false)->default(0);

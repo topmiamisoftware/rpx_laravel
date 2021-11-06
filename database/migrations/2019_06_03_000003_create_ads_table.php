@@ -16,7 +16,7 @@ class CreateAdsTable extends Migration
         Schema::create('ads', function (Blueprint $table) {
 
             $table->id();
-            $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->nullable();
+            $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade')->nullable();
             $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->smallInteger('type');

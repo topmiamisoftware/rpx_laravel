@@ -92,7 +92,7 @@ class Reward extends Model
 
         DB::transaction(function () use ($businessReward){
             $businessReward->save();
-        });  
+        }, 3);  
 
         
         $response = array(
@@ -132,7 +132,7 @@ class Reward extends Model
 
         DB::transaction(function () use ($businessReward){
             $businessReward->save();
-        });  
+        }, 3);  
         
         $response = array(
             'success' => true,
@@ -205,7 +205,7 @@ class Reward extends Model
             
             DB::transaction(function () use ($user, $reward_id){
                 Reward::where('id', $reward_id)->delete();
-            });            
+            }, 3);            
 
         }
 

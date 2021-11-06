@@ -15,7 +15,7 @@ class CreateSubscriptionsTable extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('user_id')->references('id')->onDelete('cascade')->on('users');
             $table->string('name');
             $table->string('stripe_id')->unique();
             $table->string('stripe_status');

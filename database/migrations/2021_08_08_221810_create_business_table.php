@@ -15,6 +15,7 @@ class CreateBusinessTable extends Migration
     public function up()
     {
         Schema::create('business', function (Blueprint $table) {
+
             $table->id()->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
             $table->string('name', 25)->nullable(false);
             $table->string('slug', 200)->nullable(false);
@@ -37,6 +38,7 @@ class CreateBusinessTable extends Migration
             $table->string('qr_code_link', 135)->nullable(false);      
             $table->timestamps();
             $table->softDeletes();
+            
         });
     }
 

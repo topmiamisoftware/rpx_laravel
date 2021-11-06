@@ -14,7 +14,7 @@ class CreateGoogleUsersTable extends Migration
     public function up()
     {
         Schema::create('google_users', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->references('id')->on('users')->id()->unique();
+            $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
             $table->string('google_user_id', 100)->unique();                     
             $table->timestamps();
             $table->softDeletes();

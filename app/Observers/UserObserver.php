@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
+use Illuminate\Support\Facades\DB;
+
 use App\Models\User;
-use App\Models\WebOptions;
 use App\Models\UserLocation;
-use App\Models\ContactMe;
 
 class UserObserver
 {
@@ -20,10 +20,6 @@ class UserObserver
         //Create User Location
         $userLocation = new UserLocation();
         $userLocation->createUserLocation($user);
-
-        if($user->stripe_id == null)
-            $user->createAsStripeCustomer();
-
     }
 
     /**

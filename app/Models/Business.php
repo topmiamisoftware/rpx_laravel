@@ -107,14 +107,14 @@ class Business extends Model
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
                 $user->spotbieUser->save();
-            });
+            }, 3);
 
         } else {
 
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
-            });  
+            }, 3);  
 
         }
 

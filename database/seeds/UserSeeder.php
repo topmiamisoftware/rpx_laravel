@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
 
         $indexOfBurgers = array_search('Burgers', $placeToEatCategories);
 
-        $placeToEatCategory = json_encode($indexOfBurgers);
+        $placeToEatCategory = json_encode(array($indexOfBurgers));
 
         //Let's create 8 Burger shops so that this category may always return full paged results.
         User::factory()
