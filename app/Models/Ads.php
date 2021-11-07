@@ -38,7 +38,15 @@ class Ads extends Model
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     }
 
-    public function nearbyBusiness($loc_x, $loc_y, $categories){
+    public function spotbieUser(){
+        return $this->belongsTo('App\Models\SpotbieUser', 'business_id', 'id');
+    }
+
+    public function ad(){
+        return $this->belongsTo('App\Models\User', 'business_id', 'id');
+    }
+
+    public function nearbyBusiness($loc_x, $loc_y, $categories, $userType){
 
         return Business::select(
             'business.id', 'business.qr_code_link', 'business.name', 'business.address', 'business.categories', 'business.description', 
@@ -52,6 +60,7 @@ class Ads extends Model
             ->where('loyalty_point_balances.balance', '>', 0)
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
+        ->where('spotbie_users.user_type', '=', $userType)
         ->whereJsonContains('business.categories', $categories)
         ->whereRaw("( 
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)
@@ -72,7 +81,7 @@ class Ads extends Model
 
     }
 
-    public function nearbyBusinessList($loc_x, $loc_y, $categories){
+    public function nearbyBusinessList($loc_x, $loc_y, $categories, $userType){
 
         return Business::select(
             'business.id', 'business.qr_code_link', 'business.name', 'business.address', 'business.categories', 'business.description', 
@@ -87,6 +96,7 @@ class Ads extends Model
             ->where('loyalty_point_balances.balance', '>', 0)
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
+        ->where('spotbie_users.user_type', '=', $userType)
         ->whereJsonContains('business.categories', $categories)
         ->whereRaw("( 
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)
@@ -113,27 +123,21 @@ class Ads extends Model
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string|numeric',
             'id' => 'nullable|numeric',
+            'account_type' => 'nullable|numeric'
         ]); 
 
         if(isset($validatedData['id'])){
 
             $ad = Ads::find($validatedData['id']);
 
+            $this->addClickToAd($ad);
+
             $business = Business::find($ad->business_id);
 
             $totalRewards = count(Reward::select('business_id')
             ->where('business_id', '=', $business->id)
             ->get());
-            
-            //Add click to ad.
-            DB::transaction(function () use ($ad) {
-                
-                $ad->clicks++;
-
-                $ad->save();
-
-            }, 3);
-
+                        
             $response = array(
                 "success" => true,
                 "business" => $business,
@@ -150,7 +154,7 @@ class Ads extends Model
         $categories = json_decode($validatedData['categories']);
 
         //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
 
         $ad = Ads::
         select('uuid', 'business_id', 'type', 'name', 'description', 'images')
@@ -160,6 +164,8 @@ class Ads extends Model
         ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
+
+        $this->addViewToAd($ad);
 
         $totalRewards = count(Reward::select('business_id')
         ->where('business_id', '=', $nearbyBusiness->id)
@@ -175,6 +181,33 @@ class Ads extends Model
         return response($response);
 
     }   
+
+    public function addClickToAd(Ads $ad){
+
+        //Add click to ad.
+        DB::transaction(function () use ($ad) {
+            
+            $ad->views++;
+            $ad->clicks++;
+
+            $ad->save();
+
+        }, 3);
+
+    }
+
+    public function addViewToAd(Ads $ad){
+
+        //Add click to ad.
+        DB::transaction(function () use ($ad) {
+    
+            $ad->views++;
+
+            $ad->save();
+
+        }, 3);
+
+    }
 
     public function getByUuid(Request $request){
 
@@ -205,12 +238,15 @@ class Ads extends Model
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string|numeric',
-            'id' => 'nullable|numeric'
+            'id' => 'nullable|numeric',
+            'account_type' => 'nullable|numeric'
         ]); 
 
         if(isset($validatedData['id'])){
 
             $ad = Ads::find($validatedData['id']);
+
+            $this->addClickToAd($ad);
 
             $business = Business::find($ad->business_id);
 
@@ -234,7 +270,7 @@ class Ads extends Model
         $categories = json_decode($validatedData['categories']);
 
         //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
         
         $ad = Ads::
         select('uuid', 'business_id', 'type', 'name', 'description', 'images')
@@ -244,6 +280,8 @@ class Ads extends Model
         ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
+
+        $this->addViewToAd($ad);
 
         $totalRewards = count(Reward::select('business_id')
         ->where('business_id', '=', $nearbyBusiness->id)
@@ -266,19 +304,22 @@ class Ads extends Model
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
             'categories' => 'string',
-            'id' => 'nullable|numeric'
+            'id' => 'nullable|numeric',
+            'account_type' => 'nullable|numeric'
         ]); 
 
         if(isset($validatedData['id'])){
 
             $ad = Ads::find($validatedData['id']);
 
+            $this->addClickToAd($ad);
+
             $business = Business::find($ad->business_id);
 
             $totalRewards = count(Reward::select('business_id')
             ->where('business_id', '=', $business->id)
-            ->get());
-    
+            ->get());            
+
             $response = array(
                 "success" => true,
                 "business" => $business,
@@ -295,13 +336,15 @@ class Ads extends Model
         $categories = json_encode($validatedData['categories']);
 
         //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories);
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
 
         $ad = $this
         ->where('type', 2)
         ->orderBy('views', 'asc')
         ->limit(1)
         ->get()[0];
+
+        $this->addViewToAd($ad);
 
         $response = array(
             "success" => true,

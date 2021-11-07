@@ -30,12 +30,10 @@ class AdsFactory extends Factory
     public function definition()
     {
 
-        $randomImage = config('spotbie.spotbie_front_end_ip') . 'assets/images/def/ads/' . rand(1,9) . '.jpg';
-
         $name = $this->faker->unique()->realText(25);
         $description = $this->faker->unique()->realText(150);
 
-        $images = $randomImage;
+        $images = '';
 
         $adType = rand(0,2);
 
@@ -69,7 +67,39 @@ class AdsFactory extends Factory
 
         return $this->afterCreating(function (Ads $ad) {
             
+            $spotbieUserType = $ad->spotbieUser->user_type;
+
+            $adImage = $this->getAdsPhoto($spotbieUserType);
+
+            $ad->images = $adImage;
+
+            DB::transaction(function () use ($ad){
+                $ad->save();
+            });
+
         });
+
+    }
+
+    public function getAdsPhoto($userType){
+
+        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+
+        switch($userType){
+            case '1':
+                $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+                break;
+            case '2':
+                $businessPhotoFolder = 'assets/images/def/shopping/';
+                break;
+            case '3':
+                $businessPhotoFolder = 'assets/images/def/events/';
+                break;   
+        }
+
+        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
+
+        return $businessPhoto;
 
     }
 

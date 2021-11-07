@@ -87,7 +87,7 @@ class UserSeeder extends Seeder
             ];                        
         })
         ->hasLoyaltyPointBalance(1)
-        ->create();  
+        ->create(); 
 
         /* Account #1 */
         User::factory()
