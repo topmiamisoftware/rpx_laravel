@@ -20,8 +20,7 @@ class CreateAdsTable extends Migration
             $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->smallInteger('type');
-            $table->string('name', 50);
-            $table->string('description', 150);   
+            $table->string('name', 50); 
             $table->string('images', 500);
             $table->float('dollar_cost')->nullable(false);  
             $table->integer('clicks')->nullable(false)->default(0);

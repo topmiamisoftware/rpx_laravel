@@ -14,6 +14,7 @@ use App\Models\Reward;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Laravel\Cashier\Cashier;
 
 class Business extends Model
 {
@@ -117,6 +118,16 @@ class Business extends Model
             }, 3);  
 
         }
+
+        DB::transaction(function () use ($business, $user){
+            
+            $userBillable = Cashier::findBillable($user->stripe_id);
+            
+            if($userBillable == null){
+                $user->createAsStripeCustomer();
+            }
+
+        }, 3);  
 
         $response = array(
             'message' => 'success',

@@ -53,7 +53,6 @@ class AdsFactory extends Factory
             'uuid' => Str::uuid(),
             'type' => $adType,
             'name' => $name,
-            'description' => $description,
             'images' => $images,
             'dollar_cost' => $dollar_cost,
             'clicks' => rand(0,500),
