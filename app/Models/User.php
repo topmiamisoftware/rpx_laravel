@@ -134,11 +134,12 @@ class User extends Authenticatable implements JWTSubject
             'route' => ['required', 'string']
         ]);
         
-        if($validatedData['route'] == '/business'){
+
+        if($validatedData['route'] == '/business')
             $accountType = '0';
-        } else {
+        else
             $accountType = '4';
-        }
+
 
         $user = new User();
         
@@ -161,7 +162,9 @@ class User extends Authenticatable implements JWTSubject
 
         DB::transaction(function () use ($user, $newSpotbieUser, $loyaltyPointBalance){
 
+            $user->createAsStripeCustomer();
             $user->save();
+
             $newSpotbieUser->id = $user->id;
             $newSpotbieUser->save();
             
@@ -452,10 +455,12 @@ class User extends Authenticatable implements JWTSubject
             $newSpotbieUser->last_known_ip_address = $request->ip;            
 
             DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
-
+            
                 $user->save();
                 $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
                 $user->save();
+
+                $user->createAsStripeCustomer();
 
                 $newSpotbieUser->id = $user->id;
                 $newSpotbieUser->save();
@@ -651,6 +656,8 @@ class User extends Authenticatable implements JWTSubject
                 $user->save();
                 $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
                 $user->save();
+
+                $user->createAsStripeCustomer();
 
                 $newSpotbieUser->id = $user->id;
                 $newSpotbieUser->save();

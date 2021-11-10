@@ -42,6 +42,21 @@ class Business extends Model
 
     public function verify(Request $request){
 
+        /*
+            
+            IMPORTANT: 
+        
+            We are using this method for 3 different pourposes. 
+            1. Create the new model
+            2. Update the existing model
+            3. Verifying the business.
+
+            Please Let's split this method into three different ones so that we adhered to SOLID programming principles.
+
+            Thank you.
+
+        */
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
@@ -111,7 +126,7 @@ class Business extends Model
             }, 3);
 
         } else {
-
+            //It's a new business we are creating.
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
@@ -119,13 +134,11 @@ class Business extends Model
 
         }
 
-        DB::transaction(function () use ($business, $user){
+        DB::transaction(function () use ($user){
             
             $userBillable = Cashier::findBillable($user->stripe_id);
             
-            if($userBillable == null){
-                $user->createAsStripeCustomer();
-            }
+            if($userBillable == null) $user->createAsStripeCustomer();
 
         }, 3);  
 
