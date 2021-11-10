@@ -71,7 +71,7 @@ class Ads extends Model
                                         (POWER ( (business.loc_y - $loc_y), 2) ) 
                                     ) 
                         ) 
-                    <= 0.06
+                    <= 0.1
                 )
         )")
         ->has("rewards")  

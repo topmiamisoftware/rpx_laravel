@@ -31,7 +31,6 @@ class AdsFactory extends Factory
     {
 
         $name = $this->faker->unique()->realText(25);
-        $description = $this->faker->unique()->realText(150);
 
         $images = '';
 

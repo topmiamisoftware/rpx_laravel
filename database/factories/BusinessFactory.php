@@ -30,14 +30,16 @@ class BusinessFactory extends Factory
     public function definition()
     {
         
-        $name = $this->faker->unique()->realText(25);
+        $name = $this->faker->unique()->realText(20);
         $description = $this->faker->unique()->realText(150);        
 
-        $minX = floatval( config("spotbie.my_loc_x") ) - .06;
-        $maxX = floatval( config("spotbie.my_loc_x") ) + .06;
+        // Remember that my_loc_y && my_loc_x can be negative... You might have to change this. I didn't have time to implement this correctly. Fuck StartUps :')
 
-        $minY = floatval( config("spotbie.my_loc_y") ) - .06;
-        $maxY = floatval( config("spotbie.my_loc_y") ) + .06;
+        $minX = floatval( config("spotbie.my_loc_x") ); //Avoid Miami's Ocean XD This is too close to the water.
+        $maxX = floatval( config("spotbie.my_loc_x") ) + .1;
+
+        $minY = floatval( config("spotbie.my_loc_y") ) - .1;
+        $maxY = floatval( config("spotbie.my_loc_y") );//Avoid Miami's Ocean XD This is too close to the water.
 
         $randomLocX = $this->faker->randomFloat(6, $minX, $maxX);
 

@@ -126,7 +126,8 @@ class SurroundingsController extends Controller
         )")
         ->has("rewards")  
         ->inRandomOrder()      
-        ->paginate(8);
+        ->limit(8)
+        ->get();
 
         return $data;
 
