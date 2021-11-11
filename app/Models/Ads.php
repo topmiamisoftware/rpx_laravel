@@ -160,7 +160,18 @@ class Ads extends Model
         while($ad == null){
 
             //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type'])[0];
+            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+
+            $timesFailed = 0;
+
+            while($nearbyBusiness == null){
+                //Get a nearby business.
+                if($timesFailed == 1) $categories = -1;
+                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+                $timesFailed++;
+            }
+
+            $nearbyBusiness = $nearbyBusiness[0];
 
             $ad = Ads::
             select('uuid', 'business_id', 'type', 'name', 'images')
@@ -287,7 +298,18 @@ class Ads extends Model
         while($ad == null){
 
             //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type'])[0];
+            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+
+            $timesFailed = 0;
+
+            while($nearbyBusiness == null){
+                //Get a nearby business.
+                if($timesFailed == 1) $categories = -1;
+                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+                $timesFailed++;
+            }
+
+            $nearbyBusiness = $nearbyBusiness[0];
 
             $ad = Ads::
             select('uuid', 'business_id', 'type', 'name', 'images')
@@ -362,9 +384,20 @@ class Ads extends Model
         $ad = null;
 
         while($ad == null){
-
+            
             //Get a nearby business.
             $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+
+            $timesFailed = 0;
+
+            while($nearbyBusiness == null){
+                //Get a nearby business.
+                if($timesFailed == 1) $categories = -1;
+                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+                $timesFailed++;
+            }
+
+            $nearbyBusiness = $nearbyBusiness[0];
 
             $ad = Ads::
             select('uuid', 'business_id', 'type', 'name', 'images')
