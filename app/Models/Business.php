@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 use App\Models\Reward;
-
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
@@ -74,16 +74,18 @@ class Business extends Model
             'passkey' => 'required|string|max:6|min:6'
         ]);
 
-        $spotbieBusinessPassKey = config('spotbie.business_pass_key');
+        $user = Auth::user();
 
+        $confirmKey = 'K23' . $user->id;
+
+        $spotbieBusinessPassKey = $confirmKey;
+        
         if($spotbieBusinessPassKey !== $validatedData['passkey']){
             $response = array(
                 'message' => 'passkey_mismatch'
             ); 
             return response($response);
-        }
-
-        $user = Auth::user();
+        }        
 
         $user->spotbieUser->user_type = 1;
 
@@ -93,8 +95,7 @@ class Business extends Model
         if(!is_null($existingBusiness))
             $business = $user->business;       
         else
-            $business = new Business();
-        
+            $business = new Business();        
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];
@@ -118,33 +119,50 @@ class Business extends Model
 
         $business->qr_code_link = Str::uuid();
 
+        $giveTrial = false;
+
         if($existingBusiness){
-            
+        
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
-                $user->spotbieUser->save();
+                $user->spotbieUser->save();                
             }, 3);
 
         } else {
+
             //It's a new business we are creating.
+            $user->trial_ends_at = Carbon::now()->addDays(45);
+
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
+                $user->save();
             }, 3);  
+
+            $giveTrial = true;
 
         }
 
-        DB::transaction(function () use ($user){
+        DB::transaction(function () use ($user, $giveTrial){
             
             $userBillable = Cashier::findBillable($user->stripe_id);
             
-            if($userBillable == null) $user->createAsStripeCustomer();
+            $businessMembershipProduct = config('spotbie.business_subscription_product');
+            $businessMembershipPrice = config('spotbie.business_subscription_price');
 
-        }, 3);  
+            if($giveTrial){
+                
+                //Give the business user a free trial.
+                $userBillable->newSubscription($businessMembershipProduct, $businessMembershipPrice)->add();
+
+            }
+
+        }, 3);   
 
         $response = array(
             'message' => 'success',
-            'business' => $business
+            'business' => $business,
+            'giveTrial' => $giveTrial
         ); 
 
         return response($response);

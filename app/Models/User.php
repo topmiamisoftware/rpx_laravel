@@ -29,6 +29,7 @@ use App\Rules\Username;
 
 use Carbon\Carbon;
 use Laravel\Cashier\Billable;
+use Laravel\Cashier\Cashier;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -797,6 +798,8 @@ class User extends Authenticatable implements JWTSubject
             "username" => $user->username,
             "email" => $user->email
         );
+
+        $userBillable = Cashier::findBillable($user->stripe_id);
 
         $spotbieUserSettings = $user
         ->spotbieUser()

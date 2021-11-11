@@ -77,10 +77,44 @@ class Ads extends Model
         ->has("rewards")  
         ->inRandomOrder()      
         ->limit(1)
-        ->get()[0];
+        ->get();
 
     }
     
+    private function returnCategory($categories, $accountType){
+
+        if($categories == -1){
+            
+            $parentCategory = null;
+
+            switch($accountType){
+
+                case 1:
+                    $parentCategory = config('spotbie.my_business_categories_food');
+                    break;
+                case 2:
+                    $parentCategory = config('spotbie.my_business_categories_shopping');
+                    break;
+                case 3:
+                    $parentCategory = config('spotbie.my_business_categories_events');
+                    break;
+
+            }
+
+            $max = count($parentCategory) - 1;
+
+            $needle = $parentCategory[rand(0, $max)];
+
+            $key = array_search($needle, $parentCategory);
+
+            $categories = $key;
+
+        }
+
+        return $categories;
+
+    }
+
     public function headerBanner(Request $request){
 
         $validatedData = $request->validate([            
@@ -118,13 +152,15 @@ class Ads extends Model
         $loc_y = $validatedData['loc_y'];
 
         $categories = $validatedData['categories'];        
+        
+        $categories = $this->returnCategory($categories, $validatedData['account_type']);
 
         $ad = null;
 
         while($ad == null){
 
             //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type'])[0];
 
             $ad = Ads::
             select('uuid', 'business_id', 'type', 'name', 'images')
@@ -244,12 +280,14 @@ class Ads extends Model
 
         $categories = $validatedData['categories'];
 
+        $categories = $this->returnCategory($categories, $validatedData['account_type']);
+
         $ad = null;
 
         while($ad == null){
 
             //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type'])[0];
 
             $ad = Ads::
             select('uuid', 'business_id', 'type', 'name', 'images')
@@ -318,6 +356,8 @@ class Ads extends Model
         $loc_y = $validatedData['loc_y'];
 
         $categories = $validatedData['categories'];
+
+        $categories = $this->returnCategory($categories, $validatedData['account_type']);
 
         $ad = null;
 
