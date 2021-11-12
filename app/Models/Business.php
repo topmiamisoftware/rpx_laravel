@@ -142,23 +142,7 @@ class Business extends Model
             $giveTrial = true;
 
         }
-
-        DB::transaction(function () use ($user, $giveTrial){
-            
-            $userBillable = Cashier::findBillable($user->stripe_id);
-            
-            $businessMembershipProduct = config('spotbie.business_subscription_product');
-            $businessMembershipPrice = config('spotbie.business_subscription_price');
-
-            if($giveTrial){
-                
-                //Give the business user a free trial.
-                $userBillable->newSubscription($businessMembershipProduct, $businessMembershipPrice)->add();
-
-            }
-
-        }, 3);   
-
+        
         $response = array(
             'message' => 'success',
             'business' => $business,

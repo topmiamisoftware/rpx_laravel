@@ -87,4 +87,16 @@ class UserController extends Controller
         return $user->googleLogin($request);
     } 
 
+    public function businessMembership(User $user, Request $request){
+        return $user->businessMembership($request);
+    }
+    
+    public function membershipStatus(User $user, Request $request){
+        return $user->membershipStatus($request);
+    }
+
+    public function cancelMembership(User $user){
+        return $user->cancelMembership();
+    }
+
 }   

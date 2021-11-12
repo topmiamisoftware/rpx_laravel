@@ -5,6 +5,12 @@ use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 
+/** 
+ * 
+ * Some of these routes are inactive. I haven't had time to clean this up.
+ * 
+ */
+
 
 Route::post('sign-up',            [UserController::class, 'signUp']);
 
@@ -22,7 +28,7 @@ Route::post('logout',             [UserController::class, 'logOut'])->middleware
 
 Route::put('update',              [UserController::class, 'update'])->middleware('auth');
 
-Route::put('update_place',        [UserController::class, 'updatePlace '])->middleware('auth');
+Route::put('update_place',        [UserController::class, 'updatePlace'])->middleware('auth');
 
 Route::post('settings',           [UserController::class, 'settings'])->middleware('auth');
 
@@ -41,3 +47,9 @@ Route::post('send-code',          [UserController::class, 'sendCode']);
 Route::post('send-pass-email',    [UserController::class, 'sendPassEmail']);
 
 Route::post('check-confirm',      [UserController::class, 'checkConfirm']);
+
+Route::post('business-membership', [UserController::class, 'businessMembership']);
+
+Route::post('membership-status',   [UserController::class, 'membershipStatus']);
+
+Route::post('cancel-membership',   [UserController::class, 'cancelMembership'])->middleware('auth');

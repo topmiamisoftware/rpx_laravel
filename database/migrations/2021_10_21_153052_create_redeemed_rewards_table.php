@@ -14,6 +14,7 @@ class CreateRedeemedRewardsTable extends Migration
     public function up()
     {
         Schema::create('redeemed_rewards', function (Blueprint $table) {
+
             $table->id();
             $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('users')->onDelete('cascade');
@@ -24,6 +25,7 @@ class CreateRedeemedRewardsTable extends Migration
             $table->float('loyalty_point_dollar_percent_value')->nullable(false)->default(0);
             $table->timestamps();
             $table->softDeletes();
+            
         });
     }
 

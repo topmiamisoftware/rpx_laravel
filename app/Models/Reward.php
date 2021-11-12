@@ -145,7 +145,7 @@ class Reward extends Model
     public function index(Request $request){
 
         $validatedData = $request->validate([
-            'qrCodeLink' => 'string'
+            'qrCodeLink' => ['nullable', 'string']
         ]);
 
         $rewards = null;
@@ -174,7 +174,7 @@ class Reward extends Model
 
             $business = $user->business;
 
-            if( !is_null($business) )
+            if($business->first())
                 $rewards = $business->rewards()->select('*')->get();
             else 
                 $rewards = [];

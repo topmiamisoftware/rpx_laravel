@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         ->count($personalAccountsToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
-                'user_type' => 4,
+                'user_type' => 4,//create personal accounts
             ]; 
         })
         ->hasLoyaltyPointBalance(1)
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
         ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
-                'user_type' => 1,
+                'user_type' => 1,//create places to eat business account
             ];                        
         })
         ->hasBusiness(1)
@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
         ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
-                'user_type' => 2,
+                'user_type' => 2,//create retail stores business account
             ];                        
         })
         ->hasBusiness(1)
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
         ->count($businessesToCreate)
         ->hasSpotbieUser(1, function (array $attributes){
             return [
-                'user_type' => 3,
+                'user_type' => 3//Create events business account
             ];                        
         })
         ->hasBusiness(1)

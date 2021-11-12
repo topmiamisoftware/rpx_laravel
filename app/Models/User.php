@@ -147,6 +147,7 @@ class User extends Authenticatable implements JWTSubject
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];
         $user->password = Hash::make($validatedData['password']);
+        $user->uuid = Str::uuid();
         
         $newSpotbieUser = new SpotbieUser();
         
@@ -346,7 +347,7 @@ class User extends Authenticatable implements JWTSubject
         }
 
         //Let's deny user the FbLogin if their FB email is already in use with our system.
-        $userEmailInUse = $this->select('id', 'email')->where('email', $validatedData['email'])->first();
+        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
 
         if($userEmailInUse){
             
@@ -372,13 +373,18 @@ class User extends Authenticatable implements JWTSubject
         }   
 
         //Let's login with facebook and store the user's facebook information in DB
-        $fbUser = FacebookUser::select('id')->where('facebook_user_id', $validatedData['userID'])->first();
+        $fbUser = FacebookUser::withTrashed()->select('id')->where('facebook_user_id', $validatedData['userID'])->first();
 
         //Check if user already exists
         if($fbUser){
 
             $user_id = $fbUser->id;
-            $user = $this->select('id', 'username')->where('id', $user_id)->first();
+            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
+
+            if($user->deleted_at != null){
+                //Restore the user's old acount if deleted
+                $user->restore();                
+            }
 
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
@@ -441,6 +447,7 @@ class User extends Authenticatable implements JWTSubject
             $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
             $user->email = $validatedData['email'];
             $user->password = null;
+            $user->uuid = Str::uuid();
             
             $newSpotbieUser = new SpotbieUser();
             
@@ -530,14 +537,13 @@ class User extends Authenticatable implements JWTSubject
             'route' => ['required', 'string']
         ]);
         
-        if($validatedData['route'] == '/business'){
+        if($validatedData['route'] == '/business')
             $accountType = '0';
-        } else {
+        else
             $accountType = '4';
-        }
-
-        //Let's deny user the FbLogin if their FB email is already in use with our system.
-        $userEmailInUse = $this->select('id', 'email')->where('email', $validatedData['email'])->first();
+        
+        //Let's deny user the GoogleLogin if their Google email is already in use with our system.
+        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
         
         if($userEmailInUse){
             
@@ -564,13 +570,18 @@ class User extends Authenticatable implements JWTSubject
         }
 
         //Let's login with google and store the user's facebook information in DB
-        $googleUser = GoogleUser::select('id')->where('google_user_id', $validatedData['userID'])->first();
+        $googleUser = GoogleUser::withTrashed()->select('id')->where('google_user_id', $validatedData['userID'])->first();
 
         //Check if user already exists
         if($googleUser){
-
+            
             $user_id = $googleUser->id;
-            $user = $this->select('id', 'username')->where('id', $user_id)->first();
+            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
+
+            if($user->deleted_at != null){
+                //Restore the user's old acount if deleted
+                $user->restore();                
+            }
 
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
@@ -636,6 +647,7 @@ class User extends Authenticatable implements JWTSubject
             $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
             $user->email = $validatedData['email'];
             $user->password = null;
+            $user->uuid = Str::uuid();
             
             $newSpotbieUser = new SpotbieUser();
             
@@ -745,16 +757,27 @@ class User extends Authenticatable implements JWTSubject
         if(Auth::check()){
 
             $msg = '1';
-            $userId = Auth::user()->id;
+            $user = Auth::user();
 
+            $userId = $user->id;
+
+            if($user->stripe_id !== null){                
+                $userBillable = Cashier::findBillable($user->stripe_id);
+                $businessMembership = $userBillable->subscribed($user->id);
+            } else {
+                $businessMembership = null;
+            }
+           
         } else {
             $msg = 'not_logged_in';
+            $businessMembership = null;
             $userId = null;
         }
 
         $response = array(
             'message' => $msg,
-            'user_id' => $userId
+            'user_id' => $userId,
+            'businessMembership' => $businessMembership
         );
 
         return response($response);
@@ -799,8 +822,6 @@ class User extends Authenticatable implements JWTSubject
             "email" => $user->email
         );
 
-        $userBillable = Cashier::findBillable($user->stripe_id);
-
         $spotbieUserSettings = $user
         ->spotbieUser()
         ->select('user_type', 'first_name', 'last_name', 'phone_number')
@@ -814,16 +835,37 @@ class User extends Authenticatable implements JWTSubject
             'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
         ->get();
 
-        if(count($business) > 0) 
-            $business = $business[0];
-        else
+        $isSubscribed = false;
+        $isTrial = false;
+
+        $trialEndsAt = $user->trial_ends_at;
+
+        if( count($business) > 0){ 
+        
+            $business = $business[0];            
+            
+            $userBillable = Cashier::findBillable($user->stripe_id);
+
+            $isSubscribed = $userBillable->subscribed($user->id);
+
+            if($trialEndsAt !== null && $trialEndsAt->gt( Carbon::now() ) ) $isTrial = true;
+
+        } else {
+        
             $business = null;
+            $isSubscribed = false;
+            $isTrial = false;
+            $trialEndsAt = null;
+        }
 
         $settingsResponse = array(
-            'message' => 'success',
+            'success' => true,
             'user' => $userSettings,
             'spotbie_user' => $spotbieUserSettings,
-            'business' => $business
+            'business' => $business,
+            'is_subscribed' => $isSubscribed,
+            'is_trial' => $isTrial,
+            'trial_ends_at' => $trialEndsAt
         );
 
         return response($settingsResponse);
@@ -1041,14 +1083,38 @@ class User extends Authenticatable implements JWTSubject
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'password' => ['required', new Password]
+            'password' => ['nullable', new Password],
+            'is_social_account' => ['required', 'boolean']
         ]);            
-
-        if($user->delete()) 
-            $success = true;
-        else 
-            $success = false;
         
+        $passwordCheck = false;
+
+        if($validatedData['is_social_account'] === true){
+            $passwordCheck = true;
+        } else {
+
+            if( Hash::check($validatedData['password'], $user->password) ){
+                $passwordCheck = true;
+            } else {
+                $success = false;
+            }
+            
+        }
+
+        if($passwordCheck){
+
+            if( $user->delete() ){
+            
+                $success = true;
+                
+                //Deactivate all Stripe Memberships
+
+            
+            } else 
+                $success = false;
+
+        }
+
         $response = array(
             'success' => $success
         );
@@ -1080,7 +1146,6 @@ class User extends Authenticatable implements JWTSubject
     public function checkConfirm(Request $request){
 
     }
-
 
     public function checkIfEmailIsConfirmed($request){
 
@@ -1161,6 +1226,172 @@ class User extends Authenticatable implements JWTSubject
             return true;
         else
             return false;
+
+    }
+
+    public function payBusinessMembership(Request $request){
+
+        $validatedData = $request->validate([
+            "user" => [
+                "uuid" => ['required', 'string']
+            ],
+            "payment_method" => [
+                "id" => ['required', 'string']
+            ]
+        ]);
+
+        $userUuid = $validatedData['user']['uuid'];
+        $paymentMethodId = $validatedData['payment_method']['id'];
+
+        $userSubscription = User::where('uuid', '=', $userUuid)
+        ->first();
+
+        $price_name = config('spotbie.business_subscription_price');
+        $product_name = config('spotbie.business_subscription_product');
+
+        if($userSubscription !== null){
+
+            $userStripeId = User::find($user->id)->stripe_id;
+            
+            $user = Cashier::findBillable($userStripeId);
+
+            $user->updateDefaultPaymentMethod($paymentMethodId);
+
+            //Update the subscription if the user chose a different ad type.
+            $existingSubscription = $user->subscriptions()->where('name', '=', $userUuid)->first();
+
+            if($existingSubscription !== null ){          
+                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);                
+            } else {
+                //Create the subscription with the payment method provided by the user.
+                $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
+            }
+
+            $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
+
+            DB::transaction(function () use ($adSubscription, $newSubscription){
+
+                $user->subscription_id = $newSubscription->id;
+                $user->save();
+
+            }, 3);  
+
+        }
+
+        $businessAd = $adSubscription->refresh();
+
+        $response = array(
+            'success' => true,
+            'newAd' => $businessAd,
+            'user' => $user
+        ); 
+
+        return response($response);
+        
+    }
+
+    public function businessMembership(Request $request){
+
+        $validatedData = $request->validate([
+            "uuid" => ['required', 'string', 'max:36'],
+            "payment_method" => [
+                "id" => ['required', 'string']
+            ]
+        ]);
+
+        $uuid = $validatedData['uuid'];
+        $paymentMethodId = $validatedData['payment_method']['id'];
+
+        $price_name = config('spotbie.business_subscription_price');
+
+        $user = User::where('uuid', $uuid)->get();
+
+        if($user->first()){
+
+            $userStripeId = $user[0]->stripe_id;
+            
+            $user = Cashier::findBillable($userStripeId);
+
+            $user->updateDefaultPaymentMethod($paymentMethodId);
+
+            $existingSubscription = $user->subscriptions()->where('name', '=', $user->id)->first();
+
+            if($existingSubscription !== null ){          
+
+                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
+                
+            } else {
+
+                //Create the subscription with the payment method provided by the user.
+                $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
+
+            }
+
+            $newSubscription = $user->subscriptions()->where('name', '=', $user->id)->first();
+
+            DB::transaction(function () use ($existingSubscription, $newSubscription){
+
+                if($existingSubscription !== null){
+                    $existingSubscription->subscription_id = $newSubscription->id;
+                    $existingSubscription->save();
+                }
+
+            }, 3);  
+
+        }
+
+        $user = $user->refresh();
+
+        $response = array(
+            'success' => true,
+            'user' => $user
+        ); 
+
+        return response($response);
+
+    }
+
+    public function membershipStatus(Request $request)
+    {
+        $validatedData = $request->validate([
+            "uuid" => ['required', 'string', 'max:36']
+        ]);
+
+        $user = User::where('uuid', $validatedData['uuid'])->get();
+
+        $membershipInfo = null;
+
+        if( $user->first() )
+        {
+            $membershipInfo = Cashier::findBillable($user[0]->stripe_id);
+            
+            if($membershipInfo !== null)
+            {                
+                $membershipInfo = $membershipInfo->subscribed($user[0]->id);
+            }
+        }
+
+        $response = array(
+            'success' => true,
+            'membershipInfo' => $membershipInfo
+        ); 
+
+        return response($response);
+    }
+
+    public function cancelMembership(){
+
+        $user = Auth::user();
+
+        $userBillable = Cashier::findBillable($user->stripe_id);
+
+        $userBillable->subscription($user->id)->cancelNow();
+
+        $response = array(
+            'success' => true
+        ); 
+
+        return response($response);
 
     }
 

@@ -590,14 +590,10 @@ class Ads extends Model
             $existingSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
 
             if($existingSubscription !== null ){          
-
-                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
-                
+                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);                
             } else {
-
                 //Create the subscription with the payment method provided by the user.
                 $user->newSubscription($adSubscription->id, [$price_name] )->create($paymentMethodId);
-
             }
 
             $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
@@ -664,9 +660,7 @@ class Ads extends Model
         }
 
         DB::transaction(function () use ($businessAd){
-
             $businessAd->save();
-
         }, 3);  
         
         $response = array(
