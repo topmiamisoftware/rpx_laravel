@@ -1093,23 +1093,20 @@ class User extends Authenticatable implements JWTSubject
             $passwordCheck = true;
         } else {
 
-            if( Hash::check($validatedData['password'], $user->password) ){
+            if( Hash::check($validatedData['password'], $user->password) )
                 $passwordCheck = true;
-            } else {
+            else
                 $success = false;
-            }
             
         }
 
         if($passwordCheck){
 
-            if( $user->delete() ){
-            
-                $success = true;
-                
-                //Deactivate all Stripe Memberships
+            //Deactivate all Stripe Memberships
+            $deleteStripeMembership = $this->cancelMembership();
 
-            
+            if($deleteStripeMembership){
+                if( $user->delete() ) $success = true;
             } else 
                 $success = false;
 
@@ -1123,9 +1120,7 @@ class User extends Authenticatable implements JWTSubject
 
     }
 
-    public function activate(){
-        
-    }
+    public function activate(){}
 
     public function uniqueEmail(Request $request){
 
@@ -1314,29 +1309,8 @@ class User extends Authenticatable implements JWTSubject
 
             $user->updateDefaultPaymentMethod($paymentMethodId);
 
-            $existingSubscription = $user->subscriptions()->where('name', '=', $user->id)->first();
-
-            if($existingSubscription !== null ){          
-
-                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
-                
-            } else {
-
-                //Create the subscription with the payment method provided by the user.
-                $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
-
-            }
-
-            $newSubscription = $user->subscriptions()->where('name', '=', $user->id)->first();
-
-            DB::transaction(function () use ($existingSubscription, $newSubscription){
-
-                if($existingSubscription !== null){
-                    $existingSubscription->subscription_id = $newSubscription->id;
-                    $existingSubscription->save();
-                }
-
-            }, 3);  
+            //Create the subscription with the payment method provided by the user.
+            $newSubscription = $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId); 
 
         }
 
@@ -1384,8 +1358,23 @@ class User extends Authenticatable implements JWTSubject
         $user = Auth::user();
 
         $userBillable = Cashier::findBillable($user->stripe_id);
-
+        
         $userBillable->subscription($user->id)->cancelNow();
+
+        //We also need to cancel all of the user's ads if they have any.
+        $userAdList = Ads::withTrashed()
+        ->where('business_id', '=', $user->id)
+        ->get();
+        
+        if( $userAdList->first() )
+        {
+            foreach ( $userAdList as $userAd )
+            {            
+                if( $userBillable->subscribed($userAd->id) ) $userBillable->subscription($userAd->id)->cancelNow();
+
+                $userAd->delete();
+            }
+        }
 
         $response = array(
             'success' => true

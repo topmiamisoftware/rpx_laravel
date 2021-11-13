@@ -32,6 +32,8 @@ class Ads extends Model
 
     protected $fillable = ['business_id'];
 
+    
+
     public $table = "ads";
 
     public function business(){
@@ -44,6 +46,40 @@ class Ads extends Model
 
     public function ad(){
         return $this->belongsTo('App\Models\User', 'business_id', 'id');
+    }
+
+    public function nearbyBusinessNoCategory($loc_x, $loc_y, $userType){
+        
+        return Business::select(
+            'business.id', 'business.qr_code_link', 'business.name', 'business.address', 'business.categories', 'business.description', 
+            'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
+            'spotbie_users.user_type',
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',            
+        )
+        ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+        ->join('loyalty_point_balances', function ($join){
+            $join->on('business.id', '=', 'loyalty_point_balances.id')
+            ->where('loyalty_point_balances.balance', '>', 0)
+            ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+        })
+        ->where('spotbie_users.user_type', '=', $userType)
+        ->whereRaw("( 
+            (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+            OR (    
+                    ABS ( 
+                            SQRT    (   
+                                        (POWER ( (business.loc_x - $loc_x), 2) ) +
+                                        (POWER ( (business.loc_y - $loc_y), 2) ) 
+                                    ) 
+                        ) 
+                    <= 0.1
+                )
+        )")
+        ->has("rewards")  
+        ->inRandomOrder()      
+        ->limit(1)
+        ->get();
+
     }
 
     public function nearbyBusiness($loc_x, $loc_y, $category, $userType){
@@ -157,34 +193,29 @@ class Ads extends Model
 
         $ad = null;
 
-        while($ad == null){
+        //Get a nearby business.
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
 
-            //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+        $timesFailed = 0;
 
-            $timesFailed = 0;
-
-            while($nearbyBusiness == null){
-                //Get a nearby business.
-                if($timesFailed == 1) $categories = -1;
-                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
-                $timesFailed++;
-            }
-
-            $nearbyBusiness = $nearbyBusiness[0];
-
-            $ad = Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images')
-            ->where('type', 0)
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->where('is_live', '=', 1)
-            ->orderBy('views', 'asc')
-            ->limit(1)
-            ->get();
-
+        while( !$nearbyBusiness->first() )
+        {
+            if($timesFailed == 1) $categories = -1;
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            $timesFailed++;
         }
 
-        $ad = $ad[0];
+        $nearbyBusiness = $nearbyBusiness->first();
+
+        $ad = $this->nearbyAd($nearbyBusiness->id);
+
+        while( !$ad->first() )
+        {
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+        }
+
+        $ad = $ad->first();
 
         $this->addViewToAd($ad);
 
@@ -295,34 +326,29 @@ class Ads extends Model
 
         $ad = null;
 
-        while($ad == null){
+        //Get a nearby business.
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
 
-            //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+        $timesFailed = 0;
 
-            $timesFailed = 0;
-
-            while($nearbyBusiness == null){
-                //Get a nearby business.
-                if($timesFailed == 1) $categories = -1;
-                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
-                $timesFailed++;
-            }
-
-            $nearbyBusiness = $nearbyBusiness[0];
-
-            $ad = Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images')
-            ->where('type', 2)
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->where('is_live', '=', 1)
-            ->orderBy('views', 'asc')
-            ->limit(1)
-            ->get();
-
+        while( !$nearbyBusiness->first() )
+        {
+            if($timesFailed == 1) $categories = -1;
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            $timesFailed++;
         }
 
-        $ad = $ad[0];
+        $nearbyBusiness = $nearbyBusiness->first();
+
+        $ad = $this->nearbyAd($nearbyBusiness->id);
+
+        while( !$ad->first() )
+        {
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+        }
+
+        $ad = $ad->first();
 
         $this->addViewToAd($ad);
 
@@ -339,6 +365,18 @@ class Ads extends Model
 
         return response($response);
         
+    }
+
+    public function nearbyAd($businessId){
+        
+        return Ads::
+            select('uuid', 'business_id', 'type', 'name', 'images')
+            ->where('type', 2)
+            ->where('business_id', '=', $businessId)
+            ->where('is_live', '=', 1)
+            ->orderBy('views', 'asc')
+            ->limit(1)
+            ->get();
     }
 
     public function featuredAdList(Request $request){
@@ -383,34 +421,31 @@ class Ads extends Model
 
         $ad = null;
 
-        while($ad == null){
-            
+        //Get a nearby business.
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+
+        $timesFailed = 0;
+
+        while(!$nearbyBusiness->first()){
+
             //Get a nearby business.
-            $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
-
-            $timesFailed = 0;
-
-            while($nearbyBusiness == null){
-                //Get a nearby business.
-                if($timesFailed == 1) $categories = -1;
-                $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
-                $timesFailed++;
-            }
-
-            $nearbyBusiness = $nearbyBusiness[0];
-
-            $ad = Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images')
-            ->where('type', 1)
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->where('is_live', '=', 1)
-            ->orderBy('views', 'asc')
-            ->limit(1)
-            ->get();
+            if($timesFailed == 1) $categories = -1;
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            $timesFailed++;
 
         }
 
-        $ad = $ad[0];
+        $nearbyBusiness = $nearbyBusiness->first();
+
+        $ad = $this->nearbyAd($nearbyBusiness->id);
+
+        while( !$ad->first() )
+        {
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+        }
+
+        $ad = $ad->first();
 
         $this->addViewToAd($ad);
 
