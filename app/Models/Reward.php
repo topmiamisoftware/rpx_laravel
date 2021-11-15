@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Business;
-
 use App\Helpers\UrlHelper;
 
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Str;
+
 
 class Reward extends Model
 {
@@ -49,11 +51,11 @@ class Reward extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = '/rewards-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
 
-        Storage::put($imagePath, $newFile);
+        Storage::put($imagePath, $newFile, 'public');
 
-        $imagePath = UrlHelper::getServerUrl() . $imagePath;
+        $imagePath = Storage::url($imagePath);
 
         $response = array(
             'success' => $success,
@@ -83,6 +85,8 @@ class Reward extends Model
 
         $businessReward = new Reward();
 
+        $businessReward->uuid = Str::uuid();
+
         $businessReward->business_id = $business->id;
         $businessReward->name = $validatedData['name'];
         $businessReward->description = $validatedData['description'];
@@ -101,6 +105,54 @@ class Reward extends Model
         ); 
 
         return response($response);
+
+    }
+
+    public function claim(Request $request){
+
+        $validatedData = $request->validate([
+            'redeemableHash' => 'required|string|max:36'
+        ]);
+
+        $user = Auth::user();
+
+        $success = false;
+        $reward = null;
+
+        if($user)
+        {
+            $reward = Reward::where('uuid', $validatedData['redeemableHash'])->get()->first();
+
+            if($reward)
+            {            
+                $redeemed = new RedeemableItems();
+                $redeemed->uuid = Str::uuid();
+                $redeemed->business_id = $reward->business_id;
+                $redeemed->redeemer_id = $user->id;
+                $redeemed->total_spent = $reward->point_cost;
+                $redeemed->redeemed = true;
+                $redeemed->reward_id = $reward->id;
+
+                $redeemed->dollar_value = floatval($reward->point_cost * ($user->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100) );
+                
+                //Charge the user the LP Cost.
+                $user->loyaltyPointBalance->balance = $user->loyaltyPointBalance->balance - $reward->point_cost;
+
+                DB::transaction(function () use ($user, $redeemed){
+                    $redeemed->save();
+                    $user->loyaltyPointBalance->save();                    
+                });                                
+            }
+            $success = true;
+        }
+
+        $response = response([
+            "success" => $success,
+            "reward" => $reward,
+            "loyalty_points" => $user->loyaltyPointBalance
+        ]);
+
+        return $response;
 
     }
 

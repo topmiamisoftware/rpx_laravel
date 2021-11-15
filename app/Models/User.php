@@ -119,11 +119,11 @@ class User extends Authenticatable implements JWTSubject
     }
     
     public function redeemables(){
-        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'business_id');
+        return $this->hasMany('App\Models\RedeemableItems', 'business_id');
     }
 
     public function redeemed(){
-        return $this->hasMany('App\Models\RedeemableLoyaltyPoint', 'redeemer_id');
+        return $this->hasMany('App\Models\RedeemableItems', 'redeemer_id');
     }
 
     public function signUp(Request $request){
@@ -311,6 +311,8 @@ class User extends Authenticatable implements JWTSubject
 
             Auth::user()->save();
 
+            $user = Auth::user();
+
             $loginResponse = array(
                 'token_info' => $this->respondWithToken($token),
                 'message' => 'success',
@@ -420,6 +422,8 @@ class User extends Authenticatable implements JWTSubject
                     Auth::user()->remember_token = null;                
 
                 Auth::user()->save();
+                
+                $user = Auth::user();
 
                 $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
@@ -509,6 +513,10 @@ class User extends Authenticatable implements JWTSubject
             }
 
             Auth::user()->save();
+            
+            $user = Auth::user();
+
+            $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
             $loginResponse = array(
                 'token_info' => $this->respondWithToken($token),
@@ -621,6 +629,8 @@ class User extends Authenticatable implements JWTSubject
 
                 Auth::user()->save();
 
+                $user = Auth::user();
+
                 $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
                 $loginResponse = array(
@@ -713,6 +723,8 @@ class User extends Authenticatable implements JWTSubject
             }
 
             Auth::user()->save();
+
+            $user = Auth::user();
 
             $loginResponse = array(
                 'token_info' => $this->respondWithToken($token),

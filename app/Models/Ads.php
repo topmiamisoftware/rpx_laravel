@@ -375,8 +375,8 @@ class Ads extends Model
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
             ->orderBy('views', 'asc')
-            ->limit(1)
-            ->get();
+            ->limit(1)->get();
+
     }
 
     public function featuredAdList(Request $request){
@@ -486,11 +486,11 @@ class Ads extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = '/ad-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
 
-        Storage::put($imagePath, $newFile);
+        Storage::put($imagePath, $newFile, 'public');
 
-        $imagePath = UrlHelper::getServerUrl() . $imagePath;
+        $imagePath = Storage::url($imagePath);
 
         $response = array(
             'success' => $success,

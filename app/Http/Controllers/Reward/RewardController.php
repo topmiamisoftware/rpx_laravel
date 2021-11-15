@@ -15,6 +15,11 @@ class RewardController extends Controller
         return $reward->create($request);
     }    
 
+    public function claim(Reward $reward, Request $request)
+    {
+        return $reward->claim($request);
+    }   
+
     public function index(Reward $reward, Request $request){
         return $reward->index($request);
     }

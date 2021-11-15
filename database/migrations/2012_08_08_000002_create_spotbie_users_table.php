@@ -23,8 +23,8 @@ class CreateSpotbieUsersTable extends Migration
             $table->string('description', 500)->nullable();
             $table->string('last_known_ip_address', 256)->nullable();
             $table->string('phone_number', 35)->nullable()->default(null);
-            $table->boolean('phone_is_confirmed')->default(false);
-            $table->unsignedInteger('phone_confirm_attempts')->default(0);
+            $table->boolean('confirmed')->default(false);
+            $table->unsignedInteger('confirm_attempts')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

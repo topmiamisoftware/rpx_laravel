@@ -17,7 +17,7 @@ class CreateAdsTable extends Migration
 
             $table->id();
             $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade')->nullable();
-            $table->uuid('uuid')->nullable(false)->default(Str::uuid())->unique();
+            $table->uuid('uuid')->nullable(false)->default()->unique();
             $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->smallInteger('type');
             $table->string('name', 50); 

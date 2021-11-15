@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 
-class RedeemableLoyaltyPoint extends Model
+class RedeemableItems extends Model
 {
     
     use HasFactory;
@@ -46,7 +46,7 @@ class RedeemableLoyaltyPoint extends Model
 
             $lpToDollarRatio = $user->loyaltyPointBalance->loyalty_point_dollar_percent_value;
 
-            $redeemable = new RedeemableLoyaltyPoint();
+            $redeemable = new RedeemableItems();
             $redeemable->business_id = $user->id;
             $redeemable->uuid = Str::uuid();
             $redeemable->amount  = $validatedData['amount'];
@@ -80,7 +80,7 @@ class RedeemableLoyaltyPoint extends Model
 
         $user = Auth::user();
 
-        $redeemable = RedeemableLoyaltyPoint::select()
+        $redeemable = RedeemableItems::select()
         ->where('uuid', $validatedData['redeemableHash'])
         ->first();
 
@@ -182,39 +182,46 @@ class RedeemableLoyaltyPoint extends Model
 
         $user = Auth::user();
 
-        if($user->spotbieUser->user_type == 4){
-
+        /** 
+         * Personal account or business account.
+         */
+        if($user->spotbieUser->user_type == 4)
+        {
             $redeemedList = $user->redeemed()
-            ->join('spotbie_users', 'redeemable_loyalty_points.business_id', '=', 'spotbie_users.id')
-            ->join('users', 'redeemable_loyalty_points.business_id', '=', 'users.id')
-            ->join('business', 'redeemable_loyalty_points.business_id', '=', 'business.id')
+            ->join('spotbie_users', 'redeemable_items.business_id', '=', 'spotbie_users.id')
+            ->join('users', 'redeemable_items.business_id', '=', 'users.id')
+            ->join('business', 'redeemable_items.business_id', '=', 'business.id')
+            ->leftJoin('rewards', 'redeemable_items.reward_id', '=', 'rewards.id')
             ->select(
-                'redeemable_loyalty_points.uuid', 'redeemable_loyalty_points.business_id', 'redeemable_loyalty_points.amount', 
-                'redeemable_loyalty_points.total_spent', 'redeemable_loyalty_points.dollar_value', 'redeemable_loyalty_points.loyalty_point_dollar_percent_value', 
-                'redeemable_loyalty_points.redeemed', 'redeemable_loyalty_points.updated_at',                
+                'redeemable_items.uuid', 'redeemable_items.business_id', 'redeemable_items.amount', 
+                'redeemable_items.total_spent', 'redeemable_items.dollar_value', 'redeemable_items.loyalty_point_dollar_percent_value', 
+                'redeemable_items.redeemed', 'redeemable_items.updated_at',                
                 'spotbie_users.default_picture', 'spotbie_users.user_type',
                 'users.username',
-                'business.name', 'business.address'    
+                'business.name', 'business.address',
+                'rewards.name AS reward_name', 'rewards.images AS reward_image', 'rewards.point_cost AS point_cost'
             )       
-            ->orderBy('redeemable_loyalty_points.id', 'desc')     
+            ->orderBy('redeemable_items.id', 'desc')     
             ->paginate(5);
 
         } else {
 
-            $redeemedList = DB::table('redeemable_loyalty_points')
-            ->join('spotbie_users', 'redeemable_loyalty_points.business_id', '=', 'spotbie_users.id')
-            ->join('users', 'redeemable_loyalty_points.business_id', '=', 'users.id')
+            $redeemedList = DB::table('redeemable_items')
+            ->join('spotbie_users', 'redeemable_items.business_id', '=', 'spotbie_users.id')
+            ->join('users', 'redeemable_items.business_id', '=', 'users.id')
+            ->join('rewards', 'redeemable_items.reward_id', '=', 'rewards.id')
             ->select(
-                'redeemable_loyalty_points.uuid', 'redeemable_loyalty_points.redeemer_id', 'redeemable_loyalty_points.amount', 
-                'redeemable_loyalty_points.total_spent', 'redeemable_loyalty_points.dollar_value', 'redeemable_loyalty_points.loyalty_point_dollar_percent_value', 
-                'redeemable_loyalty_points.redeemed', 'redeemable_loyalty_points.updated_at',
+                'redeemable_items.uuid', 'redeemable_items.redeemer_id', 'redeemable_items.amount', 
+                'redeemable_items.total_spent', 'redeemable_items.dollar_value', 'redeemable_items.loyalty_point_dollar_percent_value', 
+                'redeemable_items.redeemed', 'redeemable_items.updated_at',
                 'users.username',
-                'spotbie_users.default_picture', 'spotbie_users.user_type'    
+                'spotbie_users.default_picture', 'spotbie_users.user_type',
+                'rewards.name AS reward_name', 'rewards.images AS reward_image', 'rewards.point_cost AS point_cost'
             )
-            ->where('redeemable_loyalty_points.business_id', $user->id)
-            ->orderBy('redeemable_loyalty_points.id', 'desc')
+            ->where('redeemable_items.business_id', $user->id)
+            ->orderBy('redeemable_items.id', 'desc')
             ->paginate(5);
-
+            
         }
 
         $response = array(
