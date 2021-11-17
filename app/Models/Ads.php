@@ -25,6 +25,8 @@ use Laravel\Cashier\Subscription;
 
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\App;
+
 class Ads extends Model
 {
     
@@ -207,12 +209,12 @@ class Ads extends Model
 
         $nearbyBusiness = $nearbyBusiness->first();
 
-        $ad = $this->nearbyAd($nearbyBusiness->id);
+        $ad = $this->nearbyAd($nearbyBusiness->id, 0);
 
         while( !$ad->first() )
         {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
-            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 0);
         }
 
         $ad = $ad->first();
@@ -340,12 +342,12 @@ class Ads extends Model
 
         $nearbyBusiness = $nearbyBusiness->first();
 
-        $ad = $this->nearbyAd($nearbyBusiness->id);
+        $ad = $this->nearbyAd($nearbyBusiness->id, 2);
 
         while( !$ad->first() )
         {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
-            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 2);
         }
 
         $ad = $ad->first();
@@ -367,14 +369,14 @@ class Ads extends Model
         
     }
 
-    public function nearbyAd($businessId){
+    public function nearbyAd($businessId, $type){
         
         return Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images')
-            ->where('type', 2)
+            select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
+            ->where('type', $type)
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
-            ->orderBy('views', 'asc')
+            ->inRandomOrder()
             ->limit(1)->get();
 
     }
@@ -437,12 +439,12 @@ class Ads extends Model
 
         $nearbyBusiness = $nearbyBusiness->first();
 
-        $ad = $this->nearbyAd($nearbyBusiness->id);
+        $ad = $this->nearbyAd($nearbyBusiness->id, 1);
 
         while( !$ad->first() )
         {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
-            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id);
+            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 1);
         }
 
         $ad = $ad->first();
@@ -485,12 +487,18 @@ class Ads extends Model
         
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
+        
+        $environment = App::environment();
 
-        $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
-
-        Storage::put($imagePath, $newFile, 'public');
-
-        $imagePath = Storage::url($imagePath);
+        if($environment == 'local'){
+            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
+            Storage::put($imagePath, $newFile);
+            $imagePath =  UrlHelper::getServerUrl() . $imagePath;
+        } else {
+            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
+            Storage::put($imagePath, $newFile, 'public');            
+            $imagePath = Storage::url($imagePath);
+        }
 
         $response = array(
             'success' => $success,
@@ -533,6 +541,7 @@ class Ads extends Model
         $validatedData = $request->validate([
             'name' => 'required|string|max:75|min:1',
             'images' => 'required|string|max:500|min:1',
+            'images_mobile' => 'required|string|max:500|min:1',
             'type' => 'required|numeric|max:6'
         ]);
 
@@ -548,6 +557,7 @@ class Ads extends Model
 
         $businessAd->name = $validatedData['name'];
         $businessAd->images = $validatedData['images'];
+        $businessAd->images_mobile = $validatedData['images_mobile'];
         $businessAd->type = $validatedData['type'];
         $businessAd->is_live = false;
 
@@ -662,6 +672,7 @@ class Ads extends Model
             'id' => 'required|numeric',
             'name' => 'required|string|max:75|min:1',
             'images' => 'required|string|max:500|min:1',
+            'images_mobile' => 'required|string|max:500|min:1',
             'type' => 'required|numeric|max:6'
         ]);
 
@@ -677,6 +688,7 @@ class Ads extends Model
         $businessAd->name = $validatedData['name'];
         
         $businessAd->images = $validatedData['images'];
+        $businessAd->images_mobile = $validatedData['images_mobile'];
 
         $businessAd->type = $validatedData['type'];
 

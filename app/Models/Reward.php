@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\App;
 
 class Reward extends Model
 {
@@ -51,11 +52,17 @@ class Reward extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
+        $environment = App::environment();
 
-        Storage::put($imagePath, $newFile, 'public');
-
-        $imagePath = Storage::url($imagePath);
+        if($environment == 'local'){
+            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
+            Storage::put($imagePath, $newFile);
+            $imagePath =  UrlHelper::getServerUrl() . $imagePath;
+        } else {
+            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
+            Storage::put($imagePath, $newFile, 'public');            
+            $imagePath = Storage::url($imagePath);
+        }
 
         $response = array(
             'success' => $success,

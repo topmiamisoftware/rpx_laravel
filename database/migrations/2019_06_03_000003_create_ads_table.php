@@ -22,6 +22,7 @@ class CreateAdsTable extends Migration
             $table->smallInteger('type');
             $table->string('name', 50); 
             $table->string('images', 500);
+            $table->string('images_mobile', 500);
             $table->float('dollar_cost')->nullable(false);  
             $table->integer('clicks')->nullable(false)->default(0);
             $table->integer('views')->nullable(false)->default(0);

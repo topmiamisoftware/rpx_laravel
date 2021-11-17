@@ -53,6 +53,7 @@ class AdsFactory extends Factory
             'type' => $adType,
             'name' => $name,
             'images' => $images,
+            'images_mobile' => $images,
             'dollar_cost' => $dollar_cost,
             'clicks' => rand(0,500),
             'views' => rand(0,1500),
@@ -70,6 +71,7 @@ class AdsFactory extends Factory
             $adImage = $this->getAdsPhoto($spotbieUserType);
 
             $ad->images = $adImage;
+            $ad->images_mobile = $adImage;
 
             DB::transaction(function () use ($ad){
                 $ad->save();
