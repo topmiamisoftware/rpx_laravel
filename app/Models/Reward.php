@@ -54,12 +54,12 @@ class Reward extends Model
 
         $environment = App::environment();
 
-        if($environment == 'local'){
-            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
+
+        if($environment == 'local'){        
             Storage::put($imagePath, $newFile);
             $imagePath =  UrlHelper::getServerUrl() . $imagePath;
         } else {
-            $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
             Storage::put($imagePath, $newFile, 'public');            
             $imagePath = Storage::url($imagePath);
         }
