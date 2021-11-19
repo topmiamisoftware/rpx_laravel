@@ -137,9 +137,9 @@ class User extends Authenticatable implements JWTSubject
         
 
         if($validatedData['route'] == '/business')
-            $accountType = '0';
+            $accountType = 0;
         else
-            $accountType = '4';
+            $accountType = 4;
 
 
         $user = new User();
@@ -226,10 +226,10 @@ class User extends Authenticatable implements JWTSubject
 
         if($route == '/business'){
             //Set account to not set and let the user pick their business account type later on.
-            $accountType = '0';
+            $accountType = 0;
         } else {
             //Set the account type to personal.
-            $accountType = '4';
+            $accountType = 4;
         }
 
         $login_failed = true;
@@ -356,10 +356,10 @@ class User extends Authenticatable implements JWTSubject
 
         if($validatedData['route'] == '/business'){
             //Set account to not set and let the user pick their business account type later on.
-            $accountType = '0';
+            $accountType = 0;
         } else {
             //Set the account type to personal.
-            $accountType = '4';
+            $accountType = 4;
         }
 
         //Let's deny user the FbLogin if their FB email is already in use with our system.
@@ -562,9 +562,9 @@ class User extends Authenticatable implements JWTSubject
         ]);
         
         if($validatedData['route'] == '/business')
-            $accountType = '0';
+            $accountType = 0;
         else
-            $accountType = '4';
+            $accountType = 4;
         
         //Let's deny user the GoogleLogin if their Google email is already in use with our system.
         $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
@@ -759,7 +759,7 @@ class User extends Authenticatable implements JWTSubject
 
     }
 
-    public function checkAccountType(string $accountType, User $user)
+    public function checkAccountType(int $accountType, User $user)
     {
         if($user->spotbieUser->user_type !== $accountType)
         {
