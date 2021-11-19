@@ -214,13 +214,23 @@ class User extends Authenticatable implements JWTSubject
             'login' => ['required', 'string'],
             'password' => ['required', new Password],
             'timezone' => ['required', 'string'],
-            'remember_me_opt' => ['required', 'string']
+            'remember_me_opt' => ['required', 'string'],
+            'route' => ['required', 'string']
         ]);        
 
         $login = $validatedData['login'];
         $password = $validatedData['password'];
         $timezone = $validatedData['timezone'];
         $remember_me = $validatedData['remember_me_opt'];
+        $route = $validatedData['route'];
+
+        if($route == '/business'){
+            //Set account to not set and let the user pick their business account type later on.
+            $accountType = '0';
+        } else {
+            //Set the account type to personal.
+            $accountType = '4';
+        }
 
         $login_failed = true;
         
@@ -293,6 +303,10 @@ class User extends Authenticatable implements JWTSubject
                 }
             )
             ->first();
+
+            $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+            if($accountTypeCheck !== true) return $accountTypeCheck; 
 
             if($user->stripe_id == null)
                 $user->createAsStripeCustomer();
@@ -388,13 +402,13 @@ class User extends Authenticatable implements JWTSubject
                 $user->restore();                
             }
 
-            $accountTypeCheck = $this->checkAccountType($accountType, $user);
-
-            if($accountTypeCheck !== true) return $accountTypeCheck;
-
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
                 
+                $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+                if($accountTypeCheck !== true) return $accountTypeCheck;
+
                 if($user->stripe_id == null)
                     $user->createAsStripeCustomer();
 
@@ -582,10 +596,6 @@ class User extends Authenticatable implements JWTSubject
         //Let's login with google and store the user's facebook information in DB
         $googleUser = GoogleUser::withTrashed()->select('id')->where('google_user_id', $validatedData['userID'])->first();
 
-        $accountTypeCheck = $this->checkAccountType($accountType, $user);
-
-        if(!$accountTypeCheck) return $accountTypeCheck;
-
         //Check if user already exists
         if($googleUser){
             
@@ -599,7 +609,11 @@ class User extends Authenticatable implements JWTSubject
 
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
-                
+             
+                $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+                if($accountTypeCheck !== true) return $accountTypeCheck;    
+
                 if($user->stripe_id == null)
                     $user->createAsStripeCustomer();
 
