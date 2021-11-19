@@ -388,6 +388,10 @@ class User extends Authenticatable implements JWTSubject
                 $user->restore();                
             }
 
+            $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+            if($accountTypeCheck !== true) return $accountTypeCheck;
+
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
                 
@@ -498,8 +502,6 @@ class User extends Authenticatable implements JWTSubject
 
             }, 3);            
 
-            $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
             //Start the session
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
@@ -516,7 +518,7 @@ class User extends Authenticatable implements JWTSubject
             
             $user = Auth::user();
 
-            $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
+            $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
             $loginResponse = array(
                 'token_info' => $this->respondWithToken($token),
@@ -579,6 +581,10 @@ class User extends Authenticatable implements JWTSubject
 
         //Let's login with google and store the user's facebook information in DB
         $googleUser = GoogleUser::withTrashed()->select('id')->where('google_user_id', $validatedData['userID'])->first();
+
+        $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+        if(!$accountTypeCheck) return $accountTypeCheck;
 
         //Check if user already exists
         if($googleUser){
@@ -737,6 +743,18 @@ class User extends Authenticatable implements JWTSubject
 
         return response($loginResponse);
 
+    }
+
+    public function checkAccountType(string $accountType, User $user)
+    {
+        if($user->spotbieUser->user_type !== $accountType)
+        {
+            return response([
+                "message" => "wrong_account_type"
+            ]);
+        } else {
+            return true;
+        }
     }
 
     public function logOut(Request $request){
