@@ -761,7 +761,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function checkAccountType(int $accountType, User $user)
     {
-        if($user->spotbieUser->user_type !== $accountType)
+        if( ($user->spotbieUser->user_type !== $accountType) &&
+            $accountType !== 0
+        ){
+            return true;
+        } else if($user->spotbieUser->user_type !== $accountType)
         {
             return response([
                 "message" => "wrong_account_type",
