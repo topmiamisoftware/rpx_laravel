@@ -256,7 +256,7 @@ class User extends Authenticatable implements JWTSubject
         )
         ->where('password', null)
         ->first();
-        
+
         if($checkForSocialNetworkAccount){
 
             $googleUserExists = GoogleUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();       
@@ -764,7 +764,9 @@ class User extends Authenticatable implements JWTSubject
         if($user->spotbieUser->user_type !== $accountType)
         {
             return response([
-                "message" => "wrong_account_type"
+                "message" => "wrong_account_type",
+                "account_type" => $accountType,
+                "sb_acc_type" => $user->spotbieUser->user_type
             ]);
         } else {
             return true;
