@@ -142,8 +142,21 @@ class Reward extends Model
 
                 $redeemed->dollar_value = floatval($reward->point_cost * ($user->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100) );
                 
+
+                //Check if the user has enough LP to claim this reward.
+                $balanceAfterRedeeming = $user->loyaltyPointBalance->balance - $reward->point_cost;
+
+                if($balanceAfterRedeeming < 0){
+                    //Deny the transaction.
+                    $response = response([
+                        "success" => false,
+                        "message" => "Not enough Loyalty Points in your account."
+                    ]);            
+                    return $response;
+                }
+
                 //Charge the user the LP Cost.
-                $user->loyaltyPointBalance->balance = $user->loyaltyPointBalance->balance - $reward->point_cost;
+                $user->loyaltyPointBalance->balance = $balanceAfterRedeeming;
 
                 DB::transaction(function () use ($user, $redeemed){
                     $redeemed->save();
