@@ -51,7 +51,7 @@ class Business extends Model
             2. Update the existing model
             3. Verifying the business.
 
-            Please Let's split this method into three different ones so that we adhered to SOLID programming principles.
+            Please Let's split this method into three different ones so that we adhere to SOLID programming principles.
 
             Thank you.
 
@@ -114,7 +114,7 @@ class Business extends Model
         $business->photo = $validatedData['photo'];
         $business->loc_x = $validatedData['loc_x'];
         $business->loc_y = $validatedData['loc_y'];
-        $business->categories = json_encode($validatedData['categories']);
+        $business->categories = $validatedData['categories'];
         $business->is_verified = 1;
 
         $business->qr_code_link = Str::uuid();
