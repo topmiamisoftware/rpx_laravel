@@ -23,7 +23,8 @@ return [
                             'https://localhost:4200',
                             'https://spotbie-master.netlify.app',
                             'https://spotbie-staging.netlify.app',
-                            'https://192.168.1.65:4200'
+                            'https://192.168.1.65:4200',
+                            'https://192.168.1.64:4200'
                         ],
 
     'allowed_origins_patterns' => [],

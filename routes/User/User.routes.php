@@ -18,6 +18,8 @@ Route::post('check-user-auth',    [UserController::class, 'checkAuth']);
 
 Route::post('login',              [UserController::class, 'logIn']);
 
+Route::post('apple-login',        [UserController::class, 'appleLogIn']);
+
 Route::post('fb-login',           [UserController::class, 'facebookLogIn']);
 
 Route::post('google-login',       [UserController::class, 'googleLogIn']);

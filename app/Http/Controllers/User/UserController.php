@@ -87,6 +87,10 @@ class UserController extends Controller
         return $user->googleLogin($request);
     } 
 
+    public function appleLogin(User $user, Request $request){
+        return $user->appleLogin($request);
+    }
+
     public function businessMembership(User $user, Request $request){
         return $user->businessMembership($request);
     }

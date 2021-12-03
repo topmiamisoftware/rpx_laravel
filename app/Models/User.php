@@ -268,6 +268,15 @@ class User extends Authenticatable implements JWTSubject
                 return response($loginResponse);
             }
             
+            $appleUserExists = AppleUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();       
+
+            if($appleUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_apple_account'
+                );
+                return response($loginResponse);
+            }
+
             $facebookUserExists = FacebookUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();
             if($facebookUserExists){
                 $loginResponse = array(
@@ -376,6 +385,15 @@ class User extends Authenticatable implements JWTSubject
                 return response($loginResponse);
             } 
                         
+            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
+
+            if($appleUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_apple_account'
+                ); 
+                return response($loginResponse);
+            } 
+
             $facebookUserExists = FacebookUser::select('id')->where('id', $userEmailInUse->id)->first();
 
             if(!$facebookUserExists){
@@ -581,6 +599,15 @@ class User extends Authenticatable implements JWTSubject
                 return response($loginResponse);
             }
 
+            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
+
+            if($appleUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_apple_account'
+                ); 
+                return response($loginResponse);
+            }
+
             $googleUserExists = GoogleUser::select('id')->where('id', $userEmailInUse->id)->first();
 
             if(!$googleUserExists){
@@ -745,6 +772,221 @@ class User extends Authenticatable implements JWTSubject
             Auth::user()->save();
 
             $user = Auth::user();
+
+            $loginResponse = array(
+                'token_info' => $this->respondWithToken($token),
+                'message' => 'success',
+                'user' => $user,
+                'spotbie_user' => $newSpotbieUser
+            );    
+
+        }
+
+        return response($loginResponse);
+
+    }
+
+    public function appleLogin(Request $request){
+
+        $validatedData = $request->validate([
+            'userID' => ['required', 'string'],
+            'firstName' => ['required', new FirstName],
+            'lastName' => ['required', new LastName],
+            'email' => ['required', 'email'],
+            'photoUrl' => ['required', 'string'],
+            'remember_me' => ['required', 'string'],
+            'route' => ['required', 'string']
+        ]);
+        
+        $remember_me = $validatedData['remember_me'];
+
+        if($validatedData['route'] == '/business'){
+            //Set account to not set and let the user pick their business account type later on.
+            $accountType = 0;
+        } else {
+            //Set the account type to personal.
+            $accountType = 4;
+        }
+
+        //Let's deny user the FbLogin if their FB email is already in use with our system.
+        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
+
+        if($userEmailInUse){
+            
+            $googleUserExists = GoogleUser::select('id')->where('id', $userEmailInUse->id)->first();
+
+            if($googleUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_google_account'
+                ); 
+                return response($loginResponse);
+            } 
+
+            $fbUserExists = FacebookUser::select('id')->where('id', $userEmailInUse->id)->first();
+
+            if($fbUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_fb_account'
+                ); 
+                return response($loginResponse);
+            } 
+
+            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
+
+            if(!$appleUserExists){
+                $loginResponse = array(
+                    'message' => 'spotbie_account'
+                ); 
+    
+                return response($loginResponse);
+            }
+
+        }   
+
+        //Let's login with apple and store the user's apple information in DB
+        $appleUser = AppleUser::withTrashed()->select('id')->where('apple_user_id', $validatedData['userID'])->first();
+
+        //Check if user already exists
+        if($appleUser){
+
+            $user_id = $appleUser->id;
+            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
+
+            if($user->deleted_at != null){
+                //Restore the user's old acount if deleted
+                $user->restore();                
+            }
+
+            //If user exists, let's update their facebook information and log them in to SpotBie
+            if($user){
+                
+                $accountTypeCheck = $this->checkAccountType($accountType, $user);
+
+                if($accountTypeCheck !== true) return $accountTypeCheck;
+
+                if($user->stripe_id == null)
+                    $user->createAsStripeCustomer();
+
+                $user->email = $validatedData['email'];
+
+                $spotbieUser = $user->spotbieUser;
+                
+                $spotbieUser->first_name = $validatedData['firstName'];
+                $spotbieUser->last_name = $validatedData['lastName'];
+
+                $spotbieUser->default_picture = $validatedData['photoUrl'];
+
+                $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+
+                $spotbieUser->last_known_ip_address = $request->ip;
+
+                DB::transaction(function () use ($user, $spotbieUser){
+                    $user->save();
+                    $spotbieUser->save();
+                }, 3);
+            
+                //Start the session
+                Auth::login($user, $remember_me);
+                $token = Auth::refresh();
+                
+                if($remember_me == '1')
+                    Auth::user()->remember_token = $token;
+                else
+                    Auth::user()->remember_token = null;                
+
+                Auth::user()->save();
+                
+                $user = Auth::user();
+
+                $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
+
+                $loginResponse = array(
+                    'token_info' => $this->respondWithToken($token),
+                    'message' => 'success',
+                    'user' => $user,
+                    'spotbie_user' => $spotbieUser
+                );   
+
+            } else {
+                
+                $loginResponse = array(
+                    'message' => 'really_messed_up_error'
+                );    
+
+            }
+            
+        } else {
+
+            //If user doesn't exists, let's create their facebook and spotbie account, then log them in.
+            $user = new User();
+            
+            $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
+            $user->email = $validatedData['email'];
+            $user->password = null;
+            $user->uuid = Str::uuid();
+            
+            $newSpotbieUser = new SpotbieUser();
+            
+            $newSpotbieUser->first_name = $validatedData['firstName'];
+            $newSpotbieUser->last_name = $validatedData['lastName'];
+            $newSpotbieUser->user_type = $accountType;
+            $newSpotbieUser->default_picture = $validatedData['photoUrl'];
+
+            $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+            $description = "Hello my name is $fullName. Welcome to my Spotbie profile."; 
+
+            $newSpotbieUser->description = $description;
+            $newSpotbieUser->last_known_ip_address = $request->ip;            
+
+            DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
+            
+                $user->save();
+                $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
+                $user->save();
+
+                $user->createAsStripeCustomer();
+
+                $newSpotbieUser->id = $user->id;
+                $newSpotbieUser->save();
+
+                $fbUser = new FacebookUser();
+
+                $fbUser->facebook_user_id = $validatedData["userID"];
+                $fbUser->id = $user->id;
+
+                $loyaltyPointBalance = new LoyaltyPointBalance();
+                $loyaltyPointBalance->id = $user->id;
+                $loyaltyPointBalance->balance = 0;
+
+                if( $newSpotbieUser->user_type == '0')
+                {
+                    $loyaltyPointBalance->reset_balance = 0;
+                    $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
+                }
+
+                $loyaltyPointBalance->save();
+
+                $fbUser->save();
+
+            }, 3);            
+
+            //Start the session
+            Auth::login($user, $remember_me);
+            $token = Auth::refresh();
+            
+            $this->sendConfirmationEmail();
+
+            if($remember_me == '1'){
+                Auth::user()->remember_token = $token;
+            } else {
+                Auth::user()->remember_token = null;
+            }
+
+            Auth::user()->save();
+            
+            $user = Auth::user();
+
+            $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
             $loginResponse = array(
                 'token_info' => $this->respondWithToken($token),
