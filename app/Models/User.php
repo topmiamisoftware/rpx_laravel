@@ -790,13 +790,13 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'userID' => ['required', 'string'],
-            'firstName' => ['required', new FirstName],
-            'lastName' => ['required', new LastName],
-            'email' => ['required', 'email'],
+            'firstName' => ['nullable', new FirstName],
+            'lastName' => ['nullable', new LastName],
+            'email' => ['nullable', 'email'],
             'remember_me' => ['required', 'string'],
             'route' => ['required', 'string']
         ]);
-        
+
         $remember_me = $validatedData['remember_me'];
 
         if($validatedData['route'] == '/business'){
