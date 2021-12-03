@@ -873,8 +873,6 @@ class User extends Authenticatable implements JWTSubject
                 $spotbieUser->first_name = $validatedData['firstName'];
                 $spotbieUser->last_name = $validatedData['lastName'];
 
-                $spotbieUser->default_picture = $validatedData['photoUrl'];
-
                 $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
 
                 $spotbieUser->last_known_ip_address = $request->ip;
