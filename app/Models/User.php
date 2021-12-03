@@ -866,14 +866,18 @@ class User extends Authenticatable implements JWTSubject
                 if($user->stripe_id == null)
                     $user->createAsStripeCustomer();
 
-                $user->email = $validatedData['email'];
-
+                if($validatedData['email']){
+                    $user->email = $validatedData['email'];
+                }
+                
                 $spotbieUser = $user->spotbieUser;
                 
-                $spotbieUser->first_name = $validatedData['firstName'];
-                $spotbieUser->last_name = $validatedData['lastName'];
-
-                $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+                if($validatedData['email']){
+                    $spotbieUser->first_name = $validatedData['firstName'];
+                    $spotbieUser->last_name = $validatedData['lastName'];
+    
+                    $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+                }
 
                 $spotbieUser->last_known_ip_address = $request->ip;
 
