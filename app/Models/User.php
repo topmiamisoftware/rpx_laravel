@@ -793,7 +793,6 @@ class User extends Authenticatable implements JWTSubject
             'firstName' => ['required', new FirstName],
             'lastName' => ['required', new LastName],
             'email' => ['required', 'email'],
-            'photoUrl' => ['required', 'string'],
             'remember_me' => ['required', 'string'],
             'route' => ['required', 'string']
         ]);
