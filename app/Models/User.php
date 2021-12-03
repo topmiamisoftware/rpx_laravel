@@ -914,7 +914,7 @@ class User extends Authenticatable implements JWTSubject
             
         } else {
 
-            //If user doesn't exists, let's create their facebook and spotbie account, then log them in.
+            //If user doesn't exists, let's create their Apple and spotbie account, then log them in.
             $user = new User();
             
             $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
@@ -945,10 +945,10 @@ class User extends Authenticatable implements JWTSubject
                 $newSpotbieUser->id = $user->id;
                 $newSpotbieUser->save();
 
-                $fbUser = new FacebookUser();
+                $appleUser = new AppleUser();
 
-                $fbUser->facebook_user_id = $validatedData["userID"];
-                $fbUser->id = $user->id;
+                $appleUser->apple_user_id = $validatedData["userID"];
+                $appleUser->id = $user->id;
 
                 $loyaltyPointBalance = new LoyaltyPointBalance();
                 $loyaltyPointBalance->id = $user->id;
@@ -962,7 +962,7 @@ class User extends Authenticatable implements JWTSubject
 
                 $loyaltyPointBalance->save();
 
-                $fbUser->save();
+                $appleUser->save();
 
             }, 3);            
 
