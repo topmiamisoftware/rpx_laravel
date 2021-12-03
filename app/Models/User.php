@@ -927,7 +927,6 @@ class User extends Authenticatable implements JWTSubject
             $newSpotbieUser->first_name = $validatedData['firstName'];
             $newSpotbieUser->last_name = $validatedData['lastName'];
             $newSpotbieUser->user_type = $accountType;
-            $newSpotbieUser->default_picture = $validatedData['photoUrl'];
 
             $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
             $description = "Hello my name is $fullName. Welcome to my Spotbie profile."; 
