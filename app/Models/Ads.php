@@ -466,7 +466,6 @@ class Ads extends Model
 
     }   
 
-
     public function uploadMedia(Request $request){
 
         $success = true;
