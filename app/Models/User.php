@@ -629,7 +629,7 @@ class User extends Authenticatable implements JWTSubject
             $user_id = $googleUser->id;
             $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
 
-            if($user->deleted_at != null){
+            if($user && $user->deleted_at != null){
                 //Restore the user's old acount if deleted
                 $user->restore();                
             }
