@@ -620,7 +620,7 @@ class User extends Authenticatable implements JWTSubject
 
         }
 
-        //Let's login with google and store the user's facebook information in DB
+        //Let's login with google and store the user's Google information in DB
         $googleUser = GoogleUser::withTrashed()->select('id')->where('google_user_id', $validatedData['userID'])->first();
 
         //Check if user already exists
@@ -633,6 +633,8 @@ class User extends Authenticatable implements JWTSubject
                 //Restore the user's old acount if deleted
                 $user->restore();                
             }
+
+            $user = $this->select('id', 'username')->where('id', $user_id)->first();
 
             //If user exists, let's update their facebook information and log them in to SpotBie
             if($user){
