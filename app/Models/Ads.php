@@ -441,19 +441,40 @@ class Ads extends Model
 
         $ad = $this->nearbyAd($nearbyBusiness->id, 1);
 
+        $j = 10;
+        $k = 0;
         while( !$ad->first() )
         {
+            if($k == 10) break;
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
             if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 1);
+            $k++;
         }
 
-        $ad = $ad->first();
+        if($ad == null){
+            $response = array(
+                "success" => true,
+                "business" => null,
+                "ad" => null,
+                "totalRewards" => $totalRewards
+            );
+    
+            return response($response);
+        } else {
+            $ad = $ad->first();
+        }        
 
         $this->addViewToAd($ad);
 
-        $totalRewards = count(Reward::select('business_id')
+        $rewardGet = Reward::select('business_id')
         ->where('business_id', '=', $nearbyBusiness->id)
-        ->get());
+        ->get();
+
+        if($rewardGet == null){
+            $totalRewards = 0;
+        } else {
+            $totalRewards = count($rewardGet);
+        }
 
         $response = array(
             "success" => true,
