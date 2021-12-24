@@ -2,7 +2,8 @@
 
 namespace App\Mail\User;
 
-use Auth;
+use App\Models\SpotbieUser;
+use App\Models\User;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,14 +14,18 @@ class AccountCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $user;
+    protected $spotbieUser;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(User $user, SpotbieUser $spotbieUser)
     {
-        //
+        $this->user = $user;
+        $this->spotbieUser = $spotbieUser;
     }
 
     /**
@@ -30,7 +35,11 @@ class AccountCreated extends Mailable
      */
     public function build()
     {   
-        $user = Auth::user();
-        return $this->from('welcome@spotbie.com')->view('account.created', [$user]);
+        return $this->from('welcome@spotbie.com', 'SpotBie.com')
+                    ->subject('Welcome to SpotBie!')
+                    ->markdown('emails.account_created', [
+                        'user' => $this->user,
+                        'spotbieUser' => $this->spotbieUser,
+                    ]);
     }
 }

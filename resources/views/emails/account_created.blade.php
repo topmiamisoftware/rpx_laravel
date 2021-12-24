@@ -1,26 +1,125 @@
 <html>
 
-    <body>
-        
-    <p>
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
-        Hey <?php echo $user->username; ?>!
+        <!-- Styles -->
+        <style>
 
-        <br/><br/>
-
-        <?php 
-        
-            if($spotbieUser->first_name !== ''){
-                echo $spotbieUser->first_name . " " . $spotbieUser->last_name; 
-            } else {
-                echo $user->username;
+            html,
+            body {
+                min-width: 100%;
+                width: 100%;
+                color: white;
+                font-family: 'Nunito', sans-serif;
+                font-weight: 200;
+                height: 100vh;
+                margin: 0;
+                padding: 40px;
             }
-        
-        ?>, you have signed up to SpotBie.
+            .sbLogo{
+                display: block;
+                position: relative;
+                margin: 0 auto;
+                margin-top: 20px;
+                margin-bottom: 40px;
+                max-width: 350px;
+                width: 350px;
+                border-radius: 10px;
+            }
+            .full-height {
+                height: 100vh;
+            }
 
-        Just <a href='https://spotbie.com/<?php echo $user->confirm; ?>'>click on this link</a> to log-in.
+            .flex-center {
+                position: relative;
+                margin: 0 auto;
+                align-items: center;
+                display: flex;
+                padding: 40px;
+                border-radius: 10px;
+                justify-content: center;
+                max-width: 650px;
+                width: 96%;
+                color: white;
+                background-color: #32303d;
+            }
 
-    </p>
+            .position-ref {
+                position: relative;
+            }
+
+            a {
+                color: #64e56f;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+
+            .m-b-md {
+                margin-bottom: 30px;
+            }
+
+            .bottomLinks  a {
+                padding-left: 10px;
+                padding-right: 10px;
+                color: #2fed85;
+            }
+
+        </style>
+
+    <body>
+    
+        <img class='sbLogo' src='https://spotbie-master.netlify.app/assets/images/spotbie_logo_header.png' />
+
+        <div class='flex-center'>
+
+            <p>
+
+                <?php  echo "Hey ". $user->username . "!"; ?>
+
+                <br/><br/>
+
+                <?php 
+            
+                    if($spotbieUser->first_name !== '')
+                        echo $spotbieUser->first_name . " " . $spotbieUser->last_name; 
+                    else
+                        echo $user->username;                
+                
+                ?>, you have signed up to SpotBie.
+                
+                <br/><br/>
+                
+                <?php
+
+                    //Let's use this page to redirect the user to log in from their sign up welcome e-mail.
+                    $userPage = 'home';
+
+                    //The user is not of type personal.
+                    if($spotbieUser->user_type != 4)
+                        $userPage = 'business';
+                    else 
+                        $userPage = 'home';
+                    
+
+                ?>
+
+                Just <a href='https://spotbie.com/<?php echo $userPage; ?>?c=123456'>click on this link</a> to log-in.
+
+            </p>
+
+        </div>
+
+        <div class="flex-center bottomLinks" style="margin-top: 20px; text-align: center; padding-top: 20px; padding-bottom: 0px;">
+            <p>
+                <a href="https://spotbie.com/">HOME</a>
+
+                <a href="https://spotbie.com/business">BUSINESS</a>
+            </p>                       
+        </div>
 
     </body>
 

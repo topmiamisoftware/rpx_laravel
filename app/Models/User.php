@@ -5,6 +5,8 @@ namespace App\Models;
 use Auth;
 use Mail;
 
+use App\Mail\User\AccountCreated;
+
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -1101,12 +1103,8 @@ class User extends Authenticatable implements JWTSubject
         $user = Auth::user();
         $spotbieUser = $user->spotbieUser()->first();
 
-        Mail::send('emails.account_created', ['user' => $user, 'spotbieUser' => $spotbieUser], function ($m) use ($user) {
-
-            $m->from('welcome@spotbie.com', 'SpotBie.com');
-            $m->to($user->email, $user->username)->subject('Welcome to SpotBie!');
-        
-        });
+        Mail::to($user->email, $user->username)
+        ->send(new AccountCreated($user, $spotbieUser) );
 
     }
 
