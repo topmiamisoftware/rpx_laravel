@@ -68,6 +68,19 @@
                 color: #2fed85;
             }
 
+            .bottomLinks{
+                max-width: 350px;
+                width: 96%;  
+                padding-top: 20px;
+                padding-bottom: 20px;              
+            }
+
+            .bottomLinks  p {                    
+                position: relative;
+                display: block;
+                margin: 0 auto; 
+            }
+
         </style>
 
     <body>
@@ -113,7 +126,7 @@
 
         </div>
 
-        <div class="flex-center bottomLinks" style="margin-top: 20px; text-align: center; padding-top: 20px; padding-bottom: 0px;">
+        <div class="flex-center bottomLinks" style="margin-top: 20px; text-align: center;">
             <p>
                 <a href="https://spotbie.com/">HOME</a>
 

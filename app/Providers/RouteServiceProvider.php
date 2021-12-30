@@ -77,4 +77,18 @@ class RouteServiceProvider extends ServiceProvider
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
     }
+
+    /**
+     * Configure the rate limiters for the application.
+     *
+     * @return void
+     */
+    protected function configureRateLimiting()
+    {
+        RateLimiter::for('sign-up', function (Request $request) {
+            return Limit::perMinute(5)->response(function () {
+                return response('Timeout exceeded.', 429);
+            });
+        });
+    }    
 }
