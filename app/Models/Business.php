@@ -71,7 +71,7 @@ class Business extends Model
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
             'categories' => 'required|string',
-            'passkey' => 'required|string|max:6|min:6'
+            'passkey' => 'required|string|max:7|min:4'
         ]);
 
         $user = Auth::user();
