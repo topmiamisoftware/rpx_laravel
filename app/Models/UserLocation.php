@@ -47,8 +47,8 @@ class UserLocation extends Model
             'loc_y' => 'required|max:180|min:-180|numeric',
         ]);
 
-        $user->userLocation->loc_x = $validatedData['loc_x'];
-        $user->userLocation->loc_y = $validatedData['loc_y'];
+        $user->userLocation->loc_x = round($validatedData['loc_x'], 6);
+        $user->userLocation->loc_y = round($validatedData['loc_y'], 6);
 
         if($user->userLocation->save()){
             $msg = "success";
