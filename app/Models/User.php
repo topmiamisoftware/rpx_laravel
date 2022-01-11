@@ -355,8 +355,8 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'userID' => ['required', 'string'],
-            'firstName' => ['required', new FirstName],
-            'lastName' => ['required', new LastName],
+            'firstName' => ['required', 'string'],
+            'lastName' => ['required', 'string'],
             'email' => ['required', 'email'],
             'photoUrl' => ['required', 'string'],
             'remember_me' => ['required', 'string'],
@@ -573,8 +573,8 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'userID' => ['required', 'string'],
-            'firstName' => ['required', new FirstName],
-            'lastName' => ['required', new LastName],
+            'firstName' => ['required', 'string'],
+            'lastName' => ['required', 'string'],
             'email' => ['required', 'email'],
             'photoUrl' => ['required', 'string'],
             'remember_me' => ['required', 'string'],
@@ -794,8 +794,8 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'userID' => ['required', 'string'],
-            'firstName' => ['nullable', new FirstName],
-            'lastName' => ['nullable', new LastName],
+            'firstName' => ['required', 'string'],
+            'lastName' => ['required', 'string'],
             'email' => ['nullable', 'email'],
             'remember_me' => ['required', 'string'],
             'route' => ['required', 'string']
