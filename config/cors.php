@@ -19,10 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    //'allowed_origins' => ['*'],
 
     /*
-    Uncomment this for dev and make sure you include your localhost in this list.
+    Uncomment this for dev and make sure you include your localhost in this list.*/
     'allowed_origins' => ['https://spotbie.com', 
                             'https://localhost:4200',
                             'https://spotbie-master.netlify.app',
@@ -30,7 +30,7 @@ return [
                             'https://192.168.1.65:4200',
                             'https://192.168.1.64:4200'
                         ],
-    */
+    
 
     'allowed_origins_patterns' => [],
 
