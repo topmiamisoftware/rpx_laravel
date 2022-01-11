@@ -1655,9 +1655,10 @@ class User extends Authenticatable implements JWTSubject
 
         $userBillable = Cashier::findBillable($user->stripe_id);
         
-        if($userBillable !== null)
+        if($userBillable !== null){
             $userBillable->subscription($user->id)->cancelNow();
-
+        }
+        
         //We also need to cancel all of the user's ads if they have any.
         $userAdList = Ads::withTrashed()
         ->where('business_id', '=', $user->id)
