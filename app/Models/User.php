@@ -794,8 +794,8 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'userID' => ['required', 'string'],
-            'firstName' => ['required', 'string'],
-            'lastName' => ['required', 'string'],
+            'firstName' => ['nullable', 'string'],
+            'lastName' => ['nullable', 'string'],
             'email' => ['nullable', 'email'],
             'remember_me' => ['required', 'string'],
             'route' => ['required', 'string']
