@@ -31,6 +31,7 @@ return [
     
 
     'allowed_origins' => ['https://spotbie.com',
+                            'https://demo.spotbie.com',
                             'https://spotbie-demo.netlify.app',
                             'https://spotbie-master.netlify.app',
                             'https://spotbie-staging.netlify.app'
