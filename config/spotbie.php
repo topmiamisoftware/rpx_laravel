@@ -44,7 +44,7 @@
         'my_business_categories_shopping' => $shoppingCategories,
         'my_business_categories_events' => $eventCategories,        
 
-        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie-staging.netlify.app/'),
+        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotie.com/'),
 
         'header_banner_product' => env('SPOTBIE_HEADER_AD_STRIPE_PRODUCT'),
         'header_banner_price' => env('SPOTBIE_HEADER_AD_PRICE'),
