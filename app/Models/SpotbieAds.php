@@ -18,10 +18,10 @@ class SpotbieAds extends Model
                 $adId = rand(1, 2);
                 break;
             case 1:
-                $adId = rand(1, 2);
+                $adId = rand(3, 6);
                 break;
             case 2:
-                $adId = rand(3, 4);
+                $adId = rand(1, 2);
                 break;
         }
 

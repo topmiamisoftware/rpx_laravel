@@ -54,7 +54,7 @@ class Ads extends Model
             'business.id', 'business.qr_code_link', 'business.name', 'business.address', 'business.categories', 'business.description', 
             'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
             'spotbie_users.user_type',
-            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',            
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'          
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', function ($join){
@@ -87,7 +87,7 @@ class Ads extends Model
             'business.id', 'business.qr_code_link', 'business.name', 'business.address', 'business.categories', 'business.description', 
             'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
             'spotbie_users.user_type',
-            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',            
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'           
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', function ($join){
@@ -204,14 +204,15 @@ class Ads extends Model
 
         } else {
 
-            $nearbyBusiness = $nearbyBusiness->first();
-
             $ad = $this->nearbyAd($nearbyBusiness->id, 0);            
 
             while( !$ad->first() )
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 0);
+                if($nearbyBusiness->first()) {
+                    $nearbyBusiness = $nearbyBusiness->first();
+                    $ad = $this->nearbyAd($nearbyBusiness->first()->id, 0);
+                }
             }
 
             $ad = $ad->first();
@@ -230,7 +231,7 @@ class Ads extends Model
             "totalRewards" => $totalRewards
         );
 
-        return response($response);
+        return $response;
     }   
 
     public function getSpotbieAd($adType){
@@ -345,8 +346,6 @@ class Ads extends Model
             $totalRewards = 0;
 
         } else {
-
-            $nearbyBusiness = $nearbyBusiness->first();
 
             $ad = $this->nearbyAd($nearbyBusiness->id, 0);            
 

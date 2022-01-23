@@ -221,8 +221,5 @@ class Business extends Model
         ); 
 
         return response($response);
- 
-
     }
-
 }
