@@ -12,21 +12,29 @@ class SpotbieAds extends Model
     static function getSpotbieAd($adType){    
 
         $adId = 0;
+        $query = null;
 
         switch($adType){
             case 0:
                 $adId = rand(1, 2);
+                $query = SpotbieAds::select('*')
+                ->where('id', $adId)
+                ->first();
                 break;
-            case 1:
+            case 1:               
                 $adId = rand(3, 6);
+                $query = SpotbieAds::select('*')
+                ->where('id', $adId)
+                ->first();                
                 break;
             case 2:
                 $adId = rand(1, 2);
+                $query = SpotbieAds::select('*')
+                ->where('id', $adId)
+                ->first();                
                 break;
         }
 
-        return SpotbieAds::select('*')
-        ->where('id', $adId)
-        ->first();
+        return $query;
     }
 }

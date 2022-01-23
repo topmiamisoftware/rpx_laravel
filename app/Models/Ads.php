@@ -238,15 +238,16 @@ class Ads extends Model
         return SpotbieAds::getSpotbieAd($adType);
     }
 
+    public function getSpotbieAdList(){
+        return SpotbieAds::getSpotbieAd(1);
+    }
+
     public function addClickToAd(Ads $ad){
         //Add click to ad.
-        DB::transaction(function () use ($ad) {
-            
+        DB::transaction(function () use ($ad) {            
             $ad->views++;
             $ad->clicks++;
-
             $ad->save();
-
         }, 3);
     }
 
@@ -283,11 +284,9 @@ class Ads extends Model
         );
 
         return response($response);
-
     }
 
     public function footerBanner(Request $request){
-
         $validatedData = $request->validate([            
             'loc_x' => 'max:90|min:-90|numeric',
             'loc_y' => 'max:180|min:-180|numeric',
@@ -371,12 +370,10 @@ class Ads extends Model
             "totalRewards" => $totalRewards
         );
 
-        return response($response);
-        
+        return response($response);        
     }
 
-    public function nearbyAd($businessId, $type){
-        
+    public function nearbyAd($businessId, $type){        
         return Ads::
             select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
             ->where('type', $type)
@@ -384,7 +381,6 @@ class Ads extends Model
             ->where('is_live', '=', 1)
             ->inRandomOrder()
             ->limit(1)->get();
-
     }
 
     public function featuredAdList(Request $request){
@@ -396,6 +392,10 @@ class Ads extends Model
             'id' => 'nullable|numeric',
             'account_type' => 'nullable|numeric'
         ]); 
+
+        $accountType = $validatedData['account_type'];
+
+        $totalRewards = 0;
 
         if( isset($validatedData['id']) ){
 
@@ -417,7 +417,6 @@ class Ads extends Model
             );
     
             return response($response);
-
         }
 
         $loc_x = $validatedData['loc_x'];
@@ -425,61 +424,60 @@ class Ads extends Model
 
         $categories = $validatedData['categories'];
 
-        $categories = $this->returnCategory($categories, $validatedData['account_type']);
+        $categories = $this->returnCategory($categories, $accountType);
 
         $ad = null;
 
         //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $validatedData['account_type']);
+        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        $timesFailed = 0;
-
-        while(!$nearbyBusiness->first()){
-
-            //Get a nearby business.
-            if($timesFailed == 1) $categories = -1;
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
-            $timesFailed++;
-
-        }
+        if( !$nearbyBusiness->first() )
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
 
         $nearbyBusiness = $nearbyBusiness->first();
 
-        $ad = $this->nearbyAd($nearbyBusiness->id, 1);
+        if( is_null($nearbyBusiness) ) {
+            
+            $ad = $this->getSpotbieAdList();
 
-        $j = 10;
-        $k = 0;
-        while( !$ad->first() )
-        {
-            if($k == 10) break;
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $validatedData['account_type']);
-            if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 1);
-            $k++;
-        }
-
-        if($ad == null){
-            $response = array(
-                "success" => true,
-                "business" => null,
-                "ad" => null,
-                "totalRewards" => $totalRewards
-            );
-    
-            return response($response);
-        } else {
-            $ad = $ad->first();
-        }        
-
-        $this->addViewToAd($ad);
-
-        $rewardGet = Reward::select('business_id')
-        ->where('business_id', '=', $nearbyBusiness->id)
-        ->get();
-
-        if($rewardGet == null){
+            $nearbyBusiness = null;
             $totalRewards = 0;
+
         } else {
-            $totalRewards = count($rewardGet);
+
+            $ad = $this->nearbyAd($nearbyBusiness->id, 1);
+
+            $j = 10;
+            $k = 0;
+            while( !$ad->first() )
+            {
+                if($k == 10) break;
+                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
+                if($nearbyBusiness->first()){
+                    $nearbyBusiness = $nearbyBusiness->first();
+                    $ad = $this->nearbyAd($nearbyBusiness->first()->id, 1);
+                }
+                $k++;
+            }
+
+            if($ad == null){
+                $response = array(
+                    "success" => true,
+                    "business" => null,
+                    "ad" => null,
+                    "totalRewards" => $totalRewards
+                );
+        
+                return response($response);
+            } else {
+                $ad = $ad->first();
+            }        
+
+            $this->addViewToAd($ad);
+
+            $totalRewards = count(Reward::select('business_id')
+            ->where('business_id', '=', $nearbyBusiness->id)
+            ->get());
         }
 
         $response = array(
