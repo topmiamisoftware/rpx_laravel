@@ -34,15 +34,10 @@ return [
                             'https://spotbie-master.netlify.app',
                             'https://spotbie-staging.netlify.app'
                         ],
-
     'allowed_origins_patterns' => [],
-
     'allowed_headers' => ['*'],
-
     'exposed_headers' => [],
-
     'max_age' => 0,
-
     'supports_credentials' => true,
 
 ];

@@ -131,7 +131,7 @@ class Business extends Model
         } else {
 
             //It's a new business we are creating.
-            $user->trial_ends_at = Carbon::now()->addDays(45);
+            $user->trial_ends_at = Carbon::now()->addDays(90);
 
             DB::transaction(function () use ($business, $user){
                 $business->save();
