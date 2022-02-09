@@ -990,7 +990,7 @@ class User extends Authenticatable implements JWTSubject
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
             
-            $this->sendConfirmationEmail();
+            if( isset( $validatedData['email'] ) ) $this->sendConfirmationEmail();
 
             if($remember_me == '1'){
                 Auth::user()->remember_token = $token;
