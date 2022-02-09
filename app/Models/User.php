@@ -803,6 +803,18 @@ class User extends Authenticatable implements JWTSubject
 
         $remember_me = $validatedData['remember_me'];
 
+        if( is_null( $validatedData['first_name'] ) ){
+            $firstName = "NEW";
+        } else {
+            $firstName = $validatedData['first_name'];
+        }
+ 
+        if( is_null( $validatedData['last_name'] ) ){
+            $lastName = "USER";
+        } else {
+            $lastName = $validatedData['last_name'];
+        }
+
         if($validatedData['route'] == '/business'){
             //Set account to not set and let the user pick their business account type later on.
             $accountType = 0;
@@ -860,7 +872,7 @@ class User extends Authenticatable implements JWTSubject
                 $user->restore();                
             }
 
-            //If user exists, let's update their facebook information and log them in to SpotBie
+            //If user exists, let's update their apple user information and log them in to SpotBie
             if($user){
                 
                 $accountTypeCheck = $this->checkAccountType($accountType, $user);
@@ -877,10 +889,10 @@ class User extends Authenticatable implements JWTSubject
                 $spotbieUser = $user->spotbieUser;
                 
                 if($validatedData['email']){
-                    $spotbieUser->first_name = $validatedData['firstName'];
-                    $spotbieUser->last_name = $validatedData['lastName'];
+                    $spotbieUser->first_name = $firstName;
+                    $spotbieUser->last_name = $lastName;
     
-                    $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+                    $fullName = $firstName . ' ' . $lastName;
                 }
 
                 $spotbieUser->last_known_ip_address = $request->ip;
@@ -925,18 +937,18 @@ class User extends Authenticatable implements JWTSubject
             //If user doesn't exists, let's create their Apple and spotbie account, then log them in.
             $user = new User();
             
-            $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
+            $user->username = "USER." . $validatedData["userID"];
             $user->email = $validatedData['email'];
             $user->password = null;
             $user->uuid = Str::uuid();
             
             $newSpotbieUser = new SpotbieUser();
             
-            $newSpotbieUser->first_name = $validatedData['firstName'];
-            $newSpotbieUser->last_name = $validatedData['lastName'];
+            $newSpotbieUser->first_name = $firstName;
+            $newSpotbieUser->last_name = $lastName;
             $newSpotbieUser->user_type = $accountType;
 
-            $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
+            $fullName = $firstName . ' ' . $lastName;
             $description = "Hello my name is $fullName. Welcome to my Spotbie profile."; 
 
             $newSpotbieUser->description = $description;
