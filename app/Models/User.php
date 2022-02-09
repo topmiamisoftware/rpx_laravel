@@ -803,13 +803,13 @@ class User extends Authenticatable implements JWTSubject
 
         $remember_me = $validatedData['remember_me'];
 
-        if( is_null( $validatedData['first_name'] ) ){
+        if( isset( $validatedData['first_name'] ) ){
             $firstName = "NEW";
         } else {
             $firstName = $validatedData['first_name'];
         }
  
-        if( is_null( $validatedData['last_name'] ) ){
+        if( isset( $validatedData['last_name'] ) ){
             $lastName = "USER";
         } else {
             $lastName = $validatedData['last_name'];
