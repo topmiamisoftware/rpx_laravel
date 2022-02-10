@@ -22,6 +22,29 @@ class BusinessFactory extends Factory
      */
     protected $model = Business::class;
 
+    private $restaurantNameList = Array([
+        "Bistro Bazaar",
+        "Bistro Captain", 
+        "Bistroporium", 
+        "Cuisine Street", 
+        "Cuisine Wave", 
+        "Deli Divine", 
+        "Deli Feast", 
+        "Eatery Hotspot", 
+        "Eateryworks",
+        "Feast Lounge", 
+        "Feast Palace",
+        "Grub Chef",
+        "Grub lord", 
+        "Kitchen Sensation", 
+        "Kitchen Takeout",
+        "Menu Feed", 
+        "Menu Gusto", 
+        "Munchies", 
+        "Munch Grill", 
+        "Munchtastic"
+    ]);
+
     /**
      * Define the model's default state.
      *
@@ -30,7 +53,7 @@ class BusinessFactory extends Factory
     public function definition()
     {
         
-        $name = $this->faker->unique()->realText(20);
+        $name = $this->restaurantNameList[ rand(0, count($this->restaurantNameList) - 1) ];
         $description = $this->faker->unique()->realText(150);        
 
         // Remember that my_loc_y && my_loc_x can be negative... You might have to change this. I didn't have time to implement this correctly. Fuck StartUps :')
@@ -44,7 +67,7 @@ class BusinessFactory extends Factory
         $randomLocX = $this->faker->randomFloat(6, $minX, $maxX);
 
         $randomLocY = $this->faker->randomFloat(6, $minY, $maxY);
-
+        
         return [
             'name' => $name,
             'slug' => Str::slug($name),
