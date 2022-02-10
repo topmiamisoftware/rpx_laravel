@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Str;
+
 class ChangeBusinessNamesSeeder extends Seeder
 {
     /**
@@ -38,18 +40,21 @@ class ChangeBusinessNamesSeeder extends Seeder
             "Munchtastic"
         );
 
-        $randomName = $randomBusinessList[array_rand($randomBusinessList)];
 
-        DB::table('business')->where('id', '<', '109')
-        ->chunkById(100, function ($users, $randomName) {
-            foreach ($users as $user) {
-                DB::table('business')
-                    ->where('id', $user->id)
-                    ->update([
-                        'name' => $randomName
-                    ]);
-            }
-        });        
+        $businessList = DB::table('business')->where('id', '<', '109')->get();
+
+        foreach($businessList as $business){
+            
+            $randomName = $randomBusinessList[rand(0, count($randomBusinessList) - 1)];
+            
+            DB::table('business')
+            ->where('id', $business->id)
+            ->update([
+                'name' => $randomName,
+                'slug' => Str::slug($randomName)
+            ]);
+
+        }        
     }
 
 
