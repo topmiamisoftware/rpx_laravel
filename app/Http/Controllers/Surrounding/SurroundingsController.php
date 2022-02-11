@@ -111,6 +111,7 @@ class SurroundingsController extends Controller
             ->where('loyalty_point_balances.balance', '>', 0)
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
+        ->where('business.is_verified', 1)
         ->whereJsonContains('business.categories', $categories)
         ->whereRaw("( 
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)

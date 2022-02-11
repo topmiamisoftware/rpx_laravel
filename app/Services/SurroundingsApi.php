@@ -9,16 +9,13 @@ class SurroundingsApi
 
     private $currentSearchType;
 
-    private $yelpApiKey = "Bearer 5KElIffVD9ak_CJuO9JR50t_nAYM-VFG7SauuRDQfoxH-Lp84ZxwKpyo15Bm9F2mq9tU5eNF-Rhw5DVgazxmp28F0BYAtJG126RKh4y3zAmlmU6wK_SUBIpTlFbzX3Yx";
-        
+    private $yelpApiKey = "Bearer 5KElIffVD9ak_CJuO9JR50t_nAYM-VFG7SauuRDQfoxH-Lp84ZxwKpyo15Bm9F2mq9tU5eNF-Rhw5DVgazxmp28F0BYAtJG126RKh4y3zAmlmU6wK_SUBIpTlFbzX3Yx";        
     private $ticketMasterDiscovery = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7g94WBVHVpPZfTD7ANdBQdC438WXCHOj";
-
     private $ticketMasterDiscoveryClassifications = "https://app.ticketmaster.com/discovery/v2/classifications.json?apikey=7g94WBVHVpPZfTD7ANdBQdC438WXCHOj";
 
     function __construct(){}
 
-    public function pullInfoObject(Request $request){
-        
+    public function pullInfoObject(Request $request){        
         $serviceUrl = $request->config_url;
 
         $curl = curl_init($serviceUrl);
@@ -43,8 +40,7 @@ class SurroundingsApi
             die('error occured: ' . $decoded1->response->errormessage);         
 
         return json_decode($curlResponse);
-
-    }
+    } 
 
     public function searchBusinesses(Request $request){
         

@@ -40,7 +40,6 @@ class ChangeBusinessNamesSeeder extends Seeder
             "Munchtastic"
         );
 
-
         $businessList = DB::table('business')->where('id', '<', '109')->get();
 
         foreach($businessList as $business){
