@@ -135,7 +135,11 @@ class Business extends Model
         $giveTrial = false;
 
         if($existingBusiness){
-        
+            
+            if($isLifeTimeMembership){
+                $user->trial_ends_at = Carbon::now()->addYears(90); 
+            }
+
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
                 $user->spotbieUser->save();                
