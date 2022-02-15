@@ -71,21 +71,34 @@ class Business extends Model
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
             'categories' => 'required|string',
-            'passkey' => 'required|string|max:7|min:4'
+            'passkey' => 'required|string|max:20|min:4'
         ]);
 
         $user = Auth::user();
+
+        $confirmKeyLifeTime = 'SPB1DS88' . $user->id;
 
         $confirmKey = 'K23' . $user->id;
 
         $spotbieBusinessPassKey = $confirmKey;
         
-        if($spotbieBusinessPassKey !== $validatedData['passkey']){
+        if(
+            $spotbieBusinessPassKey !== $validatedData['passkey'] &&
+            $confirmKeyLifeTime !== $validatedData['passkey']   
+        ){
             $response = array(
                 'message' => 'passkey_mismatch'
             ); 
             return response($response);
         }        
+
+        $isLifeTimeMembership = false;
+
+        if( $confirmKeyLifeTime === $validatedData['passkey'] ){
+            $isLifeTimeMembership = true;
+        } else if( $spotbieBusinessPassKey === $validatedData['passkey'] ) {
+            $isLifeTimeMembership = false;
+        }
 
         $user->spotbieUser->user_type = 1;
 
@@ -131,8 +144,12 @@ class Business extends Model
         } else {
 
             //It's a new business we are creating.
-            $user->trial_ends_at = Carbon::now()->addDays(90);
-
+            if($isLifeTimeMembership){
+                $user->trial_ends_at = Carbon::now()->addYears(90);
+            } else {
+                $user->trial_ends_at = Carbon::now()->addDays(90);
+            }
+            
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
