@@ -150,7 +150,7 @@ class Business extends Model
 
             //It's a new business we are creating.
             if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addYears(90);
+                $user->trial_ends_at = Carbon::now()->addYears(90)->endOfDay();
             } else {
                 $user->trial_ends_at = Carbon::now()->addDays(90);
             }
