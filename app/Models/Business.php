@@ -105,7 +105,7 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;        
 
-        if(!is_null($existingBusiness))
+        if( !is_null($existingBusiness) )
             $business = $user->business;       
         else
             $business = new Business();        
@@ -137,7 +137,7 @@ class Business extends Model
         if($existingBusiness){
             
             if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addYears(90); 
+                $user->trial_ends_at = Carbon::now()->addDays(32000);
             }
 
             DB::transaction(function () use ($business, $user){
@@ -150,7 +150,7 @@ class Business extends Model
 
             //It's a new business we are creating.
             if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addYears(32000);//Add 90 years to the date
+                $user->trial_ends_at = Carbon::now()->addDays(32000);//Add 90 years to the date
             } else {
                 $user->trial_ends_at = Carbon::now()->addDays(90);
             }
