@@ -137,7 +137,7 @@ class Business extends Model
         if($existingBusiness){
             
             if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addDays(32000);
+                $user->trial_ends_at = Carbon::now()->addYears(90)->toDateTimeString();
             }
 
             DB::transaction(function () use ($business, $user){
@@ -150,7 +150,7 @@ class Business extends Model
 
             //It's a new business we are creating.
             if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addDays(32000);//Add 90 years to the date
+                $user->trial_ends_at = Carbon::now()->addYears(90)->toDateTimeString();//Add 90 years to the date
             } else {
                 $user->trial_ends_at = Carbon::now()->addDays(90);
             }
