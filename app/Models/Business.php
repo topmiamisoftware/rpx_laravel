@@ -69,7 +69,7 @@ class Business extends Model
 
         $user = Auth::user();
 
-        $confirmKeyLifeTime = 'SPB1DS88' . $user->id;
+        $confirmKeyLifeTime = 'ITS-ON-US-BRO';
 
         $confirmKey = 'K23' . $user->id;
 
