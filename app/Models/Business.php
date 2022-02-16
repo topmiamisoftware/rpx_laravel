@@ -142,6 +142,7 @@ class Business extends Model
             }, 3);
 
         } else {
+            
             $user->trial_ends_at = Carbon::now()->addDays(90);
 
             DB::transaction(function () use ($business, $user){
@@ -153,12 +154,18 @@ class Business extends Model
             $giveTrial = true;
         }
         
+        $user = $user->refresh();
+
+        $existingSubscription = $user->subscriptions()->where('name', '=', $user->uuid)->first();
+
         //Check if the user entered a lifetime membership passkey
-        if($isLifeTimeMembership){            
+        if($isLifeTimeMembership && !is_null($existingSubscription) ){   
+
             $user->trial_ends_at = Carbon::now()->addYears(90);
             DB::transaction(function () use ($user){
                 $user->save();
             }, 3);  
+
         }
 
         $response = array(
