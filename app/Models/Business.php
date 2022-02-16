@@ -65,7 +65,7 @@ class Business extends Model
             'country' => 'required|string',
             'line1' => 'nullable|string',
             'line2' => 'nullable|string',
-            'postal_code' => 'required|string',
+            'postal_code' => 'nullable|string',
             'state' => 'required|string',            
             'photo' => 'required|string|max:650|min:1',
             'loc_x' => 'required|max:90|min:-90|numeric',
@@ -136,25 +136,15 @@ class Business extends Model
 
         if($existingBusiness){
             
-            if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addYears(60)->toDateTimeString();
-            }
-
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
-                $user->spotbieUser->save();  
-                $user->save();              
+                $user->spotbieUser->save();             
             }, 3);
 
         } else {
 
-            //It's a new business we are creating.
-            if($isLifeTimeMembership){
-                $user->trial_ends_at = Carbon::now()->addYears(60)->toDateTimeString();//Add 90 years to the date
-            } else {
-                $user->trial_ends_at = Carbon::now()->addDays(90);
-            }
-            
+            $user->trial_ends_at = Carbon::now()->addDays(90);
+
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
@@ -165,6 +155,15 @@ class Business extends Model
 
         }
         
+        //Check if the user entered a lifetime membership passkey
+        if($isLifeTimeMembership){
+            
+            $user->trial_ends_at = Carbon::now()->addYears(90);
+            DB::transaction(function () use ($user){
+                $user->save();
+            }, 3);  
+        }
+
         $response = array(
             'message' => 'success',
             'business' => $business,

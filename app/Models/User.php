@@ -39,7 +39,7 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable, HasFactory, SoftDeletes, Billable;  
 
     protected $casts = [
-        'trial_ends_at' => 'date',
+        'trial_ends_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**

@@ -58,4 +58,7 @@
         'business_subscription_product' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRODUCT'),
         'business_subscription_price' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE'), 
 
+        'business_lifetime_subscription_product' => env('SPOTBIE_BUSINESS_LIFETIME_SUBSCRIPTION_PRODUCT'),
+        'business_lifetime_subscription_price' => env('SPOTBIE_BUSINESS_LIFETIME_SUBSCRIPTION_PRICE'), 
+
     ];
