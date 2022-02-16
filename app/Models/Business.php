@@ -154,20 +154,15 @@ class Business extends Model
             $giveTrial = true;
         }
         
-        $user = $user->refresh();
-
         $userBillable = Cashier::findBillable($user->stripe_id);
 
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->uuid)->first();
 
         //Check if the user entered a lifetime membership passkey
         if($isLifeTimeMembership && !is_null($existingSubscription) ){   
-
-            $user->trial_ends_at = Carbon::now()->addYears(90);
-            DB::transaction(function () use ($user){
-                $user->save();
-            }, 3);  
-
+            $existingSubscription->extendTrial(
+                now()->addYears(90)
+            );
         }
 
         $response = array(
