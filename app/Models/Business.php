@@ -169,6 +169,8 @@ class Business extends Model
             $existingSubscription->extendTrial(
                 now()->addYears(90)
             );
+
+            $userBillable->subscriptions()->where('name', '=', $user->stripe_id)->delete();
             
         } else {
 
