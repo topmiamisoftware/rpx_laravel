@@ -170,8 +170,8 @@ class Business extends Model
 
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
+            $user->trial_ends_at = date('Y-m-d H:i:s',strtotime( Carbon::now()->addYears(90) ));
             
-            $user->trial_ends_at = Carbon::now()->addYears(90);
             DB::transaction(function () use ($user){
                 $user->save();
             }, 3);       
