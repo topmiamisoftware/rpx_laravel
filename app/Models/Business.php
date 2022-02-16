@@ -160,16 +160,22 @@ class Business extends Model
 
         //Check if the user entered a lifetime membership passkey
         if($isLifeTimeMembership && !is_null($existingSubscription) ){
+
             //Swap the user to our LIFETIME Membership package.
             $existingSubscription->extendTrial(
                 now()->addYears(90)
             );
+            
         } else {
+
             //Extend the user's trial for a lifetime
+            $user = User::find($user->id);
+            
             $user->trial_ends_at = Carbon::now()->addYears(90);
             DB::transaction(function () use ($user){
                 $user->save();
-            }, 3);              
+            }, 3);       
+
         }
 
         $response = array(
