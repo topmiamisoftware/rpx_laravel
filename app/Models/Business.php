@@ -163,8 +163,6 @@ class Business extends Model
         //Check if the user entered a lifetime membership passkey
         if( $isLifeTimeMembership && !is_null($existingSubscription) ){
 
-            $existingSubscription->cancelNow();
-
             //Swap the user to our LIFETIME Membership package.
             $existingSubscription->extendTrial(
                 now()->addYears(90)
