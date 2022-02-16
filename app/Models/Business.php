@@ -44,16 +44,9 @@ class Business extends Model
 
         /*
             
-            IMPORTANT: 
-        
-            We are using this method for 3 different pourposes. 
             1. Create the new model
             2. Update the existing model
             3. Verifying the business.
-
-            Please Let's split this method into three different ones so that we adhere to SOLID programming principles.
-
-            Thank you.
 
         */
 
@@ -141,8 +134,6 @@ class Business extends Model
                 $user->spotbieUser->save();             
             }, 3);
 
-            //Cancel the existing user membership if any. 
-
         } else {
             
             $user->trial_ends_at = Carbon::now()->addDays(90);
@@ -192,6 +183,79 @@ class Business extends Model
         return response($response);
 
     }
+
+    public function saveBusiness(Request $request){
+
+        /*        
+            1. Create the new model
+            2. Update the existing model
+        */
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:75|min:1',
+            'description' => 'required|string|max:350|min:1',
+            'address' => 'required|string|max:350|min:1',
+            'city' => 'required|string',
+            'country' => 'required|string',
+            'line1' => 'nullable|string',
+            'line2' => 'nullable|string',
+            'postal_code' => 'nullable|string',
+            'state' => 'nullable|string',            
+            'photo' => 'required|string|max:650|min:1',
+            'loc_x' => 'required|max:90|min:-90|numeric',
+            'loc_y' => 'required|max:180|min:-180|numeric',
+            'categories' => 'required|string',
+        ]);
+
+        $user = Auth::user();      
+
+        $user->spotbieUser->user_type = 1;
+
+        //check if the place to eat already exists.
+        $existingBusiness = $user->business;        
+
+        if( !is_null($existingBusiness) )
+            $business = $user->business;       
+        else
+            $business = new Business();        
+
+        $business->id = $user->id;
+        $business->name = $validatedData['name'];
+        $business->description = $validatedData['description'];
+        $business->slug = Str::slug($business->name);
+        
+        $business->address = $validatedData['address'];
+
+        $business->city = $validatedData['city'];
+        $business->country = $validatedData['country'];
+        $business->line1 = $validatedData['line1'];
+        $business->line2 = $validatedData['line2'];
+        $business->postal_code = $validatedData['postal_code'];
+        $business->state = $validatedData['state'];
+
+        $business->photo = $validatedData['photo'];
+        $business->loc_x = $validatedData['loc_x'];
+        $business->loc_y = $validatedData['loc_y'];
+        $business->categories = $validatedData['categories'];
+
+        $business->is_verified = 0;
+
+        $business->qr_code_link = Str::uuid();
+
+        DB::transaction(function () use ($business, $user){
+            $business->save();
+            $user->spotbieUser->save();
+        }, 3);  
+
+        $response = array(
+            'message' => 'success',
+            'business' => $business
+        ); 
+
+        return response($response);
+
+    }
+
 
     public function getGooglePlacesToEat(Request $request){
 

@@ -15,6 +15,11 @@ class BusinessController extends Controller
         return $business->verify($request);
     }
 
+    public function saveBusiness(Request $request, Business $business)
+    {
+        return $business->saveBusiness($request);
+    }
+    
     public function getGooglePlacesToEat(Request $request, Business $business)
     {
         return $business->getGooglePlacesToEat($request);
