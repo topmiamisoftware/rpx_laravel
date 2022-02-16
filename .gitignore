@@ -3,6 +3,7 @@
 public/.htaccess
 public/.htaccess_prod
 public/.htaccess_staging
+config/cors.php
 /storage/*.key
 /vendor
 .env
