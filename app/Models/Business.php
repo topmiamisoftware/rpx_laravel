@@ -141,6 +141,8 @@ class Business extends Model
                 $user->spotbieUser->save();             
             }, 3);
 
+            //Cancel the existing user membership if any. 
+
         } else {
             
             $user->trial_ends_at = Carbon::now()->addDays(90);
@@ -159,7 +161,9 @@ class Business extends Model
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->stripe_id)->first();
 
         //Check if the user entered a lifetime membership passkey
-        if($isLifeTimeMembership && !is_null($existingSubscription) ){
+        if( $isLifeTimeMembership && !is_null($existingSubscription) ){
+
+            $existingSubscription->cancel();
 
             //Swap the user to our LIFETIME Membership package.
             $existingSubscription->extendTrial(
