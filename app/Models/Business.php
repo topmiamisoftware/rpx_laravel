@@ -159,7 +159,7 @@ class Business extends Model
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->uuid)->first();
 
         //Check if the user entered a lifetime membership passkey
-        if($isLifeTimeMembership && !is_null($existingSubscription) ){   
+        if($isLifeTimeMembership){   
             $existingSubscription->extendTrial(
                 now()->addYears(90)
             );
@@ -168,7 +168,7 @@ class Business extends Model
         $response = array(
             'message' => 'success',
             'business' => $business,
-            'giveTrial' => $giveTrial
+            'giveTrial' => $giveTrial,
         ); 
 
         return response($response);
