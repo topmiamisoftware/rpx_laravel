@@ -14,11 +14,11 @@ class ChangeUsersTable2 extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('city', 255)->nullable()->default(config('spotbie.my_city'));
-            $table->string('country', 255)->nullable()->default(config('spotbie.my_country'));
-            $table->string('line1', 255)->nullable()->default(config('spotbie.my_line_1'));
-            $table->string('postal_code', 255)->nullable()->default(config('spotbie.my_zip_code'));
-            $table->string('state', 255)->nullable()->default(config('spotbie.my_state'));
+            $table->string('city', 255)->nullable()->default(config('spotbie.my_city'))->change();
+            $table->string('country', 255)->nullable()->default(config('spotbie.my_country'))->change();
+            $table->string('line1', 255)->nullable()->default(config('spotbie.my_line_1'))->change();
+            $table->string('postal_code', 255)->nullable()->default(config('spotbie.my_zip_code'))->change();
+            $table->string('state', 255)->nullable()->default(config('spotbie.my_state'))->change();
         });
     }
 
@@ -30,7 +30,6 @@ class ChangeUsersTable2 extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('email', 235)->unique()->change();
         });
     }
 }
