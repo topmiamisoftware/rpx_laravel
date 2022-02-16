@@ -166,7 +166,7 @@ class Business extends Model
             );
         } else {
             //Extend the user's trial for a lifetime
-            $user->Carbon::now()->addYears(90);
+            $user->trial_ends_at = Carbon::now()->addYears(90);
             DB::transaction(function () use ($user){
                 $user->save();
             }, 3);              
