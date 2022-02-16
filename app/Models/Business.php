@@ -154,8 +154,6 @@ class Business extends Model
             $giveTrial = true;
         }
         
-        $user = $user->refresh();
-
         $userBillable = Cashier::findBillable($user->stripe_id);
 
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->uuid)->first();
