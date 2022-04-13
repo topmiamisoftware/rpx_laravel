@@ -22,7 +22,7 @@ class BusinessFactory extends Factory
      */
     protected $model = Business::class;
 
-    private $restaurantNameList = Array([
+    private $restaurantNameList = Array(
         "Bistro Bazaar",
         "Bistro Captain", 
         "Bistroporium", 
@@ -43,7 +43,7 @@ class BusinessFactory extends Factory
         "Munchies", 
         "Munch Grill", 
         "Munchtastic"
-    ]);
+    );
 
     /**
      * Define the model's default state.

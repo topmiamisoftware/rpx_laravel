@@ -83,17 +83,17 @@ class AdsFactory extends Factory
 
     public function getAdsPhoto($userType){
 
-        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+        $businessPhotoFolder = 'assets/images/in-house/places-to-eat/';
 
         switch($userType){
             case '1':
-                $businessPhotoFolder = 'assets/images/def/places-to-eat/';
+                $businessPhotoFolder = 'assets/images/in-house/places-to-eat/';
                 break;
             case '2':
-                $businessPhotoFolder = 'assets/images/def/shopping/';
+                $businessPhotoFolder = 'assets/images/in-house/shopping/';
                 break;
             case '3':
-                $businessPhotoFolder = 'assets/images/def/events/';
+                $businessPhotoFolder = 'assets/images/in-house/events/';
                 break;   
         }
 
