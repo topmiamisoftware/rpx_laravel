@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Ads;
 
 use App\Models\Ads;
-
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 
 class AdsController extends Controller
@@ -49,5 +47,4 @@ class AdsController extends Controller
     public function savePayment(Ads $ads, Request $request){
         return $ads->savePayment($request);
     }
-
 }
