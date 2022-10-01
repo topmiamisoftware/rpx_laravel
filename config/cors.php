@@ -24,7 +24,8 @@ return [
                             'https://192.168.1.66:4200',
     ],*/
     'allowed_origins' => [
-                            'https://demo.spotbie.com'
+                            'https://demo.spotbie.com',
+                            'https://localhost'
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
