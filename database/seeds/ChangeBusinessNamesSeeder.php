@@ -16,45 +16,41 @@ class ChangeBusinessNamesSeeder extends Seeder
      * @return void
      */
     public function run()
-    {        
+    {
         $randomBusinessList = array(
             "Bistro Bazaar",
-            "Bistro Captain", 
-            "Bistroporium", 
-            "Cuisine Street", 
-            "Cuisine Wave", 
-            "Deli Divine", 
-            "Deli Feast", 
-            "Eatery Hotspot", 
+            "Bistro Captain",
+            "Bistroporium",
+            "Cuisine Street",
+            "Cuisine Wave",
+            "Deli Divine",
+            "Deli Feast",
+            "Eatery Hotspot",
             "Eateryworks",
-            "Feast Lounge", 
+            "Feast Lounge",
             "Feast Palace",
             "Grub Chef",
-            "Grub lord", 
-            "Kitchen Sensation", 
+            "Grub lord",
+            "Kitchen Sensation",
             "Kitchen Takeout",
-            "Menu Feed", 
-            "Menu Gusto", 
-            "Munchies", 
-            "Munch Grill", 
+            "Menu Feed",
+            "Menu Gusto",
+            "Munchies",
+            "Munch Grill",
             "Munchtastic"
         );
 
         $businessList = DB::table('business')->where('id', '<', '109')->get();
 
         foreach($businessList as $business){
-            
             $randomName = $randomBusinessList[rand(0, count($randomBusinessList) - 1)];
-            
+
             DB::table('business')
             ->where('id', $business->id)
             ->update([
                 'name' => $randomName,
                 'slug' => Str::slug($randomName)
             ]);
-
-        }        
+        }
     }
-
-
 }
