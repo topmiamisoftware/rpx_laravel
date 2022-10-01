@@ -24,24 +24,24 @@ class BusinessFactory extends Factory
 
     private $restaurantNameList = Array(
         "Bistro Bazaar",
-        "Bistro Captain", 
-        "Bistroporium", 
-        "Cuisine Street", 
-        "Cuisine Wave", 
-        "Deli Divine", 
-        "Deli Feast", 
-        "Eatery Hotspot", 
+        "Bistro Captain",
+        "Bistroporium",
+        "Cuisine Street",
+        "Cuisine Wave",
+        "Deli Divine",
+        "Deli Feast",
+        "Eatery Hotspot",
         "Eateryworks",
-        "Feast Lounge", 
+        "Feast Lounge",
         "Feast Palace",
         "Grub Chef",
-        "Grub lord", 
-        "Kitchen Sensation", 
+        "Grub lord",
+        "Kitchen Sensation",
         "Kitchen Takeout",
-        "Menu Feed", 
-        "Menu Gusto", 
-        "Munchies", 
-        "Munch Grill", 
+        "Menu Feed",
+        "Menu Gusto",
+        "Munchies",
+        "Munch Grill",
         "Munchtastic"
     );
 
@@ -52,9 +52,8 @@ class BusinessFactory extends Factory
      */
     public function definition()
     {
-        
         $name = $this->restaurantNameList[ rand(0, count($this->restaurantNameList) - 1) ];
-        $description = $this->faker->unique()->realText(150);        
+        $description = $this->faker->unique()->realText(150);
 
         // Remember that my_loc_y && my_loc_x can be negative... You might have to change this. I didn't have time to implement this correctly. Fuck StartUps :')
 
@@ -67,27 +66,24 @@ class BusinessFactory extends Factory
         $randomLocX = $this->faker->randomFloat(6, $minX, $maxX);
 
         $randomLocY = $this->faker->randomFloat(6, $minY, $maxY);
-        
+
         return [
             'name' => $name,
             'slug' => Str::slug($name),
             'description' => $description,
             'loc_x' => $randomLocX,
             'loc_y' => $randomLocY,
-            'address' => config("spotbie.my_address"),            
+            'address' => config("spotbie.my_address"),
             'photo' => '',
-            'is_verified' => true,        
+            'is_verified' => true,
             'qr_code_link' => Str::uuid()
         ];
-        
     }
 
     public function configure(){
-
         return $this->afterCreating(function (Business $business) {
-
             $user = User::find($business->id);
-            
+
             $spotbieUser = SpotbieUser::select('user_type')
             ->where('id', '=', $business->id)
             ->get()[0];
@@ -97,22 +93,19 @@ class BusinessFactory extends Factory
             $business->photo = $this->getBusinessPhoto($userType);
 
             if($business->categories == null){
-
                 $categories = '';
-    
+
                 switch($userType){
                     case '1':
                         $categories = array_rand(config("spotbie.my_business_categories_food"), 3);
                         break;
                     case '2':
                         $categories = array_rand(config("spotbie.my_business_categories_shopping"), 3);
-                        break; 
+                        break;
                     case '3':
                         $categories = array_rand(config("spotbie.my_business_categories_events"), 3);
                 }
-    
-                $business->categories = json_encode($categories);                
-
+                $business->categories = json_encode($categories);
             }
 
             $business->save();
@@ -134,7 +127,7 @@ class BusinessFactory extends Factory
             Ads::factory()
             ->state([
                 "type" => 1
-            ])            
+            ])
             ->count(1)
             ->for($business)
             ->create();
@@ -142,17 +135,14 @@ class BusinessFactory extends Factory
             Ads::factory()
             ->state([
                 "type" => 2
-            ])            
+            ])
             ->count(1)
             ->for($business)
             ->create();
-
         });
-
     }
 
     public function getBusinessPhoto($userType){
-
         $businessPhotoFolder = 'assets/images/def/places-to-eat/';
 
         switch($userType){
@@ -164,13 +154,11 @@ class BusinessFactory extends Factory
                 break;
             case '3':
                 $businessPhotoFolder = 'assets/images/def/events/';
-                break;   
+                break;
         }
 
         $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
 
         return $businessPhoto;
-
     }
-
 }

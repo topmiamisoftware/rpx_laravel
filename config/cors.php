@@ -22,6 +22,7 @@ return [
     //Uncomment this for dev and make sure you include your localhost in this list.*/
     'allowed_origins' => ['https://spotbie.com',
                             'https://localhost:4200',
+                            'https://localhost',
                             'https://spotbie-demo.netlify.app',
                             'https://spotbie-master.netlify.app',
                             'https://spotbie-staging.netlify.app',
