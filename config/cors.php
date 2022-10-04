@@ -24,9 +24,11 @@ return [
                             'https://192.168.1.66:4200',
     ],*/
     'allowed_origins' => [
-                            'https://demo.spotbie.com',
-                            'https://localhost',
-                            'https://localhost:4200'
+            'https://spotbie.com',
+            'https://demo.spotbie.com',
+            'https://spotbie-demo.netlify.app',
+            'https://spotbie-master.netlify.app',
+            'https://spotbie-staging.netlify.app'
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
