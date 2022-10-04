@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class BusinessController extends Controller
 {
-
     public function verify(Request $request, Business $business)
     {
         return $business->verify($request);
@@ -19,7 +18,7 @@ class BusinessController extends Controller
     {
         return $business->saveBusiness($request);
     }
-    
+
     public function getGooglePlacesToEat(Request $request, Business $business)
     {
         return $business->getGooglePlacesToEat($request);
@@ -29,6 +28,4 @@ class BusinessController extends Controller
     {
         return $business->show($request);
     }
-
-
 }

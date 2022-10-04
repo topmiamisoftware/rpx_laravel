@@ -26,7 +26,7 @@ class Business extends Model
 
     public function rewards(){
         return $this->hasMany('App\Models\Reward', 'business_id', 'id');
-    }    
+    }
 
     public function ads(){
         return $this->hasMany('App\Models\Ads', 'business_id');
@@ -34,7 +34,7 @@ class Business extends Model
 
     public function user(){
         return $this->belongsTo('App\Models\User', 'id');
-    } 
+    }
 
     public function spotbieUser(){
         return $this->belongsTo('App\Models\SpotbieUser', 'id');
@@ -43,7 +43,7 @@ class Business extends Model
     public function verify(Request $request){
 
         /*
-            
+
             1. Create the new model
             2. Update the existing model
             3. Verifying the business.
@@ -59,12 +59,13 @@ class Business extends Model
             'line1' => 'nullable|string',
             'line2' => 'nullable|string',
             'postal_code' => 'nullable|string',
-            'state' => 'nullable|string',            
+            'state' => 'nullable|string',
             'photo' => 'required|string|max:650|min:1',
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
             'categories' => 'required|string',
-            'passkey' => 'required|string|max:20|min:4'
+            'passkey' => 'required|string|max:20|min:4',
+            'accountType' => 'required|numeric'
         ]);
 
         $user = Auth::user();
@@ -74,16 +75,16 @@ class Business extends Model
         $confirmKey = 'K23' . $user->id;
 
         $spotbieBusinessPassKey = $confirmKey;
-        
+
         if(
             $spotbieBusinessPassKey !== $validatedData['passkey'] &&
-            $confirmKeyLifeTime !== $validatedData['passkey']   
+            $confirmKeyLifeTime !== $validatedData['passkey']
         ){
             $response = array(
                 'message' => 'passkey_mismatch'
-            ); 
+            );
             return response($response);
-        }        
+        }
 
         $isLifeTimeMembership = false;
 
@@ -93,21 +94,21 @@ class Business extends Model
             $isLifeTimeMembership = false;
         }
 
-        $user->spotbieUser->user_type = 1;
+        $user->spotbieUser->user_type =  $validatedData['accountType'];
 
         //check if the place to eat already exists.
-        $existingBusiness = $user->business;        
+        $existingBusiness = $user->business;
 
         if( !is_null($existingBusiness) )
-            $business = $user->business;       
+            $business = $user->business;
         else
-            $business = new Business();        
+            $business = new Business();
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
         $business->slug = Str::slug($business->name);
-        
+
         $business->address = $validatedData['address'];
 
         $business->city = $validatedData['city'];
@@ -128,25 +129,25 @@ class Business extends Model
         $giveTrial = false;
 
         if($existingBusiness){
-            
+
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
-                $user->spotbieUser->save();             
+                $user->spotbieUser->save();
             }, 3);
 
         } else {
-            
+
             $user->trial_ends_at = Carbon::now()->addDays(90);
 
             DB::transaction(function () use ($business, $user){
                 $business->save();
                 $user->spotbieUser->save();
                 $user->save();
-            }, 3);  
+            }, 3);
 
             $giveTrial = true;
         }
-        
+
         $userBillable = Cashier::findBillable($user->stripe_id);
 
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->id)->first();
@@ -157,20 +158,20 @@ class Business extends Model
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
-            
+
             DB::transaction(function () use ($user){
                 $user->save();
-            }, 3); 
-            
+            }, 3);
+
         } else if($isLifeTimeMembership) {
 
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
-            
+
             DB::transaction(function () use ($user){
                 $user->save();
-            }, 3);       
+            }, 3);
 
         }
 
@@ -178,7 +179,7 @@ class Business extends Model
             'message' => 'success',
             'business' => $business,
             'giveTrial' => $giveTrial,
-        ); 
+        );
 
         return response($response);
 
@@ -186,7 +187,7 @@ class Business extends Model
 
     public function saveBusiness(Request $request){
 
-        /*        
+        /*
             1. Create the new model
             2. Update the existing model
         */
@@ -200,30 +201,31 @@ class Business extends Model
             'line1' => 'nullable|string',
             'line2' => 'nullable|string',
             'postal_code' => 'nullable|string',
-            'state' => 'nullable|string',            
+            'state' => 'nullable|string',
             'photo' => 'required|string|max:650|min:1',
             'loc_x' => 'required|max:90|min:-90|numeric',
             'loc_y' => 'required|max:180|min:-180|numeric',
             'categories' => 'required|string',
+            'accountType' => 'required|numeric'
         ]);
 
-        $user = Auth::user();      
+        $user = Auth::user();
 
-        $user->spotbieUser->user_type = 1;
+        $user->spotbieUser->user_type = $validatedData['accountType'];
 
         //check if the place to eat already exists.
-        $existingBusiness = $user->business;        
+        $existingBusiness = $user->business;
 
         if( !is_null($existingBusiness) )
-            $business = $user->business;       
+            $business = $user->business;
         else
-            $business = new Business();        
+            $business = new Business();
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
         $business->slug = Str::slug($business->name);
-        
+
         $business->address = $validatedData['address'];
 
         $business->city = $validatedData['city'];
@@ -245,12 +247,12 @@ class Business extends Model
         DB::transaction(function () use ($business, $user){
             $business->save();
             $user->spotbieUser->save();
-        }, 3);  
+        }, 3);
 
         $response = array(
             'message' => 'success',
             'business' => $business
-        ); 
+        );
 
         return response($response);
 
@@ -285,12 +287,12 @@ class Business extends Model
         $output = curl_exec($ch);
 
         // close curl resource to free up system resources
-        curl_close($ch); 
+        curl_close($ch);
 
         $response = array(
             'message' => 'success',
             'g_response' => $output
-        ); 
+        );
 
         return response($response);
 
@@ -303,10 +305,10 @@ class Business extends Model
         ]);
 
         $business = Business::select(
-            'business.qr_code_link', 'business.name', 'business.categories', 'business.description', 
+            'business.qr_code_link', 'business.name', 'business.categories', 'business.description',
             'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
             'spotbie_users.user_type',
-            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',            
+            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', 'business.id', '=', 'loyalty_point_balances.id')
@@ -322,7 +324,7 @@ class Business extends Model
         $response = array(
             'success' => $success,
             'business' => $business
-        ); 
+        );
 
         return response($response);
     }
