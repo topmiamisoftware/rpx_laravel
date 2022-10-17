@@ -228,9 +228,9 @@ class BusinessFactory extends Factory
 
     public function getBusinessPhoto($userType){
         $businessPhotoFolder = match ($userType) {
-            '1' => 'assets/images/def/places-to-eat/',
-            '2' => 'assets/images/def/shopping/',
-            '3' => 'assets/images/def/events/',
+            1 => 'assets/images/def/places-to-eat/',
+            2 => 'assets/images/def/shopping/',
+            3 => 'assets/images/def/events/',
         };
 
         return config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';;
