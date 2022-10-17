@@ -4,6 +4,7 @@ namespace App\Http\Controllers\LoyaltyPointLedger;
 
 use App\Models\LoyaltyPointLedger;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class LoyaltyPointLedgerController extends Controller
 {
@@ -12,9 +13,9 @@ class LoyaltyPointLedgerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, LoyaltyPointLedger $ledger)
     {
-        //
+        return $ledger->index($request);
     }
 
     /**

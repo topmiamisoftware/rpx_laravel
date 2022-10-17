@@ -42,9 +42,9 @@
 
         'my_business_categories_food' => $foodCategories,
         'my_business_categories_shopping' => $shoppingCategories,
-        'my_business_categories_events' => $eventCategories,        
+        'my_business_categories_events' => $eventCategories,
 
-        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotie.com/'),
+        'spotbie_front_end_ip' => env('SPOTBIE_FRONT_END_IP', 'https://spotbie.com/'),
 
         'header_banner_product' => env('SPOTBIE_HEADER_AD_STRIPE_PRODUCT'),
         'header_banner_price' => env('SPOTBIE_HEADER_AD_PRICE'),
@@ -53,7 +53,7 @@
         'featured_related_price' => env('SPOTBIE_FEATURED_AD_PRICE'),
 
         'featured_related_product' => env('SPOTBIE_FOOTER_AD_STRIPE_PRODUCT'),
-        'footer_banner_price' => env('SPOTBIE_FOOTER_AD_PRICE'),     
+        'footer_banner_price' => env('SPOTBIE_FOOTER_AD_PRICE'),
 
         'business_subscription_product' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRODUCT'),
         'business_subscription_price' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE'),

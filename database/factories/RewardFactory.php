@@ -3,9 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Reward;
-use App\Models\Business;
-
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -33,14 +30,12 @@ class RewardFactory extends Factory
      */
     public function definition()
     {
-
         $name = $this->faker->unique()->realText(50);
         $description = $this->faker->unique()->realText(150);
 
         $images = config('spotbie.spotbie_front_end_ip') . $this->rewardImageList[rand(0,4)];
 
         $point_cost = rand(450, 1200);
-
         $monthly_times_available = rand(1, 200);
         $times_claimed_this_month = rand(1, 200);
 
@@ -54,8 +49,7 @@ class RewardFactory extends Factory
             'images' => $images,
             'point_cost' => $point_cost,
             'monthly_times_available' => $monthly_times_available,
-            'times_claimed_this_month' => $times_claimed_this_month           
+            'times_claimed_this_month' => $times_claimed_this_month
         ];
     }
-  
 }

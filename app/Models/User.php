@@ -6,36 +6,29 @@ use Auth;
 use Mail;
 
 use App\Mail\User\AccountCreated;
-
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
-
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
 use App\Rules\FirstName;
 use App\Rules\LastName;
 use App\Rules\Password;
 use App\Rules\Username;
-
 use Carbon\Carbon;
 use Laravel\Cashier\Billable;
 use Laravel\Cashier\Cashier;
 
+/**
+ * @property mixed $business
+ */
 class User extends Authenticatable implements JWTSubject
 {
-
     use Notifiable, HasFactory, SoftDeletes, Billable;
 
     protected $casts = [
@@ -100,14 +93,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne('App\Models\SpotbieUser', 'id');
     }
 
-    public function facebookUser(){
-        return $this->hasOne('App\Models\FacebookUser', 'id');
-    }
-
-    public function googleUser(){
-        return $this->hasOne('App\Models\GoogleUser', 'id');
-    }
-
     public function defaultImages(){
         return $this->hasMany('App\Models\DefaultImages', 'id');
     }
@@ -117,11 +102,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function loyaltyPointBalance(){
-        return $this->hasOne('App\Models\LoyaltyPointBalance', 'id');
+        return $this->hasMany('App\Models\LoyaltyPointBalance', 'id');
     }
 
-    public function redeemables(){
-        return $this->hasMany('App\Models\RedeemableItems', 'business_id');
+    public function loyaltyPointLedger(){
+        return $this->hasMany('App\Models\LoyaltyPointLedger', 'user_id');
     }
 
     public function redeemed(){
@@ -129,7 +114,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function signUp(Request $request){
-
         $validatedData = $request->validate([
             'username' => ['required', 'unique:users', 'max:35', 'min:1', new Username],
             'email' => ['required', 'unique:users', 'email'],
@@ -137,12 +121,11 @@ class User extends Authenticatable implements JWTSubject
             'route' => ['required', 'string']
         ]);
 
-
-        if($validatedData['route'] == '/business')
+        if($validatedData['route'] == '/business') {
             $accountType = 0;
-        else
+        } else {
             $accountType = 4;
-
+        }
 
         $user = new User();
 
@@ -165,7 +148,6 @@ class User extends Authenticatable implements JWTSubject
         $loyaltyPointBalance = new LoyaltyPointBalance();
 
         DB::transaction(function () use ($user, $newSpotbieUser, $loyaltyPointBalance){
-
             $user->createAsStripeCustomer();
             $user->save();
 
@@ -176,14 +158,11 @@ class User extends Authenticatable implements JWTSubject
             $loyaltyPointBalance->balance = 0;
 
             if( $newSpotbieUser->user_type == '0' ){
-
                 $loyaltyPointBalance->reset_balance = 0;
                 $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
-
             }
 
             $loyaltyPointBalance->save();
-
         }, 3);
 
         $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
@@ -234,93 +213,46 @@ class User extends Authenticatable implements JWTSubject
             $accountType = 4;
         }
 
-        $login_failed = true;
-
         $searchUser = User::onlyTrashed()
-        ->select('id', 'password')
-        ->where(
-            function($query) use ($login){
-                $query->where('username', $login)
-                    ->orWhere('email', $login);
-            }
-        )
-        ->first();
+            ->select('id', 'password')
+            ->where(function($query) use ($login){
+                    $query->where('username', $login)
+                        ->orWhere('email', $login);
+                })
+            ->first();
 
-        if($searchUser !== null && Hash::check($password, $searchUser->password))
+        if($searchUser !== null && Hash::check($password, $searchUser->password)) {
             $searchUser->restore();
-
-        $checkForSocialNetworkAccount = User::select('id')
-        ->where(
-            function($query) use ($login){
-                $query->where('username', $login)
-                    ->orWhere('email', $login);
-            }
-        )
-        ->where('password', null)
-        ->first();
-
-        if($checkForSocialNetworkAccount){
-
-            $googleUserExists = GoogleUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();
-
-            if($googleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_google_account'
-                );
-                return response($loginResponse);
-            }
-
-            $appleUserExists = AppleUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();
-
-            if($appleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_apple_account'
-                );
-                return response($loginResponse);
-            }
-
-            $facebookUserExists = FacebookUser::select('id')->where('id', $checkForSocialNetworkAccount->id)->first();
-            if($facebookUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_fb_account'
-                );
-                return response($loginResponse);
-            }
-
         }
 
-        if
-        (
-            !Auth::attempt(['email' => $login, 'password' => $password]) &&
+        if (!Auth::attempt(['email' => $login, 'password' => $password]) &&
             !Auth::attempt(['username' => $login, 'password' => $password])
-        )
+        ) {
             $login_failed = true;
-        else
+        } else {
             $login_failed = false;
-
+        }
 
         if($login_failed){
-
             $loginResponse = array(
                 'message' => 'invalid_cred'
             );
-
         } else {
-
-            $user = User::select('id', 'username')->where(
-                function($query) use ($login){
+            $user = User::select('id', 'username')->where(function($query) use ($login){
                     $query->where('username', $login)
-                        ->orWhere('email', $login);
-                }
-            )
-            ->first();
+                            ->orWhere('email', $login);
+                })
+                ->first();
 
             $accountTypeCheck = $this->checkAccountType($accountType, $user);
 
-            if($accountTypeCheck !== true) return $accountTypeCheck;
+            if($accountTypeCheck !== true) {
+                return $accountTypeCheck;
+            }
 
-            if($user->stripe_id == null)
+            if($user->stripe_id == null) {
                 $user->createAsStripeCustomer();
+            }
 
             $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
@@ -344,677 +276,8 @@ class User extends Authenticatable implements JWTSubject
                 'user' => $user,
                 'spotbie_user' => $spotbieUser
             );
-
         }
-
         return response($loginResponse);
-
-    }
-
-    public function facebookLogin(Request $request){
-
-        $validatedData = $request->validate([
-            'userID' => ['required', 'string'],
-            'firstName' => ['required', 'string'],
-            'lastName' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'photoUrl' => ['required', 'string'],
-            'remember_me' => ['required', 'string'],
-            'route' => ['required', 'string']
-        ]);
-
-        $remember_me = $validatedData['remember_me'];
-
-        if($validatedData['route'] == '/business'){
-            //Set account to not set and let the user pick their business account type later on.
-            $accountType = 0;
-        } else {
-            //Set the account type to personal.
-            $accountType = 4;
-        }
-
-        //Let's deny user the FbLogin if their FB email is already in use with our system.
-        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
-
-        if($userEmailInUse){
-
-            $googleUserExists = GoogleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($googleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_google_account'
-                );
-                return response($loginResponse);
-            }
-
-            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($appleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_apple_account'
-                );
-                return response($loginResponse);
-            }
-
-            $facebookUserExists = FacebookUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if(!$facebookUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_account'
-                );
-
-                return response($loginResponse);
-            }
-
-        }
-
-        //Let's login with facebook and store the user's facebook information in DB
-        $fbUser = FacebookUser::withTrashed()->select('id')->where('facebook_user_id', $validatedData['userID'])->first();
-
-        //Check if user already exists
-        if($fbUser){
-
-            $user_id = $fbUser->id;
-            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
-
-            if($user->deleted_at != null){
-                //Restore the user's old acount if deleted
-                $user->restore();
-            }
-
-            //If user exists, let's update their facebook information and log them in to SpotBie
-            if($user){
-
-                $accountTypeCheck = $this->checkAccountType($accountType, $user);
-
-                if($accountTypeCheck !== true) return $accountTypeCheck;
-
-                if($user->stripe_id == null)
-                    $user->createAsStripeCustomer();
-
-                $user->email = $validatedData['email'];
-
-                $spotbieUser = $user->spotbieUser;
-
-                $spotbieUser->first_name = $validatedData['firstName'];
-                $spotbieUser->last_name = $validatedData['lastName'];
-
-                $spotbieUser->default_picture = $validatedData['photoUrl'];
-
-                $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
-
-                $spotbieUser->last_known_ip_address = $request->ip;
-
-                DB::transaction(function () use ($user, $spotbieUser){
-                    $user->save();
-                    $spotbieUser->save();
-                }, 3);
-
-                //Start the session
-                Auth::login($user, $remember_me);
-                $token = Auth::refresh();
-
-                if($remember_me == '1')
-                    Auth::user()->remember_token = $token;
-                else
-                    Auth::user()->remember_token = null;
-
-                Auth::user()->save();
-
-                $user = Auth::user();
-
-                $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
-                $loginResponse = array(
-                    'token_info' => $this->respondWithToken($token),
-                    'message' => 'success',
-                    'user' => $user,
-                    'spotbie_user' => $spotbieUser
-                );
-
-            } else {
-
-                $loginResponse = array(
-                    'message' => 'really_messed_up_error'
-                );
-
-            }
-
-
-        } else {
-
-            //If user doesn't exists, let's create their facebook and spotbie account, then log them in.
-            $user = new User();
-
-            $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
-            $user->email = $validatedData['email'];
-            $user->password = null;
-            $user->uuid = Str::uuid();
-
-            $newSpotbieUser = new SpotbieUser();
-
-            $newSpotbieUser->first_name = $validatedData['firstName'];
-            $newSpotbieUser->last_name = $validatedData['lastName'];
-            $newSpotbieUser->user_type = $accountType;
-            $newSpotbieUser->default_picture = $validatedData['photoUrl'];
-
-            $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
-            $description = "Hello my name is $fullName. Welcome to my Spotbie profile.";
-
-            $newSpotbieUser->description = $description;
-            $newSpotbieUser->last_known_ip_address = $request->ip;
-
-            DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
-
-                $user->save();
-                $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
-                $user->save();
-
-                $user->createAsStripeCustomer();
-
-                $newSpotbieUser->id = $user->id;
-                $newSpotbieUser->save();
-
-                $fbUser = new FacebookUser();
-
-                $fbUser->facebook_user_id = $validatedData["userID"];
-                $fbUser->id = $user->id;
-
-                $loyaltyPointBalance = new LoyaltyPointBalance();
-                $loyaltyPointBalance->id = $user->id;
-                $loyaltyPointBalance->balance = 0;
-
-                if( $newSpotbieUser->user_type == '0')
-                {
-                    $loyaltyPointBalance->reset_balance = 0;
-                    $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
-                }
-
-                $loyaltyPointBalance->save();
-
-                $fbUser->save();
-
-            }, 3);
-
-            //Start the session
-            Auth::login($user, $remember_me);
-            $token = Auth::refresh();
-
-            $this->sendConfirmationEmail();
-
-            if($remember_me == '1'){
-                Auth::user()->remember_token = $token;
-            } else {
-                Auth::user()->remember_token = null;
-            }
-
-            Auth::user()->save();
-
-            $user = Auth::user();
-
-            $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
-            $loginResponse = array(
-                'token_info' => $this->respondWithToken($token),
-                'message' => 'success',
-                'user' => $user,
-                'spotbie_user' => $newSpotbieUser
-            );
-
-        }
-
-        return response($loginResponse);
-
-    }
-
-    public function googleLogin(Request $request){
-
-        //Let's login with google and store the user's google information in DB
-
-        $validatedData = $request->validate([
-            'userID' => ['required', 'string'],
-            'firstName' => ['required', 'string'],
-            'lastName' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'photoUrl' => ['required', 'string'],
-            'remember_me' => ['required', 'string'],
-            'route' => ['required', 'string']
-        ]);
-
-        if($validatedData['route'] == '/business')
-            $accountType = 0;
-        else
-            $accountType = 4;
-
-        //Let's deny user the GoogleLogin if their Google email is already in use with our system.
-        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
-
-        if($userEmailInUse){
-
-            $facebookUserExists = FacebookUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($facebookUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_fb_account'
-                );
-
-                return response($loginResponse);
-            }
-
-            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($appleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_apple_account'
-                );
-                return response($loginResponse);
-            }
-
-            $googleUserExists = GoogleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if(!$googleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_account'
-                );
-
-                return response($loginResponse);
-            }
-
-        }
-
-        //Let's login with google and store the user's Google information in DB
-        $googleUser = GoogleUser::withTrashed()->select('id')->where('google_user_id', $validatedData['userID'])->first();
-
-        //Check if user already exists
-        if($googleUser){
-
-            $user_id = $googleUser->id;
-            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
-
-            if($user && $user->deleted_at != null){
-                //Restore the user's old acount if deleted
-                $user->restore();
-            }
-
-            $user = $this->select('id', 'username')->where('id', $user_id)->first();
-
-            //If user exists, let's update their facebook information and log them in to SpotBie
-            if($user){
-
-                $accountTypeCheck = $this->checkAccountType($accountType, $user);
-
-                if($accountTypeCheck !== true) return $accountTypeCheck;
-
-                if($user->stripe_id == null)
-                    $user->createAsStripeCustomer();
-
-                $user->email = $validatedData['email'];
-
-                $spotbieUser = $user->spotbieUser;
-
-                $spotbieUser->first_name = $validatedData['firstName'];
-                $spotbieUser->last_name = $validatedData['lastName'];
-
-                $spotbieUser->default_picture = $validatedData['photoUrl'];
-
-                $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
-
-                $spotbieUser->last_known_ip_address = $request->ip;
-
-                DB::transaction(function () use ($user, $spotbieUser){
-                    $user->save();
-                    $spotbieUser->save();
-                }, 3);
-
-                $remember_me = $validatedData['remember_me'];
-
-                //Start the session
-                Auth::login($user, $remember_me);
-                $token = Auth::refresh();
-
-                if($remember_me == '1'){
-                    Auth::user()->remember_token = $token;
-                } else {
-                    Auth::user()->remember_token = null;
-                }
-
-                Auth::user()->save();
-
-                $user = Auth::user();
-
-                $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
-                $loginResponse = array(
-                    'token_info' => $this->respondWithToken($token),
-                    'message' => 'success',
-                    'user' => $user,
-                    'spotbie_user' => $spotbieUser
-                );
-
-            } else {
-
-                $loginResponse = array(
-                    'message' => 'really_messed_up_error'
-                );
-
-            }
-
-
-        } else {
-
-            //If user doesn't exists, let's create their facebook and spotbie account, then log them in.
-            $user = new User();
-
-            $user->username = $validatedData['firstName'] . "." . $validatedData['lastName'] . "." . $validatedData["userID"];
-            $user->email = $validatedData['email'];
-            $user->password = null;
-            $user->uuid = Str::uuid();
-
-            $newSpotbieUser = new SpotbieUser();
-
-            $newSpotbieUser->first_name = $validatedData['firstName'];
-            $newSpotbieUser->last_name = $validatedData['lastName'];
-
-            $newSpotbieUser->user_type = $accountType;
-
-            $newSpotbieUser->default_picture = $validatedData['photoUrl'];
-
-            $fullName = $validatedData['firstName'] . ' ' . $validatedData['lastName'];
-            $description = "Hello my name is $fullName. Welcome to my Spotbie profile.";
-
-            $newSpotbieUser->description = $description;
-            $newSpotbieUser->last_known_ip_address = $request->ip;
-
-            DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
-
-                $user->save();
-                $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
-                $user->save();
-
-                $user->createAsStripeCustomer();
-
-                $newSpotbieUser->id = $user->id;
-                $newSpotbieUser->save();
-
-                $googleUser = new GoogleUser();
-
-                $googleUser->google_user_id = $validatedData["userID"];
-                $googleUser->id = $user->id;
-
-                $loyaltyPointBalance = new LoyaltyPointBalance();
-                $loyaltyPointBalance->id = $user->id;
-                $loyaltyPointBalance->balance = 0;
-
-                if( $newSpotbieUser->user_type == '0' ){
-
-                    $loyaltyPointBalance->reset_balance = 0;
-                    $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
-
-                }
-
-                $loyaltyPointBalance->save();
-                $googleUser->save();
-
-            }, 3);
-
-            $newSpotbieUser = $user->spotbieUser;
-
-            $remember_me = $validatedData['remember_me'];
-
-            //Start the session
-            Auth::login($user, $remember_me);
-            $token = Auth::refresh();
-
-            $this->sendConfirmationEmail();
-
-            if($remember_me == '1'){
-                Auth::user()->remember_token = $token;
-            } else {
-                Auth::user()->remember_token = null;
-            }
-
-            Auth::user()->save();
-
-            $user = Auth::user();
-
-            $loginResponse = array(
-                'token_info' => $this->respondWithToken($token),
-                'message' => 'success',
-                'user' => $user,
-                'spotbie_user' => $newSpotbieUser
-            );
-
-        }
-
-        return response($loginResponse);
-
-    }
-
-    public function appleLogin(Request $request){
-
-        $validatedData = $request->validate([
-            'userID' => ['required', 'string'],
-            'firstName' => ['nullable', 'string'],
-            'lastName' => ['nullable', 'string'],
-            'email' => ['nullable', 'email'],
-            'remember_me' => ['required', 'string'],
-            'route' => ['required', 'string']
-        ]);
-
-        $remember_me = $validatedData['remember_me'];
-
-        if( !isset( $validatedData['first_name'] ) ){
-            $firstName = "NEW";
-        } else {
-            $firstName = $validatedData['first_name'];
-        }
-
-        if( !isset( $validatedData['last_name'] ) ){
-            $lastName = "USER";
-        } else {
-            $lastName = $validatedData['last_name'];
-        }
-
-        if($validatedData['route'] == '/business'){
-            //Set account to not set and let the user pick their business account type later on.
-            $accountType = 0;
-        } else {
-            //Set the account type to personal.
-            $accountType = 4;
-        }
-
-        //Let's deny user the FbLogin if their FB email is already in use with our system.
-        $userEmailInUse = $this->withTrashed()->select('id', 'email')->where('email', $validatedData['email'])->first();
-
-        if($userEmailInUse){
-
-            $googleUserExists = GoogleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($googleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_google_account'
-                );
-                return response($loginResponse);
-            }
-
-            $fbUserExists = FacebookUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if($fbUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_fb_account'
-                );
-                return response($loginResponse);
-            }
-
-            $appleUserExists = AppleUser::select('id')->where('id', $userEmailInUse->id)->first();
-
-            if(!$appleUserExists){
-                $loginResponse = array(
-                    'message' => 'spotbie_account'
-                );
-
-                return response($loginResponse);
-            }
-
-        }
-
-        //Let's login with apple and store the user's apple information in DB
-        $appleUser = AppleUser::withTrashed()->select('id')->where('apple_user_id', $validatedData['userID'])->first();
-
-        //Check if user already exists
-        if($appleUser){
-
-            $user_id = $appleUser->id;
-            $user = $this->withTrashed()->select('id', 'username', 'deleted_at')->where('id', $user_id)->first();
-
-            if($user->deleted_at != null){
-                //Restore the user's old acount if deleted
-                $user->restore();
-            }
-
-            //If user exists, let's update their apple user information and log them in to SpotBie
-            if($user){
-
-                $accountTypeCheck = $this->checkAccountType($accountType, $user);
-
-                if($accountTypeCheck !== true) return $accountTypeCheck;
-
-                if($user->stripe_id == null)
-                    $user->createAsStripeCustomer();
-
-                if($validatedData['email']){
-                    $user->email = $validatedData['email'];
-                }
-
-                $spotbieUser = $user->spotbieUser;
-
-                if($validatedData['email']){
-                    $spotbieUser->first_name = $firstName;
-                    $spotbieUser->last_name = $lastName;
-
-                    $fullName = $firstName . ' ' . $lastName;
-                }
-
-                $spotbieUser->last_known_ip_address = $request->ip;
-
-                DB::transaction(function () use ($user, $spotbieUser){
-                    $user->save();
-                    $spotbieUser->save();
-                }, 3);
-
-                //Start the session
-                Auth::login($user, $remember_me);
-                $token = Auth::refresh();
-
-                if($remember_me == '1')
-                    Auth::user()->remember_token = $token;
-                else
-                    Auth::user()->remember_token = null;
-
-                Auth::user()->save();
-
-                $user = Auth::user();
-
-                $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
-                $loginResponse = array(
-                    'token_info' => $this->respondWithToken($token),
-                    'message' => 'success',
-                    'user' => $user,
-                    'spotbie_user' => $spotbieUser
-                );
-
-            } else {
-
-                $loginResponse = array(
-                    'message' => 'really_messed_up_error'
-                );
-
-            }
-
-        } else {
-
-            //If user doesn't exists, let's create their Apple and spotbie account, then log them in.
-            $user = new User();
-
-            $user->username = "USER." . $validatedData["userID"];
-            $user->email = $validatedData['email'];
-            $user->password = null;
-            $user->uuid = Str::uuid();
-
-            $newSpotbieUser = new SpotbieUser();
-
-            $newSpotbieUser->first_name = $firstName;
-            $newSpotbieUser->last_name = $lastName;
-            $newSpotbieUser->user_type = $accountType;
-
-            $fullName = $firstName . ' ' . $lastName;
-            $description = "Hello my name is $fullName. Welcome to my Spotbie profile.";
-
-            $newSpotbieUser->description = $description;
-            $newSpotbieUser->last_known_ip_address = $request->ip;
-
-            DB::transaction(function () use ($user, $newSpotbieUser, $validatedData){
-
-                $user->save();
-                $user->username = $newSpotbieUser->first_name . "." . $newSpotbieUser->last_name . "." . $user->id;
-                $user->save();
-
-                $user->createAsStripeCustomer();
-
-                $newSpotbieUser->id = $user->id;
-                $newSpotbieUser->save();
-
-                $appleUser = new AppleUser();
-
-                $appleUser->apple_user_id = $validatedData["userID"];
-                $appleUser->id = $user->id;
-
-                $loyaltyPointBalance = new LoyaltyPointBalance();
-                $loyaltyPointBalance->id = $user->id;
-                $loyaltyPointBalance->balance = 0;
-
-                if( $newSpotbieUser->user_type == '0')
-                {
-                    $loyaltyPointBalance->reset_balance = 0;
-                    $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
-                }
-
-                $loyaltyPointBalance->save();
-
-                $appleUser->save();
-
-            }, 3);
-
-            //Start the session
-            Auth::login($user, $remember_me);
-            $token = Auth::refresh();
-
-            if( isset( $validatedData['email'] ) ) $this->sendConfirmationEmail();
-
-            if($remember_me == '1'){
-                Auth::user()->remember_token = $token;
-            } else {
-                Auth::user()->remember_token = null;
-            }
-
-            Auth::user()->save();
-
-            $user = Auth::user();
-
-            $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
-
-            $loginResponse = array(
-                'token_info' => $this->respondWithToken($token),
-                'message' => 'success',
-                'user' => $user,
-                'spotbie_user' => $newSpotbieUser
-            );
-
-        }
-
-        return response($loginResponse);
-
     }
 
     public function checkAccountType(int $accountType, User $user)
@@ -1024,11 +287,9 @@ class User extends Authenticatable implements JWTSubject
             $user->spotbieUser->user_type  == 2 ||
             $user->spotbieUser->user_type  == 3
             )
-        )
-        {
+        ) {
             return true;
-        } else if($user->spotbieUser->user_type !== $accountType)
-        {
+        } else if($user->spotbieUser->user_type !== $accountType) {
             return response([
                 "message" => "wrong_account_type",
                 "account_type" => $accountType,
@@ -1040,7 +301,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function logOut(Request $request){
-
         Auth::logout();
 
         $logoutResponse = array(
@@ -1048,11 +308,9 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($logoutResponse);
-
     }
 
     public function closeBrowser(Request $request){
-
         if(Auth::user()->remember_me !== NULL)
             Auth::logout();
 
@@ -1061,13 +319,10 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($logoutResponse);
-
     }
 
     public function checkIfLoggedIn(){
-
         if(Auth::check()){
-
             $msg = '1';
             $user = Auth::user();
 
@@ -1079,7 +334,6 @@ class User extends Authenticatable implements JWTSubject
             } else {
                 $businessMembership = null;
             }
-
         } else {
             $msg = 'not_logged_in';
             $businessMembership = null;
@@ -1093,35 +347,17 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
-    }
-
-    public function getMyStream(Request $request){
-
-        $user = Auth::user();
-
-        $stream_posts = $user->streamPosts;
-
-        $response = array(
-            'message' => $stream_posts
-        );
-
-        return response($response);
-
     }
 
     private function sendConfirmationEmail (){
-
         $user = Auth::user();
         $spotbieUser = $user->spotbieUser()->first();
 
         Mail::to($user->email, $user->username)
         ->send(new AccountCreated($user, $spotbieUser) );
-
     }
 
     public function getSettings(){
-
         $user = Auth::user();
 
         $userSettings = array(
@@ -1131,17 +367,17 @@ class User extends Authenticatable implements JWTSubject
         );
 
         $spotbieUserSettings = $user
-        ->spotbieUser()
-        ->select('user_type', 'first_name', 'last_name', 'phone_number')
-        ->get()[0];
+            ->spotbieUser()
+            ->select('user_type', 'first_name', 'last_name', 'phone_number')
+            ->get()[0];
 
         $business = $user
-        ->business()
-        ->select(
-            'id', 'name', 'description', 'address',
-            'city', 'country', 'line1', 'line2', 'postal_code', 'state', 'categories',
-            'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
-        ->get();
+            ->business()
+            ->select(
+                'id', 'name', 'description', 'address',
+                'city', 'country', 'line1', 'line2', 'postal_code', 'state', 'categories',
+                'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
+            ->get();
 
         $isSubscribed = false;
         $isTrial = false;
@@ -1179,15 +415,17 @@ class User extends Authenticatable implements JWTSubject
     public function saveSettings(Request $request){
         $user = Auth::user();
 
-        if($user->username === $request->username)
+        if($user->username === $request->username) {
             $usernameValidators = 'required|string|max:35|min:1';
-        else
+        } else {
             $usernameValidators = 'required|string|unique:users|max:35|min:1';
+        }
 
-        if($user->email === $request->email)
+        if($user->email === $request->email) {
             $emailValidators = 'required|email';
-        else
+        } else {
             $emailValidators = 'required|email|unique:users';
+        }
 
         $validatedData = $request->validate([
             'username' => $usernameValidators,
@@ -1281,7 +519,6 @@ class User extends Authenticatable implements JWTSubject
             } else if($isFacebookUser){
                 $status = 'social_account';
             }
-
         } else {
             $status = 'invalid_email';
         }
@@ -1298,7 +535,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function completePassReset(Request $request){
-
         $success = true;
 
         $validatedData = $request->validate([
@@ -1330,7 +566,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function changePassword(Request $request){
-
         $success = false;
 
         $user = Auth::user();
@@ -1355,11 +590,9 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
     }
 
     public function deactivate(Request $request){
-
         $success = false;
 
         $user = Auth::user();
@@ -1399,13 +632,11 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
     }
 
     public function activate(){}
 
     public function uniqueEmail(Request $request){
-
         $emailConfirmed = EmailConfirmation::select(
             'email', 'email_is_verified'
         )
@@ -1413,11 +644,11 @@ class User extends Authenticatable implements JWTSubject
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null)
+        if($emailConfirmed !== null) {
             return true;
-        else
+        } else {
             return false;
-
+        }
     }
 
     public function checkConfirm(Request $request){
@@ -1425,7 +656,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function checkIfEmailIsConfirmed($request){
-
         $emailConfirmed = EmailConfirmation::select(
             'email', 'email_is_verified'
         )
@@ -1433,23 +663,21 @@ class User extends Authenticatable implements JWTSubject
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null)
+        if($emailConfirmed !== null) {
             return true;
-        else
+        } else {
             return false;
-
+        }
     }
 
     public function sendCode(Request $request): bool {
-
         $request->validated();
 
         $user = array("email" => $request->email, "first_name" => $request->first_name);
 
         $pin = mt_rand(100000, 999999);
 
-        EmailConfirmation::updateOrCreate(
-            [
+        EmailConfirmation::updateOrCreate([
                 'email' => $request->email,
                 'email_is_verified' => false
             ], [
@@ -1459,7 +687,6 @@ class User extends Authenticatable implements JWTSubject
         Mail::queue(new EmailConfirmationEmail($user, $propertyInfo, $pin, $lang));
 
         return true;
-
     }
 
     public function validateEmailConfirmCode(ValidateEmailConfirmCode $request): bool{
@@ -1484,11 +711,9 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return true;
-
     }
 
     public function checkConfirmCode(CheckEmailConfirmCode $request){
-
         $now = Carbon::now();
 
         $emailConfirmed = EmailConfirmation::select(
@@ -1507,7 +732,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function payBusinessMembership(Request $request){
-
         $validatedData = $request->validate([
             "user" => [
                 "uuid" => ['required', 'string']
@@ -1527,7 +751,6 @@ class User extends Authenticatable implements JWTSubject
         $product_name = config('spotbie.business_subscription_product');
 
         if($userSubscription !== null){
-
             $userStripeId = User::find($user->id)->stripe_id;
 
             $user = Cashier::findBillable($userStripeId);
@@ -1547,12 +770,9 @@ class User extends Authenticatable implements JWTSubject
             $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
 
             DB::transaction(function () use ($adSubscription, $newSubscription){
-
                 $user->subscription_id = $newSubscription->id;
                 $user->save();
-
             }, 3);
-
         }
 
         $businessAd = $adSubscription->refresh();
@@ -1564,11 +784,9 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
     }
 
     public function businessMembership(Request $request){
-
         $validatedData = $request->validate([
             "uuid" => ['required', 'string', 'max:36'],
             "payment_method" => [
@@ -1584,7 +802,6 @@ class User extends Authenticatable implements JWTSubject
         $user = User::where('uuid', $uuid)->get();
 
         if($user->first()){
-
             $userStripeId = $user[0]->stripe_id;
 
             $user = Cashier::findBillable($userStripeId);
@@ -1593,7 +810,6 @@ class User extends Authenticatable implements JWTSubject
 
             //Create the subscription with the payment method provided by the user.
             $newSubscription = $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
-
         }
 
         $user = $user->refresh();
@@ -1604,7 +820,6 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
     }
 
     public function membershipStatus(Request $request)
@@ -1614,15 +829,12 @@ class User extends Authenticatable implements JWTSubject
         ]);
 
         $user = User::where('uuid', $validatedData['uuid'])->get();
-
         $membershipInfo = null;
 
-        if( $user->first() )
-        {
+        if( $user->first() ) {
             $membershipInfo = Cashier::findBillable($user[0]->stripe_id);
 
-            if($membershipInfo !== null)
-            {
+            if($membershipInfo !== null) {
                 $membershipInfo = $membershipInfo->subscribed($user[0]->id);
             }
         }
@@ -1636,17 +848,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function cancelMembership(){
-
         $user = Auth::user();
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
         if( !!is_null($userBillable) ){
-
             if( $userBillable->subscribed($user->id) ){
                 $userBillable->subscription($user->id)->cancelNow();
             }
-
         }
 
         //We also need to cancel all of the user's ads if they have any.
@@ -1654,12 +863,11 @@ class User extends Authenticatable implements JWTSubject
         ->where('business_id', '=', $user->id)
         ->get();
 
-        if( $userAdList->first() )
-        {
-            foreach ( $userAdList as $userAd )
-            {
-                if( $userBillable->subscribed($userAd->id) ) $userBillable->subscription($userAd->id)->cancelNow();
-
+        if( $userAdList->first() ) {
+            foreach ( $userAdList as $userAd ) {
+                if( $userBillable->subscribed($userAd->id) ) {
+                    $userBillable->subscription($userAd->id)->cancelNow();
+                }
                 $userAd->delete();
             }
         }
@@ -1669,7 +877,5 @@ class User extends Authenticatable implements JWTSubject
         );
 
         return response($response);
-
     }
-
 }
