@@ -12,5 +12,3 @@
     | contains the "web" middleware group. Now create something great!
     |
     */
-
-    Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
