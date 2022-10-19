@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Auth;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Http\Request;
-
 use App\Models\Reward;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +25,18 @@ class Business extends Model
         return $this->hasMany('App\Models\Reward', 'business_id', 'id');
     }
 
+    public function loyaltyPointBalance(){
+        return $this->hasOne('App\Models\LoyaltyPointBalance', 'business_id', 'id');
+    }
+
+    public function loyaltyPointLedger(){
+        return $this->hasOne('App\Models\LoyaltyPointLedger', 'business_id', 'id');
+    }
+
+    public function redeemables(){
+        return $this->hasMany('App\Models\RedeemableItems', 'business_id');
+    }
+
     public function ads(){
         return $this->hasMany('App\Models\Ads', 'business_id');
     }
@@ -41,15 +50,6 @@ class Business extends Model
     }
 
     public function verify(Request $request){
-
-        /*
-
-            1. Create the new model
-            2. Update the existing model
-            3. Verifying the business.
-
-        */
-
         $validatedData = $request->validate([
             'name' => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
@@ -71,7 +71,6 @@ class Business extends Model
         $user = Auth::user();
 
         $confirmKeyLifeTime = 'ITS-ON-US-BRO';
-
         $confirmKey = 'K23' . $user->id;
 
         $spotbieBusinessPassKey = $confirmKey;
@@ -99,44 +98,38 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;
 
-        if( !is_null($existingBusiness) )
+        if( !is_null($existingBusiness) ) {
             $business = $user->business;
-        else
+        } else {
             $business = new Business();
+        }
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];
         $business->description = $validatedData['description'];
         $business->slug = Str::slug($business->name);
-
         $business->address = $validatedData['address'];
-
         $business->city = $validatedData['city'];
         $business->country = $validatedData['country'];
         $business->line1 = $validatedData['line1'];
         $business->line2 = $validatedData['line2'];
         $business->postal_code = $validatedData['postal_code'];
         $business->state = $validatedData['state'];
-
         $business->photo = $validatedData['photo'];
         $business->loc_x = $validatedData['loc_x'];
         $business->loc_y = $validatedData['loc_y'];
         $business->categories = $validatedData['categories'];
         $business->is_verified = 1;
-
         $business->qr_code_link = Str::uuid();
 
         $giveTrial = false;
 
         if($existingBusiness){
-
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
                 $user->spotbieUser->save();
             }, 3);
-
         } else {
-
             $user->trial_ends_at = Carbon::now()->addDays(90);
 
             DB::transaction(function () use ($business, $user){
@@ -154,7 +147,6 @@ class Business extends Model
 
         //Check if the user entered a lifetime membership passkey
         if( $isLifeTimeMembership && !is_null($existingSubscription) ){
-
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
@@ -162,9 +154,7 @@ class Business extends Model
             DB::transaction(function () use ($user){
                 $user->save();
             }, 3);
-
         } else if($isLifeTimeMembership) {
-
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
@@ -172,7 +162,6 @@ class Business extends Model
             DB::transaction(function () use ($user){
                 $user->save();
             }, 3);
-
         }
 
         $response = array(
@@ -186,12 +175,6 @@ class Business extends Model
     }
 
     public function saveBusiness(Request $request){
-
-        /*
-            1. Create the new model
-            2. Update the existing model
-        */
-
         $validatedData = $request->validate([
             'name' => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
@@ -216,10 +199,11 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;
 
-        if( !is_null($existingBusiness) )
+        if( !is_null($existingBusiness) ) {
             $business = $user->business;
-        else
+        } else {
             $business = new Business();
+        }
 
         $business->id = $user->id;
         $business->name = $validatedData['name'];

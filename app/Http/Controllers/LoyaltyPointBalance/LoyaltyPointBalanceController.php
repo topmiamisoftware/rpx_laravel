@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\LoyaltyPointBalance;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\LoyaltyPointBalance;
+use App\Models\LoyaltyPointLedger;
 use Illuminate\Http\Request;
 
 class LoyaltyPointBalanceController extends Controller
@@ -14,9 +14,13 @@ class LoyaltyPointBalanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, LoyaltyPointLedger $ledger)
     {
-        //
+        return $ledger->index($request);
+    }
+
+    public function balanceList(LoyaltyPointBalance $loyaltyPointBalance){
+        return $loyaltyPointBalance->balanceList();
     }
 
     /**
@@ -31,20 +35,9 @@ class LoyaltyPointBalanceController extends Controller
     }
 
     /**
-     * Increment the LoyaltyPoint account balance.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function add(LoyaltyPointBalance $loyaltyPointBalance, Request $request)
-    {
-        return $loyaltyPointBalance->add($request);
-    }
-
-    /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointBalance  $LoyaltyPointBalance
+     * @param  \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
      * @return \Illuminate\Http\Response
      */
     public function show(LoyaltyPointBalance $loyaltyPointBalance)
@@ -55,7 +48,7 @@ class LoyaltyPointBalanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointBalance  $LoyaltyPointBalance
+     * @param  \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
      * @return \Illuminate\Http\Response
      */
     public function edit(LoyaltyPointBalance $LoyaltyPointBalance)

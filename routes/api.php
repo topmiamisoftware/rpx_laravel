@@ -16,21 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('user')                       ->group(__DIR__ . '/User/User.routes.php');
-
 Route::prefix('user-location')              ->group(__DIR__ . '/UserLocation/UserLocation.routes.php');
-
 Route::prefix('surroundings')               ->group(__DIR__ . '/Surroundings/SurroundingApi.routes.php');
-
 Route::prefix('in-house')                   ->group(__DIR__ . '/Ads/Ads.routes.php');
-
 Route::prefix('bugs')                       ->group(__DIR__ . '/Bugs/Bugs.routes.php');
-
 Route::prefix('business')                   ->group(__DIR__ . '/Business/Business.routes.php');
-
 Route::prefix('reward')                     ->group(__DIR__ . '/Reward/Reward.routes.php');
-
 Route::prefix('my-favorites')               ->group(__DIR__ . '/MyFavorites/MyFavorites.routes.php');
-
-Route::prefix('loyalty-points')             ->group(__DIR__ . '/LoyaltyPoints/LoyaltyPoints.routes.php');    
-
-Route::prefix('redeemable')                 ->group(__DIR__ . '/Redeemable/Redeemable.routes.php');    
+Route::prefix('loyalty-points')             ->group(__DIR__ . '/LoyaltyPoints/LoyaltyPoints.routes.php');
+Route::prefix('redeemable')                 ->group(__DIR__ . '/Redeemable/Redeemable.routes.php');
