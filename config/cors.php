@@ -14,11 +14,8 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-
     'paths' => ['*'],
-
     'allowed_methods' => ['*'],
-
     //Uncomment this for dev and make sure you include your localhost in this list.*/
 <<<<<<< HEAD
     /*'allowed_origins' => [  'https://localhost:4200',
@@ -36,13 +33,6 @@ return [
                             'https://spotbie-master.netlify.app',
 >>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
     ],
-/*   'allowed_origins' => [
-                            'https://spotbie.com',
-                            'https://demo.spotbie.com',
-                            'https://spotbie-demo.netlify.app',
-                            'https://spotbie-master.netlify.app',
-                            'https://spotbie-staging.netlify.app'
-    ],*/
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
