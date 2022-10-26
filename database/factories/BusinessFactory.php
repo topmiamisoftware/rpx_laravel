@@ -80,24 +80,15 @@ class BusinessFactory extends Factory
 
     public function configure(){
         return $this->afterCreating(function (Business $business) {
-<<<<<<< HEAD
-            $user = User::find($business->id);
-
-=======
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
             $spotbieUser = SpotbieUser::select('user_type')
-            ->where('id', '=', $business->id)
-            ->get()[0];
+                ->where('id', '=', $business->id)
+                ->get()[0];
 
             $userType = $spotbieUser->user_type;
             $business->photo = $this->getBusinessPhoto($userType);
 
             if($business->categories == null){
                 $categories = '';
-<<<<<<< HEAD
-
-=======
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
                 switch($userType){
                     case '1':
                         $categories = array_rand(config("spotbie.my_business_categories_food"), 3);
@@ -127,47 +118,33 @@ class BusinessFactory extends Factory
             $business = Business::find($business->id);
 
             Reward::factory()
-            ->count(7)
-            ->for($business)
-            ->create();
+                ->count(7)
+                ->for($business)
+                ->create();
 
             //Let's make 3 ads of each type for the business.
             Ads::factory()
-            ->state(["type" => 0])
-            ->count(1)
-            ->for($business)
-            ->create();
+                ->state(["type" => 0])
+                ->count(1)
+                ->for($business)
+                ->create();
 
             Ads::factory()
-<<<<<<< HEAD
-            ->state([
-                "type" => 1
-            ])
-=======
-            ->state(["type" => 1])
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
-            ->count(1)
-            ->for($business)
-            ->create();
+                ->state(["type" => 1])
+                ->count(1)
+                ->for($business)
+                ->create();
 
             Ads::factory()
-<<<<<<< HEAD
-            ->state([
-                "type" => 2
-            ])
-            ->count(1)
-            ->for($business)
-            ->create();
-=======
-            ->state(["type" => 2])
-            ->count(1)
-            ->for($business)
-            ->create();
+                ->state(["type" => 2])
+                ->count(1)
+                ->for($business)
+                ->create();
 
             // Award random reward number from business to users.
             $userList = User::where('username', '=', 'agent000')
-                            ->orWhere('username', '=', 'agent001')
-                            ->get();
+                ->orWhere('username', '=', 'agent001')
+                ->get();
 
             var_dump($business->id);
 
@@ -246,30 +223,10 @@ class BusinessFactory extends Factory
                     ]);
                 }
             }
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         });
     }
 
     public function getBusinessPhoto($userType){
-<<<<<<< HEAD
-        $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-
-        switch($userType){
-            case '1':
-                $businessPhotoFolder = 'assets/images/def/places-to-eat/';
-                break;
-            case '2':
-                $businessPhotoFolder = 'assets/images/def/shopping/';
-                break;
-            case '3':
-                $businessPhotoFolder = 'assets/images/def/events/';
-                break;
-        }
-
-        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
-
-        return $businessPhoto;
-=======
         $businessPhotoFolder = match ($userType) {
             1 => 'assets/images/def/places-to-eat/',
             2 => 'assets/images/def/shopping/',
@@ -277,6 +234,5 @@ class BusinessFactory extends Factory
         };
 
         return config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';;
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
     }
 }
