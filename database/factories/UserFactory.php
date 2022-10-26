@@ -39,8 +39,13 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             if(!$user->business){
+                if($user->username === 'agent000' || $user->username === 'agent001'){
+                    $toCreate = 30;
+                } else {
+                    $toCreate = 10;
+                }
                 // Let's attach some Loyalty Point Balances from different stores.
-                for($i = 0; $i < 10; $i++) {
+                for($i = 0; $i < $toCreate; $i++) {
                     // We seed DB with 90 business accounts;
                     $randBusinessId = rand(12, 122);
 

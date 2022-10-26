@@ -4,27 +4,20 @@ namespace App\Models;
 
 use Auth;
 use Image;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use App\Models\Business;
-use App\Models\Reward;
 use App\Helpers\UrlHelper;
 use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Cashier;
-use Laravel\Cashier\Subscription;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
 
 class Ads extends Model
 {
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['business_id'];
@@ -50,15 +43,15 @@ class Ads extends Model
             'spotbie_users.user_type',
             'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'
         )
-        ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-        ->join('loyalty_point_balances', function ($join){
-            $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-            ->where('loyalty_point_balances.balance', '>', 0)
-            ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
-        })
-        ->where('business.is_verified', 1)
-        ->where('spotbie_users.user_type', '=', $userType)
-        ->whereRaw("(
+            ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+            ->join('loyalty_point_balances', function ($join){
+                $join->on('business.id', '=', 'loyalty_point_balances.business_id')
+                    ->where('loyalty_point_balances.balance', '>', 0)
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+            })
+            ->where('business.is_verified', 1)
+            ->where('spotbie_users.user_type', '=', $userType)
+            ->whereRaw("(
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)
             OR (
                     ABS (
@@ -70,10 +63,10 @@ class Ads extends Model
                     <= 0.1
                 )
         )")
-        ->has("rewards")
-        ->inRandomOrder()
-        ->limit(1)
-        ->get();
+            ->has("rewards")
+            ->inRandomOrder()
+            ->limit(1)
+            ->get();
     }
 
     public function nearbyBusiness($loc_x, $loc_y, $category, $userType){
@@ -83,16 +76,16 @@ class Ads extends Model
             'spotbie_users.user_type',
             'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value'
         )
-        ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-        ->join('loyalty_point_balances', function ($join){
-            $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-            ->where('loyalty_point_balances.balance', '>', 0)
-            ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
-        })
-        ->where('business.is_verified', 1)
-        ->where('spotbie_users.user_type', '=', $userType)
-        ->whereJsonContains('business.categories', $category)
-        ->whereRaw("(
+            ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+            ->join('loyalty_point_balances', function ($join){
+                $join->on('business.id', '=', 'loyalty_point_balances.business_id')
+                    ->where('loyalty_point_balances.balance', '>', 0)
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+            })
+            ->where('business.is_verified', 1)
+            ->where('spotbie_users.user_type', '=', $userType)
+            ->whereJsonContains('business.categories', $category)
+            ->whereRaw("(
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)
             OR (
                     ABS (
@@ -104,18 +97,15 @@ class Ads extends Model
                     <= 0.1
                 )
         )")
-        ->has("rewards")
-        ->inRandomOrder()
-        ->limit(1)
-        ->get();
+            ->has("rewards")
+            ->inRandomOrder()
+            ->limit(1)
+            ->get();
     }
 
     private function returnCategory($categories, $accountType){
         if($categories == -1){
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
             $parentCategory = null;
 
             switch($accountType){
@@ -151,6 +141,7 @@ class Ads extends Model
         $accountType = $validatedData['account_type'];
 
         if( isset($validatedData['id']) ){
+
             $ad = Ads::find($validatedData['id']);
 
             $this->addClickToAd($ad);
@@ -158,8 +149,8 @@ class Ads extends Model
             $business = Business::find($ad->business_id);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $business->id)
-            ->get());
+                ->where('business_id', '=', $business->id)
+                ->get());
 
             $response = array(
                 "success" => true,
@@ -189,19 +180,14 @@ class Ads extends Model
         $nearbyBusiness = $nearbyBusiness->first();
 
         if( is_null($nearbyBusiness) ) {
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
             $ad = $this->getSpotbieAd(0);
 
             $nearbyBusiness = null;
             $totalRewards = 0;
-        } else {
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
+        } else {
+
             $ad = $this->nearbyAd($nearbyBusiness->id, 0);
 
             while( !$ad->first() )
@@ -218,8 +204,8 @@ class Ads extends Model
             $this->addViewToAd($ad);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->get());
+                ->where('business_id', '=', $nearbyBusiness->id)
+                ->get());
         }
 
         $response = array(
@@ -241,10 +227,7 @@ class Ads extends Model
     }
 
     public function addClickToAd(Ads $ad){
-<<<<<<< HEAD
-=======
         //Add click to ad.
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         DB::transaction(function () use ($ad) {
             $ad->views++;
             $ad->clicks++;
@@ -253,32 +236,30 @@ class Ads extends Model
     }
 
     public function addViewToAd(Ads $ad){
-        DB::transaction(function () use ($ad) {
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
+        //Add click to ad.
+        DB::transaction(function () use ($ad) {
+
             $ad->views++;
+
             $ad->save();
 
         }, 3);
+
     }
 
     public function getByUuid(Request $request){
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         $validatedData = $request->validate([
             'uuid' => 'required|string'
         ]);
 
         $ad = Ads::select('*')
-        ->where('uuid', '=', $validatedData['uuid'])
-        ->first();
+            ->where('uuid', '=', $validatedData['uuid'])
+            ->first();
 
         $business = Business::where('id', '=', $ad->business_id)
-        ->first();
+            ->first();
 
         $response = array(
             "success" => true,
@@ -301,6 +282,7 @@ class Ads extends Model
         $accountType = $validatedData['account_type'];
 
         if( isset($validatedData['id']) ){
+
             $ad = Ads::find($validatedData['id']);
 
             $this->addClickToAd($ad);
@@ -308,10 +290,8 @@ class Ads extends Model
             $business = Business::find($ad->business_id);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $business->id)
-            ->get());
-<<<<<<< HEAD
-=======
+                ->where('business_id', '=', $business->id)
+                ->get());
 
             $response = array(
                 "success" => true,
@@ -363,8 +343,8 @@ class Ads extends Model
             $this->addViewToAd($ad);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->get());
+                ->where('business_id', '=', $nearbyBusiness->id)
+                ->get());
         }
 
         $response = array(
@@ -379,7 +359,7 @@ class Ads extends Model
 
     public function nearbyAd($businessId, $type){
         return Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
+        select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
             ->where('type', $type)
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
@@ -410,9 +390,8 @@ class Ads extends Model
             $business = Business::find($ad->business_id);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $business->id)
-            ->get());
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
+                ->where('business_id', '=', $business->id)
+                ->get());
 
             $response = array(
                 "success" => true,
@@ -421,7 +400,6 @@ class Ads extends Model
                 "totalRewards" => $totalRewards
             );
 
-<<<<<<< HEAD
             return response($response);
         }
 
@@ -443,116 +421,18 @@ class Ads extends Model
         $nearbyBusiness = $nearbyBusiness->first();
 
         if( is_null($nearbyBusiness) ) {
-            $ad = $this->getSpotbieAd(2);
 
-            $nearbyBusiness = null;
-            $totalRewards = 0;
-        } else {
-            $ad = $this->nearbyAd($nearbyBusiness->id, 0);
-
-            while( !$ad->first() )
-            {
-                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if($nearbyBusiness->first()) $ad = $this->nearbyAd($nearbyBusiness->first()->id, 2);
-            }
-
-            $ad = $ad->first();
-
-            $this->addViewToAd($ad);
-
-            $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->get());
-        }
-
-        $response = array(
-            "success" => true,
-            "business" => $nearbyBusiness,
-            "ad" => $ad,
-            "totalRewards" => $totalRewards
-        );
-
-        return response($response);
-    }
-
-    public function nearbyAd($businessId, $type){
-        return Ads::
-            select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
-            ->where('type', $type)
-            ->where('business_id', '=', $businessId)
-            ->where('is_live', '=', 1)
-            ->inRandomOrder()
-            ->limit(1)->get();
-    }
-
-    public function featuredAdList(Request $request){
-        $validatedData = $request->validate([
-            'loc_x' => 'max:90|min:-90|numeric',
-            'loc_y' => 'max:180|min:-180|numeric',
-            'categories' => 'numeric',
-            'id' => 'nullable|numeric',
-            'account_type' => 'nullable|numeric'
-        ]);
-
-        $accountType = $validatedData['account_type'];
-
-        $totalRewards = 0;
-
-        if( isset($validatedData['id']) ) {
-            $ad = Ads::find($validatedData['id']);
-
-            $this->addClickToAd($ad);
-
-            $business = Business::find($ad->business_id);
-
-            $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $business->id)
-            ->get());
-
-            $response = array(
-                "success" => true,
-                "business" => $business,
-                "ad" => $ad,
-                "totalRewards" => $totalRewards
-            );
-
-=======
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
-            return response($response);
-        }
-
-        $loc_x = $validatedData['loc_x'];
-        $loc_y = $validatedData['loc_y'];
-
-        $categories = $validatedData['categories'];
-
-        $categories = $this->returnCategory($categories, $accountType);
-
-        $ad = null;
-
-        //Get a nearby business.
-        $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
-
-        if( !$nearbyBusiness->first() )
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-
-        $nearbyBusiness = $nearbyBusiness->first();
-
-        if( is_null($nearbyBusiness) ) {
-<<<<<<< HEAD
-=======
-
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
             $ad = $this->getSpotbieAdList();
 
             $nearbyBusiness = null;
             $totalRewards = 0;
+
         } else {
+
             $ad = $this->nearbyAd($nearbyBusiness->id, 1);
 
             $j = 10;
             $k = 0;
-
             while( !$ad->first() )
             {
                 if($k == 10) break;
@@ -580,8 +460,8 @@ class Ads extends Model
             $this->addViewToAd($ad);
 
             $totalRewards = count(Reward::select('business_id')
-            ->where('business_id', '=', $nearbyBusiness->id)
-            ->get());
+                ->where('business_id', '=', $nearbyBusiness->id)
+                ->get());
         }
 
         $response = array(
@@ -592,13 +472,11 @@ class Ads extends Model
         );
 
         return response($response);
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
     }
 
     public function uploadMedia(Request $request){
+
         $success = true;
         $message = null;
 
@@ -637,22 +515,22 @@ class Ads extends Model
         );
 
         return response($response);
+
     }
 
     public function index(){
+
         $user = Auth::user();
 
         if(!$user){
+
             $response = array(
                 "success" => false,
                 "message" => "You are not authorized to view this content."
             );
 
             return response($response);
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         }
 
         $adList = $user->business->ads()->get();
@@ -663,9 +541,11 @@ class Ads extends Model
         );
 
         return response($response);
+
     }
 
     public function create(Request $request){
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:75|min:1',
             'images' => 'required|string|max:500|min:1',
@@ -675,13 +555,7 @@ class Ads extends Model
 
         $user = Auth::user();
 
-<<<<<<< HEAD
-        if($user) {
-            $business = $user->business;
-        }
-=======
         if($user) $business = $user->business;
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
 
         $businessAd = new Ads();
 
@@ -708,14 +582,11 @@ class Ads extends Model
         }
 
         DB::transaction(function () use ($businessAd){
+
             $businessAd->save();
+
         }, 3);
 
-<<<<<<< HEAD
-=======
-        }, 3);
-
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         $newAd = $businessAd->refresh();
 
         $response = array(
@@ -724,13 +595,11 @@ class Ads extends Model
         );
 
         return response($response);
+
     }
 
     public function savePayment(Request $request){
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         $validatedData = $request->validate([
             "ad" => [
                 "id" => ['required', 'string']
@@ -744,7 +613,7 @@ class Ads extends Model
         $paymentMethodId = $validatedData['payment_method']['id'];
 
         $adSubscription = Ads::where('id', '=', $adId)
-        ->first();
+            ->first();
 
         $price_name = config('spotbie.header_banner_price');
 
@@ -761,6 +630,7 @@ class Ads extends Model
         }
 
         if($adSubscription !== null){
+
             $userId = $adSubscription->business_id;
 
             $userStripeId = User::find($userId)->stripe_id;
@@ -789,10 +659,7 @@ class Ads extends Model
                 $adSubscription->save();
 
             }, 3);
-<<<<<<< HEAD
-=======
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         }
 
         $businessAd = $adSubscription->refresh();
@@ -804,9 +671,11 @@ class Ads extends Model
         );
 
         return response($response);
+
     }
 
     public function updateModel(Request $request){
+
         $validatedData = $request->validate([
             'id' => 'required|numeric',
             'name' => 'required|string|max:75|min:1',
@@ -858,40 +727,32 @@ class Ads extends Model
     }
 
     public function deleteModel(Request $request){
+
         $validatedData = $request->validate([
             'id' => 'required|numeric'
         ]);
 
         $user = Auth::user();
-<<<<<<< HEAD
-        $adToDelete = $validatedData['id'];
-
-        if($user){
-=======
 
         $adToDelete = $validatedData['id'];
 
         if($user){
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
             $userBillable = Cashier::findBillable($user->stripe_id);
+
             $userBillable->subscription($adToDelete)->cancelNow();
 
             DB::transaction(function () use ($user, $adToDelete){
+
                 Ads::where('id', $adToDelete)
-                ->update([
-                    "is_live" => 0
-                ]);
-<<<<<<< HEAD
-                Ads::where('id', $adToDelete)->delete();
-            }, 3);
-=======
+                    ->update([
+                        "is_live" => 0
+                    ]);
 
                 Ads::where('id', $adToDelete)->delete();
 
             }, 3);
 
->>>>>>> 18d6b465f0d3dc22f380da7a63cfc3045d0c3afe
         }
 
         $response = array(
@@ -899,5 +760,7 @@ class Ads extends Model
         );
 
         return response($response);
+
     }
+
 }
