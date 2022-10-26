@@ -16,9 +16,9 @@ return [
     */
     'paths' => ['*'],
     'allowed_methods' => ['*'],
-    //Uncomment this for dev and make sure you include your localhost in this list.*/
     'allowed_origins' => ['https://spotbie.com',
                             'https://localhost',
+                            'app://localhost',
                             'https://spotbie-master.netlify.app',
     ],
     'allowed_origins_patterns' => [],
