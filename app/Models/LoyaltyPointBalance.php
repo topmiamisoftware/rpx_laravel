@@ -30,6 +30,7 @@ class LoyaltyPointBalance extends Model
 
         if($user->spotbieUser->user_type === 4){
             $balanceList = $user->loyaltyPointBalance()
+                ->whereHas('fromBusiness')
                 ->with('fromBusiness', function ($query) {
                     $query->with('spotbieUser');
                 })

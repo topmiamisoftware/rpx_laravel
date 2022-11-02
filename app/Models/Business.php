@@ -239,12 +239,10 @@ class Business extends Model
         );
 
         return response($response);
-
     }
 
 
     public function getGooglePlacesToEat(Request $request){
-
         $request->validate([
             'url'    => 'required|string|max:250|min:1',
             'bearer' => 'required|string|max:250|min:1'
@@ -283,7 +281,6 @@ class Business extends Model
     }
 
     public function show(Request $request){
-
         $validatedData = $request->validate([
             'qrCodeLink' => ['required', 'string']
         ]);
@@ -295,7 +292,7 @@ class Business extends Model
             'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-        ->join('loyalty_point_balances', 'business.id', '=', 'loyalty_point_balances.id')
+        ->join('loyalty_point_balances', 'business.id', '=', 'loyalty_point_balances.from_business')
         ->where('qr_code_link', $validatedData['qrCodeLink'])
         ->get()[0];
 
