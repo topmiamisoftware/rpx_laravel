@@ -33,10 +33,10 @@
         'my_line_1' => env('MY_LINE_1', '4091 W. 9th Ln'),
         'my_zip_code' => env('MY_ZIP_CODE', '33012'),
 
-        'default_images_path' => env('DEFAULT_IMAGES_PATH', 'https://api.spotbie.com/defaults/'),
-        'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api.spotbie.com/backgrounds/'),
-        'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api.spotbie.com/rewards-media/images/'),
-        'ad_images_path' => env('AD_IMAGES_PATH', 'https://api.spotbie.com/ad-media/images/'),
+        'default_images_path' => env('DEFAULT_IMAGES_PATH', 'https://api-demo.spotbie.com/defaults/'),
+        'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api-demo.spotbie.com/backgrounds/'),
+        'rewards_images_path' => env('REWARDS_IMAGES_PATH', 'https://api-demo.spotbie.com/rewards-media/images/'),
+        'ad_images_path' => env('AD_IMAGES_PATH', 'https://api-demo.spotbie.com/ad-media/images/'),
 
         'business_pass_key' => env('SPOTBIE_BUSINESS_PASSKEY'),
 

@@ -16,10 +16,10 @@ return [
     */
     'paths' => ['*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['https://spotbie.com',
+    'allowed_origins' => ['https://demo.spotbie.com',
                             'https://localhost',
                             'app://localhost',
-                            'https://spotbie-master.netlify.app',
+                            'https://spotbie-demo.netlify.app',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
