@@ -287,12 +287,11 @@ class Business extends Model
 
         $business = Business::select(
             'business.qr_code_link', 'business.name', 'business.categories', 'business.description',
-            'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y',
+            'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y', 'business.id',
             'spotbie_users.user_type',
-            'loyalty_point_balances.balance', 'loyalty_point_balances.loyalty_point_dollar_percent_value',
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-        ->join('loyalty_point_balances', 'business.id', '=', 'loyalty_point_balances.from_business')
+        ->with('loyaltyPointBalance')
         ->where('qr_code_link', $validatedData['qrCodeLink'])
         ->get()[0];
 

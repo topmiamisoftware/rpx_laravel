@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="Fixed user type save on business verify" />
+    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="Lp Aggregator fix">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Ads.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Ads.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Business.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Business.php" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -181,7 +185,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/spotbie/spotbie_laravel&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/spotbie/spotbie_laravel/app/Models&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -190,6 +194,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Models" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner scope="XML" />
@@ -235,6 +244,9 @@
       <workItem from="1664754349039" duration="1799000" />
       <workItem from="1664815068909" duration="14000" />
       <workItem from="1664855551282" duration="5160000" />
+      <workItem from="1667444274538" duration="8890000" />
+      <workItem from="1667490739157" duration="16211000" />
+      <workItem from="1667545767096" duration="1902000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the subscription with regular key issue.">
       <created>1657433063930</created>
@@ -278,7 +290,35 @@
       <option name="project" value="LOCAL" />
       <updated>1664865470485</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Lp &amp; business ad fix">
+      <created>1667364821490</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1667364821490</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Lp &amp; business ad fix">
+      <created>1667365172412</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1667365172412</updated>
+    </task>
+    <task id="LOCAL-00009" summary="cors fix">
+      <created>1667447861712</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1667447861712</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Lp Aggregator fix">
+      <created>1667536950541</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1667536950541</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -300,6 +340,9 @@
     <MESSAGE value="Some cors stuff for cordova." />
     <MESSAGE value="Some cors stuff localhost" />
     <MESSAGE value="Fixed user type save on business verify" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed user type save on business verify" />
+    <MESSAGE value="Lp &amp; business ad fix" />
+    <MESSAGE value="cors fix" />
+    <MESSAGE value="Lp Aggregator fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Lp Aggregator fix" />
   </component>
 </project>

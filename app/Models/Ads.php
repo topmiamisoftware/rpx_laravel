@@ -140,7 +140,7 @@ class Ads extends Model
 
         $accountType = $validatedData['account_type'];
 
-        if( isset($validatedData['id']) ){
+        if( !is_null($validatedData['id']) ){
 
             $ad = Ads::find($validatedData['id']);
 
