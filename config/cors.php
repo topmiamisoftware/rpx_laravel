@@ -17,6 +17,7 @@ return [
     'paths' => ['*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => ['https://demo.spotbie.com',
+                            'https://spotbie.com',
                             'https://localhost',
                             'https://localhost:4200',
                             'app://localhost',
