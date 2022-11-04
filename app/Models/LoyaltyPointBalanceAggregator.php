@@ -45,7 +45,7 @@ class LoyaltyPointBalanceAggregator extends Model
                     'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value,
                 ]);
 
-                $loyaltyPointBalance = $user->business->loyaltyPointBalance;\
+                $loyaltyPointBalance = $user->business->loyaltyPointBalance;
             }
 
             $response = array(
