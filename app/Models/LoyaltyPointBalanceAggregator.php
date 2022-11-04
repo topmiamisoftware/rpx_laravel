@@ -29,7 +29,11 @@ class LoyaltyPointBalanceAggregator extends Model
                 'loyalty_points' => $loyaltyPointBalanceAggregate
             );
         } else {
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get()[0];
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get();
+
+            if(count($loyaltyPointBalance) === 0){
+                $loyaltyPointBalance = 0;
+            }
 
             $response = array(
                 'success' => true,
