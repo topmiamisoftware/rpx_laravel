@@ -105,6 +105,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\Models\LoyaltyPointBalance', 'id');
     }
 
+    public function loyaltyPointBalanceAggregator(){
+        return $this->hasOne('App\Models\LoyaltyPointBalanceAggregator', 'id');
+    }
+
     public function loyaltyPointLedger(){
         return $this->hasMany('App\Models\LoyaltyPointLedger', 'user_id');
     }

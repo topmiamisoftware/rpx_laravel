@@ -18,6 +18,9 @@ use Illuminate\Http\Request;
  * @property mixed $loyalty_point_dollar_percent_value
  * @property mixed $dollar_value
  * @property mixed $total_spent
+ * @property mixed redeemer_id
+ * @property mixed reward_id
+ * @property mixed ledger_record_id
  * @property mixed $amount
  * @property mixed|\Ramsey\Uuid\UuidInterface $uuid
  */
@@ -166,21 +169,21 @@ class RedeemableItems extends Model
                     "balance" => $newBusinessBalance
                 ]);
 
+                $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
+                $user->loyaltyPointBalanceAggregator->save();
+
                 $user->loyaltyPointBalance()->where('from_business', $redeemable->business_id)->update([
                     "balance" => $newUserBalance
                 ]);
             }, 3);
 
             $redeemable->refresh();
-
-            $loyaltyPoints = $user->loyaltyPointBalance()
-                ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
-                ->get();
+            $user->loyaltyPointBalanceAggregator->refresh();
 
             $response = array(
                 "success" => true,
                 "redeemable" => $redeemable,
-                "loyalty_points" => $loyaltyPoints
+                "loyalty_points" => $user->loyaltyPointBalanceAggregator->balance
             );
 
             return response($response);

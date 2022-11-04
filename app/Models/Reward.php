@@ -118,6 +118,15 @@ class Reward extends Model
             $reward = Reward::where('uuid', $validatedData['redeemableHash'])->get()->first();
 
             if($reward) {
+
+                $rewardLedgerRecord = $user->loyaltyPointLedger()->create([
+                    'uuid' => Str::uuid(),
+                    'business_id' => $reward->business_id,
+                    'loyalty_amount' => -($reward->point_cost),
+                    'user_id' => $user->id,
+                    'type' => 'reward_expense'
+                ]);
+
                 $redeemed = new RedeemableItems();
                 $redeemed->uuid = Str::uuid();
                 $redeemed->business_id = $reward->business_id;
@@ -125,11 +134,11 @@ class Reward extends Model
                 $redeemed->total_spent = $reward->point_cost;
                 $redeemed->redeemed = true;
                 $redeemed->reward_id = $reward->id;
-
-                $redeemed->dollar_value = floatval($reward->point_cost * ($user->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100) );
+                $redeemed->dollar_value = floatval($reward->point_cost * ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100) );
+                $redeemed->ledger_record_id = $rewardLedgerRecord->id;
 
                 //Check if the user has enough LP to claim this reward.
-                $balanceAfterRedeeming = $user->loyaltyPointBalance->balance - $reward->point_cost;
+                $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
 
                 if($balanceAfterRedeeming < 0){
                     //Deny the transaction.
@@ -141,11 +150,11 @@ class Reward extends Model
                 }
 
                 //Charge the user the LP Cost.
-                $user->loyaltyPointBalance->balance = $balanceAfterRedeeming;
+                $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
 
                 DB::transaction(function () use ($user, $redeemed){
                     $redeemed->save();
-                    $user->loyaltyPointBalance->save();
+                    $user->loyaltyPointBalanceAggregator->save();
                 });
             }
             $success = true;
@@ -154,7 +163,7 @@ class Reward extends Model
         $response = response([
             "success" => $success,
             "reward" => $reward,
-            "loyalty_points" => $user->loyaltyPointBalance
+            "loyalty_points" => $user->loyaltyPointBalanceAggregator->balance
         ]);
 
         return $response;

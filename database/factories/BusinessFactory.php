@@ -155,10 +155,10 @@ class BusinessFactory extends Factory
 
                 while(1000 > $balance) {
                     $randCreatedAt = Carbon::now()->subDays(rand(1, 55))->subSeconds(rand(1, 55));
-                    $randLp = rand(0, 250); // The LP awarded to user for spending at the business.
 
-                    $totalSpent = ($businessLp->loyalty_point_dollar_percent_value / 100) * $randLp; // How much the user spent in dollars.
+                    $totalSpent = rand(10, 250);; // How much the user spent in dollars.
                     $dollarValue = $totalSpent * ($businessLp->loyalty_point_dollar_percent_value / 100); // The dollar value of the LP being awarded.
+                    $randLp = ($dollarValue * 100) / $businessLp->loyalty_point_dollar_percent_value; // The LP awarded to user for spending at the business.
 
                     $ledgerRecord = $user->loyaltyPointLedger()->create([
                         'uuid' => Str::uuid(),
@@ -211,8 +211,8 @@ class BusinessFactory extends Factory
                     $user->redeemed()->create([
                         'uuid' => Str::uuid(),
                         'business_id' => $business->id,
-                        'amount' => $randomReward->point_cost,
-                        'total_spent' => 0,
+                        'amount' => 0,
+                        'total_spent' => $randomReward->point_cost,
                         'dollar_value' => $dollarValue,
                         'loyalty_point_dollar_percent_value' => $businessLp->loyalty_point_dollar_percent_value,
                         'redeemed' => 1,

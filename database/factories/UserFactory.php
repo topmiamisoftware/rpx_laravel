@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Business;
 use App\Models\LoyaltyPointBalance;
+use App\Models\LoyaltyPointBalanceAggregator;
 use App\Models\RedeemableItems;
 use App\Models\User;
 use Carbon\Carbon;
@@ -44,6 +45,7 @@ class UserFactory extends Factory
                 } else {
                     $toCreate = 10;
                 }
+                $aggregateBalance = 0;
                 // Let's attach some Loyalty Point Balances from different stores.
                 for($i = 0; $i < $toCreate; $i++) {
                     // We seed DB with 90 business accounts;
@@ -53,12 +55,18 @@ class UserFactory extends Factory
                         $randBusinessId = rand(12, 122);
                     }
 
+                    $balance = rand(1000, 2000);
                     $user->loyaltyPointBalance()->create([
-                        'balance' => rand(1000, 2000),
+                        'balance' => $balance,
                         'from_business' => $randBusinessId,
                         'business_id' => 0,
                     ]);
+                    $aggregateBalance += $balance;
                 }
+                $lpAggregator = new LoyaltyPointBalanceAggregator();
+                $lpAggregator->id = $user->id;
+                $lpAggregator->balance = $aggregateBalance;
+                $lpAggregator->save();
             }
         });
     }

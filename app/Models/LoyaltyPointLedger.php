@@ -20,6 +20,8 @@ class LoyaltyPointLedger extends Model
 
     public $table = 'loyalty_point_ledger';
 
+    public $fillable = ['uuid', 'business_id', 'loyalty_amount', 'user_id', 'type'];
+
     public function business(){
         return $this->hasOne('App\Models\Business', 'id', 'business_id');
     }
