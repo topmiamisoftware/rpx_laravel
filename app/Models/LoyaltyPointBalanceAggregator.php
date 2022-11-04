@@ -36,7 +36,7 @@ class LoyaltyPointBalanceAggregator extends Model
                 $reset_balance = 0;
                 $balance = $reset_balance;
                 $end_of_month = Carbon::now();
-                $loyalty_point_dollar_percent_value = null;
+                $loyalty_point_dollar_percent_value = 0;
 
                 $user->business->loyaltyPointBalance()->create([
                     'balance' => $balance,
