@@ -39,8 +39,8 @@ class LoyaltyPointBalanceAggregator extends Model
                 $loyalty_point_dollar_percent_value = 0;
 
                 $user->business->loyaltyPointBalance()->create([
-                    'id' => 0,
-                    'from_business' => 0,
+                    'id' => '0',
+                    'from_business' => '0',
                     'balance' => $balance,
                     'reset_balance' => $reset_balance,
                     'end_of_month' => $end_of_month,
