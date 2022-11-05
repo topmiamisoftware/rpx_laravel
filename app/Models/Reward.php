@@ -60,7 +60,7 @@ class Reward extends Model
 
         $response = array(
             'success' => $success,
-            'message' => $message,
+            'message' => $environment,
             'image' => $imagePath
         );
 
