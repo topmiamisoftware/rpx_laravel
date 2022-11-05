@@ -158,15 +158,12 @@ class User extends Authenticatable implements JWTSubject
             $newSpotbieUser->id = $user->id;
             $newSpotbieUser->save();
 
-            $loyaltyPointBalance->id = $user->id;
-            $loyaltyPointBalance->balance = 0;
-
-            if( $newSpotbieUser->user_type == '0' ){
-                $loyaltyPointBalance->reset_balance = 0;
-                $loyaltyPointBalance->end_of_month = Carbon::now()->addMonth();
+            if( $newSpotbieUser->user_type != '0' ){
+                $lpAggregator = new LoyaltyPointBalanceAggregator();
+                $lpAggregator->id = $user->id;
+                $lpAggregator->balance = 0;
+                $lpAggregator->save();
             }
-
-            $loyaltyPointBalance->save();
         }, 3);
 
         $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Auth;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,32 +22,18 @@ class LoyaltyPointBalanceAggregator extends Model
         $user = Auth::user();
 
         if(!$user->business){
-            $loyaltyPointBalanceAggregate = $user->loyaltyPointBalanceAggregator->balance;
+            if($user->loyaltyPointBalanceAggregator){
+                $loyaltyPointBalanceAggregate = $user->loyaltyPointBalanceAggregator->balance;
+            } else {
+                $loyaltyPointBalanceAggregate = 0;
+            }
 
             $response = array(
                 'success' => true,
                 'loyalty_points' => $loyaltyPointBalanceAggregate
             );
         } else {
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get();
-
-            if(count($loyaltyPointBalance) === 0){
-                $reset_balance = 0;
-                $balance = $reset_balance;
-                $end_of_month = Carbon::now();
-                $loyalty_point_dollar_percent_value = 0;
-
-                $user->business->loyaltyPointBalance()->create([
-                    'id' => '0',
-                    'from_business' => '0',
-                    'balance' => $balance,
-                    'reset_balance' => $reset_balance,
-                    'end_of_month' => $end_of_month,
-                    'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value,
-                ]);
-
-                $loyaltyPointBalance = $user->business->loyaltyPointBalance;
-            }
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get()[0];
 
             $response = array(
                 'success' => true,

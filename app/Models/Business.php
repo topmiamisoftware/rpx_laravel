@@ -231,6 +231,18 @@ class Business extends Model
         DB::transaction(function () use ($business, $user){
             $business->save();
             $user->spotbieUser->save();
+
+            $business->refresh();
+
+            $lpBalance = new LoyaltyPointBalance();
+            $lpBalance->id = 0;
+            $lpBalance->from_business = 0;
+            $lpBalance->business_id = $business->id;
+            $lpBalance->balance = 0;
+            $lpBalance->reset_balance = 0;
+            $lpBalance->loyalty_point_dollar_percent_value = 0;
+            $lpBalance->end_of_month = Carbon::now()->addMonth();
+            $lpBalance->save();
         }, 3);
 
         $response = array(
