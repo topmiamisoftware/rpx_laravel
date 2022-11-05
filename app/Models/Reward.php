@@ -55,7 +55,7 @@ class Reward extends Model
             $imagePath = config('app.url') . '/' . $imagePath;
         } else {
             Storage::put($imagePath, $newFile, 'public');
-            $imagePath = Storage::url($imagePath);
+            $imagePath = config('app.url') . '/' . $imagePath;
         }
 
         $response = array(
