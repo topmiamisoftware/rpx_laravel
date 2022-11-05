@@ -52,7 +52,7 @@ class Reward extends Model
 
         if($environment == 'local'){
             Storage::put($imagePath, $newFile);
-            $imagePath = config('app.url') . Storage::url($imagePath);
+            $imagePath = config('app.url') . '/' . $imagePath;
         } else {
             Storage::put($imagePath, $newFile, 'public');
             $imagePath = Storage::url($imagePath);
