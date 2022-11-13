@@ -26,6 +26,7 @@ use Laravel\Cashier\Cashier;
 
 /**
  * @property mixed $business
+ * @property mixed $trial_ends_at
  */
 class User extends Authenticatable implements JWTSubject
 {
@@ -34,6 +35,8 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'trial_ends_at' => 'date',
     ];
+
+    protected $fillable = ['trial_ends_at'];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -392,7 +395,12 @@ class User extends Authenticatable implements JWTSubject
 
             $isSubscribed = $userBillable->subscribed($user->id);
 
-            if($trialEndsAt !== null && $trialEndsAt->gt( Carbon::now() ) ) $isTrial = true;
+            if($trialEndsAt !== null && $trialEndsAt->gt( Carbon::now() ) && !$isSubscribed) $isTrial = true;
+
+            if($isSubscribed){
+                $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+            }
+
         } else {
             $business = null;
             $isSubscribed = false;
@@ -810,7 +818,11 @@ class User extends Authenticatable implements JWTSubject
             $user->updateDefaultPaymentMethod($paymentMethodId);
 
             //Create the subscription with the payment method provided by the user.
-            $newSubscription = $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
+            $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
+
+            //Set existing trial_ends_at to now
+            $user->trial_ends_at = Carbon::now();
+            $user->save();
         }
 
         $user = $user->refresh();

@@ -124,15 +124,17 @@ class Business extends Model
 
         $giveTrial = false;
 
+        $userBillable = Cashier::findBillable($user->stripe_id);
+
+        $user->update(['trial_ends_at' => Carbon::now()->addDays(90)]);
+
         if($existingBusiness){
             DB::transaction(function () use ($business, $user){
                 $user->business->save();
                 $user->spotbieUser->save();
             }, 3);
         } else {
-            $user->trial_ends_at = Carbon::now()->addDays(90);
-
-            DB::transaction(function () use ($business, $user){
+            DB::transaction(function () use ($business, $user, $userBillable){
                 $business->save();
                 $user->spotbieUser->save();
                 $user->save();
@@ -140,8 +142,6 @@ class Business extends Model
 
             $giveTrial = true;
         }
-
-        $userBillable = Cashier::findBillable($user->stripe_id);
 
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->id)->first();
 
