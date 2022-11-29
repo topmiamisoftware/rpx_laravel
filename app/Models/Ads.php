@@ -188,10 +188,10 @@ class Ads extends Model
         } else {
             $ad = $this->nearbyAd($nearbyBusiness->id, 0);
 
-            while( !$ad[0] )
+            while( count($ad[0]) === 0)
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if($nearbyBusiness[0]) {
+                if(count($nearbyBusiness) > 0) {
                     $nearbyBusiness = $nearbyBusiness[0];
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
                 }
@@ -329,7 +329,9 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if($nearbyBusiness[0]) $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
+                if(count($nearbyBusiness) > 0){
+                    $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
+                }
             }
 
             $ad = $ad[0];
@@ -424,16 +426,16 @@ class Ads extends Model
             $j = 10;
             $k = 0;
             while( count($ad) === 0) {
-                if($k == 10) break;
+                if($k === 10) break;
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if($nearbyBusiness[0]){
+                if(count($nearbyBusiness) > 0){
                     $nearbyBusiness = $nearbyBusiness[0];
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 1);
                 }
                 $k++;
             }
 
-            if($ad == null){
+            if( is_null($ad) ){
                 $response = array(
                     "success" => true,
                     "business" => null,
