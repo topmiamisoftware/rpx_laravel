@@ -312,7 +312,7 @@ class Ads extends Model
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if( !$nearbyBusiness[0] ) {
+        if( count($nearbyBusiness) === 0) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
