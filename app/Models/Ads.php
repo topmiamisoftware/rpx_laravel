@@ -193,7 +193,7 @@ class Ads extends Model
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
                 if( !is_null($nearbyBusiness[0]) ) {
                     $nearbyBusiness = $nearbyBusiness[0];
-                    $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
+                    $ad = $this->nearbyAd($nearbyBusiness->id, 0);
                 }
             }
 
@@ -426,7 +426,7 @@ class Ads extends Model
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
                 if( !is_null($nearbyBusiness[0]) ){
                     $nearbyBusiness = $nearbyBusiness[0];
-                    $ad = $this->nearbyAd($nearbyBusiness[0]->id, 1);
+                    $ad = $this->nearbyAd($nearbyBusiness->id, 1);
                 }
                 $k++;
             }
