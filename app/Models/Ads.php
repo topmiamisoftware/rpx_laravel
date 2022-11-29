@@ -52,17 +52,17 @@ class Ads extends Model
             ->where('business.is_verified', 1)
             ->where('spotbie_users.user_type', '=', $userType)
             ->whereRaw("(
-            (business.loc_x = $loc_x AND business.loc_y = $loc_y)
-            OR (
-                    ABS (
-                            SQRT    (
-                                        (POWER ( (business.loc_x - $loc_x), 2) ) +
-                                        (POWER ( (business.loc_y - $loc_y), 2) )
-                                    )
-                        )
-                    <= 0.1
-                )
-        )")
+                (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+                OR (
+                        ABS (
+                                SQRT    (
+                                            (POWER ( (business.loc_x - $loc_x), 2) ) +
+                                            (POWER ( (business.loc_y - $loc_y), 2) )
+                                        )
+                            )
+                        <= 0.1
+                    )
+            )")
             ->has("rewards")
             ->inRandomOrder()
             ->limit(1)
@@ -191,7 +191,7 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if(count($nearbyBusiness) > 0) {
+                if( !is_null($nearbyBusiness[0]) ) {
                     $nearbyBusiness = $nearbyBusiness[0];
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
                 }
@@ -329,7 +329,7 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if(count($nearbyBusiness) > 0){
+                if( !is_null($nearbyBusiness[0]) ) {
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
                 }
             }
@@ -401,10 +401,7 @@ class Ads extends Model
         $loc_y = $validatedData['loc_y'];
 
         $categories = $validatedData['categories'];
-
         $categories = $this->returnCategory($categories, $accountType);
-
-        $ad = null;
 
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
@@ -423,12 +420,11 @@ class Ads extends Model
         } else {
             $ad = $this->nearbyAd($nearbyBusiness->id, 1);
 
-            $j = 10;
             $k = 0;
             while( count($ad) === 0) {
                 if($k === 10) break;
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if(count($nearbyBusiness) > 0){
+                if( !is_null($nearbyBusiness[0]) ){
                     $nearbyBusiness = $nearbyBusiness[0];
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 1);
                 }
