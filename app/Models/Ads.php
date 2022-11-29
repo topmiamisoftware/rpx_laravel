@@ -86,17 +86,17 @@ class Ads extends Model
             ->where('spotbie_users.user_type', '=', $userType)
             ->whereJsonContains('business.categories', $category)
             ->whereRaw("(
-            (business.loc_x = $loc_x AND business.loc_y = $loc_y)
-            OR (
-                    ABS (
-                            SQRT    (
-                                        (POWER ( (business.loc_x - $loc_x), 2) ) +
-                                        (POWER ( (business.loc_y - $loc_y), 2) )
-                                    )
-                        )
-                    <= 0.1
-                )
-        )")
+                (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+                OR (
+                        ABS (
+                                SQRT    (
+                                            (POWER ( (business.loc_x - $loc_x), 2) ) +
+                                            (POWER ( (business.loc_y - $loc_y), 2) )
+                                        )
+                            )
+                        <= 0.1
+                    )
+            )")
             ->has("rewards")
             ->inRandomOrder()
             ->limit(1)
@@ -189,6 +189,8 @@ class Ads extends Model
                 if( !is_null($nearbyBusiness[0]) ) {
                     $nearbyBusiness = $nearbyBusiness[0];
                     $ad = $this->nearbyAd($nearbyBusiness->id, 0);
+                }  else {
+                    $ad = $this->getSpotbieAd(2);
                 }
             }
 
@@ -324,6 +326,8 @@ class Ads extends Model
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
                 if( !is_null($nearbyBusiness[0]) ) {
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
+                } else {
+                    $ad = $this->getSpotbieAd(2);
                 }
             }
 
@@ -347,8 +351,7 @@ class Ads extends Model
     }
 
     public function nearbyAd($businessId, $type){
-        return Ads::
-        select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
+        return Ads::select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
             ->where('type', $type)
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
