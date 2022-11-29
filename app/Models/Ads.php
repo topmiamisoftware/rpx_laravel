@@ -188,7 +188,7 @@ class Ads extends Model
         } else {
             $ad = $this->nearbyAd($nearbyBusiness->id, 0);
 
-            while( count($ad[0]) === 0)
+            while( count($ad) === 0 )
             {
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
                 if(count($nearbyBusiness) > 0) {
