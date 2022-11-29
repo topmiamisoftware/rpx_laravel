@@ -166,10 +166,7 @@ class Ads extends Model
         $loc_y = $validatedData['loc_y'];
 
         $categories = $validatedData['categories'];
-
         $categories = $this->returnCategory($categories, $accountType);
-
-        $ad = null;
 
         //Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
@@ -178,9 +175,7 @@ class Ads extends Model
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        $nearbyBusiness = $nearbyBusiness[0];
-
-        if( is_null($nearbyBusiness) ) {
+        if( count($nearbyBusiness) === 0 ) {
             $ad = $this->getSpotbieAd(0);
 
             $nearbyBusiness = null;
