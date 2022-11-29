@@ -181,7 +181,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $ad = $this->nearbyAd($nearbyBusiness->id, 0);
+            $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
 
             while( count($ad) === 0 )
             {
@@ -311,15 +311,13 @@ class Ads extends Model
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        $nearbyBusiness = $nearbyBusiness[0];
-
-        if( is_null($nearbyBusiness) ) {
+        if( count($nearbyBusiness) === 0 ) {
             $ad = $this->getSpotbieAd(2);
 
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $ad = $this->nearbyAd($nearbyBusiness->id, 0);
+            $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
 
             while( count($ad) === 0 )
             {
