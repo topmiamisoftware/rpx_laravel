@@ -329,6 +329,7 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 if ($k === 10) {
+                    $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
                     break;
                 }
@@ -429,6 +430,7 @@ class Ads extends Model
             $k = 0;
             while( count($ad) === 0 ) {
                 if ($k === 10) {
+                    $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(1);
                     break;
                 }
