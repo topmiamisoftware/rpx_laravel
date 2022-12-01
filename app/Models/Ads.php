@@ -200,7 +200,7 @@ class Ads extends Model
                 $k++;
             }
 
-            if(!is_null($nearbyBusiness[0])){
+            if(!is_null($nearbyBusiness)){
                 $ad = $ad[0];
                 $this->addViewToAd($ad);
                 $totalRewards = count(Reward::select('business_id')
