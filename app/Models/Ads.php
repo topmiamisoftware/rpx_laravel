@@ -344,12 +344,11 @@ class Ads extends Model
 
             $ad = $ad[0];
 
-            $this->addViewToAd($ad);
-
             if( !is_null($nearbyBusiness) ){
                 $totalRewards = count(Reward::select('business_id')
                     ->where('business_id', '=', $nearbyBusiness->id)
                     ->get());
+                $this->addViewToAd($ad);
             } else {
                 $totalRewards = 0;
             }
