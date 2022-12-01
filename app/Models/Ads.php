@@ -186,14 +186,14 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 if($k === 10){
-                    $ad = $this->getSpotbieAd(2);
+                    $ad = $this->getSpotbieAd(0);
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 0);
                 }  else {
-                    $ad = $this->getSpotbieAd(2);
+                    $ad = $this->getSpotbieAd(0);
                     $nearbyBusiness = null;
                 }
                 $k++;
@@ -329,7 +329,7 @@ class Ads extends Model
             while( count($ad) === 0 )
             {
                 if ($k === 10) {
-                    $ad = $this->getSpotbieAd(1);
+                    $ad = $this->getSpotbieAd(2);
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];

@@ -9,29 +9,24 @@ class SpotbieAds extends Model
 {
     use HasFactory;
 
-    static function getSpotbieAd($adType){    
+    static function getSpotbieAd($adType){
 
         $adId = 0;
         $query = null;
 
         switch($adType){
             case 0:
+            case 2:
                 $adId = rand(1, 2);
                 $query = SpotbieAds::select('*')
                 ->where('id', $adId)
                 ->first();
                 break;
-            case 1:               
-                $adId = rand(3, 6);
+            case 1:
+                $adId = rand(3, 5);
                 $query = SpotbieAds::select('*')
                 ->where('id', $adId)
-                ->first();                
-                break;
-            case 2:
-                $adId = rand(1, 2);
-                $query = SpotbieAds::select('*')
-                ->where('id', $adId)
-                ->first();                
+                ->first();
                 break;
         }
 
