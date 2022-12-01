@@ -187,6 +187,7 @@ class Ads extends Model
             {
                 if($k === 10){
                     $ad = $this->getSpotbieAd(0);
+                    $nearbyBusiness = null;
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
