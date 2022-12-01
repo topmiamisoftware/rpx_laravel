@@ -336,14 +336,13 @@ class Ads extends Model
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 2);
+                    $ad = $ad[0];
                 } else {
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
                 }
                 $k++;
             }
-
-            $ad = $ad[0];
 
             if( !is_null($nearbyBusiness) ){
                 $totalRewards = count(Reward::select('business_id')
@@ -437,8 +436,10 @@ class Ads extends Model
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ){
                     $ad = $this->nearbyAd($nearbyBusiness->id, 1);
+                    $ad = $ad[0];
                 } else {
                     $nearbyBusiness = null;
+                    $ad = $this->getSpotbieAd(1);
                 }
                 $k++;
             }
