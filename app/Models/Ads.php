@@ -185,20 +185,19 @@ class Ads extends Model
 
             while( count($ad) === 0 )
             {
-                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if( !is_null($nearbyBusiness[0]) ) {
-                    $nearbyBusiness = $nearbyBusiness[0];
+                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
+                if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 0);
                 }  else {
                     $ad = $this->getSpotbieAd(2);
+                    $nearbyBusiness = null;
                 }
             }
 
             $ad = $ad[0];
 
-            $this->addViewToAd($ad);
-
             if(!is_null($nearbyBusiness[0])){
+                $this->addViewToAd($ad);
                 $totalRewards = count(Reward::select('business_id')
                     ->where('business_id', '=', $nearbyBusiness[0]->id)
                     ->get());
@@ -209,7 +208,7 @@ class Ads extends Model
 
         $response = array(
             "success" => true,
-            "business" => $nearbyBusiness[0],
+            "business" => $nearbyBusiness,
             "ad" => $ad,
             "totalRewards" => $totalRewards
         );
@@ -324,10 +323,11 @@ class Ads extends Model
 
             while( count($ad) === 0 )
             {
-                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if( !is_null($nearbyBusiness[0]) ) {
+                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
+                if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
                 } else {
+                    $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
                 }
             }
@@ -336,9 +336,9 @@ class Ads extends Model
 
             $this->addViewToAd($ad);
 
-            if( !is_null($nearbyBusiness[0]) ){
+            if( !is_null($nearbyBusiness) ){
                 $totalRewards = count(Reward::select('business_id')
-                    ->where('business_id', '=', $nearbyBusiness[0]->id)
+                    ->where('business_id', '=', $nearbyBusiness->id)
                     ->get());
             } else {
                 $totalRewards = 0;
@@ -347,7 +347,7 @@ class Ads extends Model
 
         $response = array(
             "success" => true,
-            "business" => $nearbyBusiness[0],
+            "business" => $nearbyBusiness,
             "ad" => $ad,
             "totalRewards" => $totalRewards
         );
@@ -411,9 +411,7 @@ class Ads extends Model
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        $nearbyBusiness = $nearbyBusiness[0];
-
-        if( is_null($nearbyBusiness) ) {
+        if( count($nearbyBusiness) === 0 ) {
             $ad = $this->getSpotbieAdList();
 
             $nearbyBusiness = null;
@@ -424,32 +422,23 @@ class Ads extends Model
             $k = 0;
             while( count($ad) === 0) {
                 if($k === 10) break;
-                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
-                if( !is_null($nearbyBusiness[0]) ){
-                    $nearbyBusiness = $nearbyBusiness[0];
+                $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
+                if( !is_null($nearbyBusiness) ){
                     $ad = $this->nearbyAd($nearbyBusiness->id, 1);
+                } else {
+                    $nearbyBusiness = null;
                 }
                 $k++;
             }
 
-            if( is_null($ad) ){
-                $response = array(
-                    "success" => true,
-                    "business" => null,
-                    "ad" => null,
-                    "totalRewards" => $totalRewards
-                );
-
-                return response($response);
+            if( !is_null($nearbyBusiness) ){
+                $this->addViewToAd($ad);
+                $totalRewards = count(Reward::select('business_id')
+                    ->where('business_id', '=', $nearbyBusiness->id)
+                    ->get());
             } else {
-                $ad = $ad[0];
+                $totalRewards = 0;
             }
-
-            $this->addViewToAd($ad);
-
-            $totalRewards = count(Reward::select('business_id')
-                ->where('business_id', '=', $nearbyBusiness->id)
-                ->get());
         }
 
         $response = array(
