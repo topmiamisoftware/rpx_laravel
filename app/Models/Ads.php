@@ -424,8 +424,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $ad = $this->nearbyAd($nearbyBusiness->id, 1);
-
+            $ad = $this->nearbyAd($nearbyBusiness[0]->id, 1);
             $k = 0;
             while( count($ad) === 0 ) {
                 if ($k === 10) {
