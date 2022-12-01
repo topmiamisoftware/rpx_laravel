@@ -182,9 +182,13 @@ class Ads extends Model
             $totalRewards = 0;
         } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
-
+            $k = 0;
             while( count($ad) === 0 )
             {
+                if($k === 10){
+                    $ad = $this->getSpotbieAd(2);
+                    break;
+                }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 0);
@@ -192,6 +196,7 @@ class Ads extends Model
                     $ad = $this->getSpotbieAd(2);
                     $nearbyBusiness = null;
                 }
+                $k++;
             }
 
             $ad = $ad[0];
@@ -320,9 +325,13 @@ class Ads extends Model
             $totalRewards = 0;
         } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
-
+            $k = 0;
             while( count($ad) === 0 )
             {
+                if ($k === 10) {
+                    $ad = $this->getSpotbieAd(1);
+                    break;
+                }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 2);
@@ -330,6 +339,7 @@ class Ads extends Model
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
                 }
+                $k++;
             }
 
             $ad = $ad[0];
@@ -375,8 +385,6 @@ class Ads extends Model
 
         $accountType = $validatedData['account_type'];
 
-        $totalRewards = 0;
-
         if( isset($validatedData['id']) ){
             $ad = Ads::find($validatedData['id']);
 
@@ -420,8 +428,11 @@ class Ads extends Model
             $ad = $this->nearbyAd($nearbyBusiness->id, 1);
 
             $k = 0;
-            while( count($ad) === 0) {
-                if($k === 10) break;
+            while( count($ad) === 0 ) {
+                if ($k === 10) {
+                    $ad = $this->getSpotbieAd(1);
+                    break;
+                }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
                 if( !is_null($nearbyBusiness) ){
                     $ad = $this->nearbyAd($nearbyBusiness->id, 1);
