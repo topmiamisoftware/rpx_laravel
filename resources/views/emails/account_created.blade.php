@@ -70,22 +70,22 @@
 
             .bottomLinks{
                 max-width: 350px;
-                width: 96%;  
+                width: 96%;
                 padding-top: 20px;
-                padding-bottom: 20px;              
+                padding-bottom: 20px;
             }
 
-            .bottomLinks  p {                    
+            .bottomLinks  p {
                 position: relative;
                 display: block;
-                margin: 0 auto; 
+                margin: 0 auto;
             }
 
         </style>
 
     <body>
-    
-        <img class='sbLogo' src='https://spotbie-master.netlify.app/assets/images/spotbie_logo_header.png' />
+
+        <img class='sbLogo' src='https://spotbie.com/assets/images/spotbie_logo_header.png' />
 
         <div class='flex-center'>
 
@@ -95,17 +95,17 @@
 
                 <br/><br/>
 
-                <?php 
-            
+                <?php
+
                     if($spotbieUser->first_name !== '')
-                        echo $spotbieUser->first_name . " " . $spotbieUser->last_name; 
+                        echo $spotbieUser->first_name . " " . $spotbieUser->last_name;
                     else
-                        echo $user->username;                
-                
+                        echo $user->username;
+
                 ?>, you have signed up to SpotBie.
-                
+
                 <br/><br/>
-                
+
                 <?php
 
                     //Let's use this page to redirect the user to log in from their sign up welcome e-mail.
@@ -114,9 +114,9 @@
                     //The user is not of type personal.
                     if($spotbieUser->user_type != 4)
                         $userPage = 'business';
-                    else 
+                    else
                         $userPage = 'home';
-                    
+
 
                 ?>
 
@@ -131,7 +131,7 @@
                 <a href="https://spotbie.com/">HOME</a>
 
                 <a href="https://spotbie.com/business">BUSINESS</a>
-            </p>                       
+            </p>
         </div>
 
     </body>
