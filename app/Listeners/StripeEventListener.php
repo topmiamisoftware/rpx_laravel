@@ -2,14 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Models\Ads;
-
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Laravel\Cashier\Cashier;
+use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Events\WebhookReceived;
-use Laravel\Cashier\Subscription;
-use Stripe\Subscription as StripeSubscription;
 
 class StripeEventListener
 {
