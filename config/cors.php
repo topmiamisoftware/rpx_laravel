@@ -18,10 +18,7 @@ return [
     'allowed_methods' => ['*'],
     'allowed_origins' => ['https://demo.spotbie.com',
                             'https://spotbie.com',
-                            'https://localhost',
-                            'https://localhost:4200',
-                            'app://localhost',
-                            'https://spotbie-demo.netlify.app',
+                            'app://localhost', # You need this line for Cordova.
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
