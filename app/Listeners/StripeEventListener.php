@@ -8,6 +8,9 @@ use Laravel\Cashier\Events\WebhookReceived;
 
 class StripeEventListener
 {
+
+    private WebhookReceived $event;
+
     /**
      * Handle received Stripe webhooks.
      *
@@ -16,8 +19,6 @@ class StripeEventListener
      */
     public function handle(WebhookReceived $event)
     {
-
-
         /**
          *
          * We have two types of customers.
@@ -26,28 +27,47 @@ class StripeEventListener
          *
          */
 
+        $this->event = $event;
+
+        $userId = $this->getUserId();
+
         switch($event->payload['type']) {
             case 'customer.created':
-                Log::info("Customer Created - SpotBie UID: ");
+                Log::info("Customer Created - SpotBie UID: ".$userId);
                 return;
             case 'customer.updated':
-                Log::info("Customer Updated - SpotBie UID: ");
+                Log::info("Customer Updated - SpotBie UID: ".$userId);
+                return;
+            case 'customer.subscription.updated':
+                Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
+                return;
+            case 'customer.subscription.created':
+                Log::info("Customer Subscription Created - SpotBie UID: ".$userId);
+                return;
+            case 'customer.subscription.deleted':
+                Log::info("Customer Subscription Deleted - SpotBie UID: ".$userId);
                 return;
         }
+    }
 
-        $user = Cashier::findBillable($event->payload['data']['object']['customer']);
+    public function getUserId() {
+
+        $event = $this->event;
+
+        if ($event->payload['type'] === 'customer.created' ||
+            $event->payload['type'] === 'customer.deleted' ||
+            $event->payload['type'] === 'customer.updated'){
+            $user = Cashier::findBillable($this->event->payload['data']['id']);
+        }  else {
+            $user = Cashier::findBillable($this->event->payload['data']['object']['customer']);
+        }
+
         if($user){
             $userId = $user->id;
         } else {
             $userId = 'demo-api';
         }
 
-        if ($event->payload['type'] === 'customer.subscription.updated') {
-            Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
-        } else if($event->payload['type'] === 'customer.subscription.created') {
-            Log::info("Customer Subscription Created - SpotBie UID: ".$userId);
-        } else if($event->payload['type'] === 'customer.subscription.deleted') {
-            Log::info("Customer Subscription Deleted - SpotBie UID: ".$userId);
-        }
+        return $userId;
     }
 }
