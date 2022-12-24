@@ -38,6 +38,9 @@ class StripeEventListener
             case 'customer.updated':
                 Log::info("Customer Updated - SpotBie UID: ".$userId);
                 return;
+        case 'customer.deleted':
+            Log::info("Customer Deleted - SpotBie UID: ".$userId);
+            return;
             case 'customer.subscription.updated':
                 Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
                 return;
