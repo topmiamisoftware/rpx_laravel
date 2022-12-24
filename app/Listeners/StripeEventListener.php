@@ -60,7 +60,7 @@ class StripeEventListener
         if ($event->payload['type'] === 'customer.created' ||
             $event->payload['type'] === 'customer.deleted' ||
             $event->payload['type'] === 'customer.updated'){
-            $user = Cashier::findBillable($this->event->payload['data']['id']);
+            $user = Cashier::findBillable($this->event->payload['data']['object']['id']);
         }  else {
             $user = Cashier::findBillable($this->event->payload['data']['object']['customer']);
         }
