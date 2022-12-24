@@ -26,7 +26,12 @@ class StripeEventListener
          *
          */
 
-        $userId = Cashier::findBillable($event->payload['data']['object']['customer'])->id;
+        $user = Cashier::findBillable($event->payload['data']['object']['customer']);
+        if($user){
+            $userId = $user->id;
+        } else {
+            $userId = 'demo-api';
+        }
 
         if ($event->payload['type'] === 'customer.subscription.updated') {
             Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
