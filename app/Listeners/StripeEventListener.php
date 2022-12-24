@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookReceived;
 
 class StripeEventListener
@@ -25,12 +26,16 @@ class StripeEventListener
          *
          */
 
+        $userId = Cashier::findBillable($event->payload['data']['object']['customer'])->id;
+
         if ($event->payload['type'] === 'customer.subscription.updated') {
-            Log::info('Customer Subscription Updated:', ['info' => $event->payload]);
+            Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
+        } else if($event->payload['type'] === 'customer.subscription.created') {
+            Log::info("Customer Subscription Created - SpotBie UID: ".$userId);
         } else if($event->payload['type'] === 'customer.created') {
-            Log::info('Customer Subscription Updated:', ['info' => $event->payload]);
+            Log::info("Customer Created - SpotBie UID: ".$userId);
         } else if($event->payload['type'] === 'customer.subscription.deleted') {
-            Log::info('Customer Subscription Updated:', ['info' => $event->payload]);
+            Log::info("Customer Subscription Deleted - SpotBie UID: ".$userId);
         }
     }
 }
