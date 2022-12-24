@@ -26,6 +26,15 @@ class StripeEventListener
          *
          */
 
+        switch($event->payload['type']) {
+            case 'customer.created':
+                Log::info("Customer Created - SpotBie UID: ");
+                return;
+            case 'customer.updated':
+                Log::info("Customer Updated - SpotBie UID: ");
+                return;
+        }
+
         $user = Cashier::findBillable($event->payload['data']['object']['customer']);
         if($user){
             $userId = $user->id;
@@ -37,8 +46,6 @@ class StripeEventListener
             Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
         } else if($event->payload['type'] === 'customer.subscription.created') {
             Log::info("Customer Subscription Created - SpotBie UID: ".$userId);
-        } else if($event->payload['type'] === 'customer.created') {
-            Log::info("Customer Created - SpotBie UID: ".$userId);
         } else if($event->payload['type'] === 'customer.subscription.deleted') {
             Log::info("Customer Subscription Deleted - SpotBie UID: ".$userId);
         }
