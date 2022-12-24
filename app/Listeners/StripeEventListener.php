@@ -11,6 +11,11 @@ class StripeEventListener
 
     private WebhookReceived $event;
 
+    private array $allowedPayloadTypes = [
+        'customer.created', 'customer.updated', 'customer.deleted',
+        'customer.subscription.updated', 'customer.subscription.created', 'customer.subscription.deleted'
+    ];
+
     /**
      * Handle received Stripe webhooks.
      *
@@ -29,6 +34,11 @@ class StripeEventListener
 
         $this->event = $event;
 
+        if(!in_array($event->payload['type'], $this->allowedPayloadTypes)){
+            Log::info($event->payload['type']. " - Stripe Event ID: ". $event->payload['id']);
+            return;
+        }
+
         $userId = $this->getUserId();
 
         switch($event->payload['type']) {
@@ -38,9 +48,9 @@ class StripeEventListener
             case 'customer.updated':
                 Log::info("Customer Updated - SpotBie UID: ".$userId);
                 return;
-        case 'customer.deleted':
-            Log::info("Customer Deleted - SpotBie UID: ".$userId);
-            return;
+            case 'customer.deleted':
+                Log::info("Customer Deleted - SpotBie UID: ".$userId);
+                return;
             case 'customer.subscription.updated':
                 Log::info("Customer Subscription Updated - SpotBie UID: ".$userId);
                 return;
