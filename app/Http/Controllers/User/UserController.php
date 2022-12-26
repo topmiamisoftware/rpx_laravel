@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    
+
     public function signUp(Request $request, User $user)
     {
         return $user->signUp($request);
@@ -81,11 +81,11 @@ class UserController extends Controller
 
     public function facebookLogin(User $user, Request $request){
         return $user->facebookLogin($request);
-    }   
+    }
 
     public function googleLogin(User $user, Request $request){
         return $user->googleLogin($request);
-    } 
+    }
 
     public function appleLogin(User $user, Request $request){
         return $user->appleLogin($request);
@@ -94,7 +94,7 @@ class UserController extends Controller
     public function businessMembership(User $user, Request $request){
         return $user->businessMembership($request);
     }
-    
+
     public function membershipStatus(User $user, Request $request){
         return $user->membershipStatus($request);
     }
@@ -102,5 +102,4 @@ class UserController extends Controller
     public function cancelMembership(User $user){
         return $user->cancelMembership();
     }
-
-}   
+}

@@ -38,14 +38,14 @@ class AdsFactory extends Factory
 
         switch($adType){
             case 0:
-                $dollar_cost = 15.99;
+                $dollar_cost = 19.99;
                 break;
             case 1:
                 $dollar_cost = 13.99;
                 break;
             case 2:
-                $dollar_cost = 10.99;
-                break;                                
+                $dollar_cost = 16.99;
+                break;
         }
 
         return [
@@ -59,13 +59,13 @@ class AdsFactory extends Factory
             'views' => rand(0,1500),
             'is_live' => 1
         ];
-        
+
     }
 
     public function configure(){
 
         return $this->afterCreating(function (Ads $ad) {
-            
+
             $spotbieUserType = $ad->spotbieUser->user_type;
 
             $adImage = $this->getAdsPhoto($spotbieUserType);
@@ -94,7 +94,7 @@ class AdsFactory extends Factory
                 break;
             case '3':
                 $businessPhotoFolder = 'assets/images/in-house/events/';
-                break;   
+                break;
         }
 
         $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
