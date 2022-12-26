@@ -562,13 +562,13 @@ class Ads extends Model
 
         switch($businessAd->type){
             case 0:
-                $businessAd->dollar_cost = 15.99;
+                $businessAd->dollar_cost = 19.99;
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
                 break;
             case 2:
-                $businessAd->dollar_cost = 10.99;
+                $businessAd->dollar_cost = 16.99;
                 break;
         }
 
@@ -688,13 +688,13 @@ class Ads extends Model
 
         switch($businessAd->type){
             case 0:
-                $businessAd->dollar_cost = 15.99;
+                $businessAd->dollar_cost = 19.99;
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
                 break;
             case 2:
-                $businessAd->dollar_cost = 10.99;
+                $businessAd->dollar_cost = 16.99;
                 break;
         }
 
@@ -722,7 +722,9 @@ class Ads extends Model
         if($user){
             $userBillable = Cashier::findBillable($user->stripe_id);
 
-            $userBillable->subscription($adToDelete)->cancelNow();
+            if($userBillable->subscribed($adToDelete)){
+                $userBillable->subscription($adToDelete)->cancelNow();
+            }
 
             DB::transaction(function () use ($user, $adToDelete){
                 Ads::where('id', $adToDelete)

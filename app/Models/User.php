@@ -205,7 +205,6 @@ class User extends Authenticatable implements JWTSubject
 
         $login = $validatedData['login'];
         $password = $validatedData['password'];
-        $timezone = $validatedData['timezone'];
         $remember_me = $validatedData['remember_me_opt'];
         $route = $validatedData['route'];
 
@@ -242,7 +241,7 @@ class User extends Authenticatable implements JWTSubject
                 'message' => 'invalid_cred'
             );
         } else {
-            $user = User::select('id', 'username')->where(function($query) use ($login){
+            $user = User::select('id', 'username', 'stripe_id')->where(function($query) use ($login){
                     $query->where('username', $login)
                             ->orWhere('email', $login);
                 })
@@ -738,61 +737,6 @@ class User extends Authenticatable implements JWTSubject
         else
             return false;
 
-    }
-
-    public function payBusinessMembership(Request $request){
-        $validatedData = $request->validate([
-            "user" => [
-                "uuid" => ['required', 'string']
-            ],
-            "payment_method" => [
-                "id" => ['required', 'string']
-            ]
-        ]);
-
-        $userUuid = $validatedData['user']['uuid'];
-        $paymentMethodId = $validatedData['payment_method']['id'];
-
-        $userSubscription = User::where('uuid', '=', $userUuid)
-        ->first();
-
-        $price_name = config('spotbie.business_subscription_price');
-        $product_name = config('spotbie.business_subscription_product');
-
-        if($userSubscription !== null){
-            $userStripeId = User::find($user->id)->stripe_id;
-
-            $user = Cashier::findBillable($userStripeId);
-
-            $user->updateDefaultPaymentMethod($paymentMethodId);
-
-            //Update the subscription if the user chose a different ad type.
-            $existingSubscription = $user->subscriptions()->where('name', '=', $userUuid)->first();
-
-            if($existingSubscription !== null ){
-                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
-            } else {
-                //Create the subscription with the payment method provided by the user.
-                $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
-            }
-
-            $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
-
-            DB::transaction(function () use ($adSubscription, $newSubscription){
-                $user->subscription_id = $newSubscription->id;
-                $user->save();
-            }, 3);
-        }
-
-        $businessAd = $adSubscription->refresh();
-
-        $response = array(
-            'success' => true,
-            'newAd' => $businessAd,
-            'user' => $user
-        );
-
-        return response($response);
     }
 
     public function businessMembership(Request $request){

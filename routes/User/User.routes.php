@@ -5,10 +5,10 @@ use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 
-/** 
- * 
+/**
+ *
  * Some of these routes are inactive. I haven't had time to clean this up.
- * 
+ *
  */
 
 
