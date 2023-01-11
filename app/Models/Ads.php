@@ -146,28 +146,18 @@ class Ads extends Model
 
             $this->addClickToAd($ad);
 
-	    if(is_null($ad)){
-		if(Auth::user()){
-			$user = Auth::user();
-			$business = $user->business;
-} else {
-			$business = Business::find(1);
-		}
-            	$business = null;
-		$totalRewards = 0;
-            } else {
-	    	$business = Business::find($ad->business_id);
+            $business = Business::find($ad->business_id);
 
-            	$totalRewards = count(Reward::select('business_id')
-                	->where('business_id', '=', $business->id)->get());
-	     }
+            $totalRewards = count(Reward::select('business_id')
+                ->where('business_id', '=', $business->id)
+                ->get());
 
-            	$response = array(
-                	"success" => true,
-                	"business" => $business,
-                	"ad" => $ad,
-                	"totalRewards" => $totalRewards
-            	);
+            $response = array(
+                "success" => true,
+                "business" => $business,
+                "ad" => $ad,
+                "totalRewards" => $totalRewards
+            );
 
             return response($response);
         }
@@ -242,11 +232,8 @@ class Ads extends Model
         return SpotbieAds::getSpotbieAd(1);
     }
 
-    public function addClickToAd(Ads $ad = null){
+    public function addClickToAd(Ads $ad){
         //Add click to ad.
-	if(is_null($ad)) {
-		return;
-	}
         DB::transaction(function () use ($ad) {
             $ad->views++;
             $ad->clicks++;
