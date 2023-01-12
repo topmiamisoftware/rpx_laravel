@@ -88,7 +88,10 @@ class Business extends Model
         $isLifeTimeMembership = false;
 
         if( $confirmKeyLifeTime === $validatedData['passkey'] ){
-            $isLifeTimeMembership = true;
+            /**
+             * We are setting a false isLifeTimeMembership for now.
+             */
+            $isLifeTimeMembership = false;
         } else if( $spotbieBusinessPassKey === $validatedData['passkey'] ) {
             $isLifeTimeMembership = false;
         }
