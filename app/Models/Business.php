@@ -129,7 +129,7 @@ class Business extends Model
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
-        $user->update(['trial_ends_at' => Carbon::now()->addDays(90)]);
+        $user->update(['trial_ends_at' => Carbon::now()->addDays(60)]);
 
         if($existingBusiness){
             DB::transaction(function () use ($business, $user){
