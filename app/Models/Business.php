@@ -96,7 +96,7 @@ class Business extends Model
             $isLifeTimeMembership = false;
         }
 
-        $user->spotbieUser->user_type =  $validatedData['accountType'];
+        $user->spotbieUser->user_type = $validatedData['accountType'];
 
         //check if the place to eat already exists.
         $existingBusiness = $user->business;
@@ -129,7 +129,9 @@ class Business extends Model
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
-        $user->update(['trial_ends_at' => Carbon::now()->addDays(60)]);
+        if($userBillable && $user->trial_ends_at === null){
+            $user->update(['trial_ends_at' => Carbon::now()->addDays(60)]);
+        }
 
         if($existingBusiness){
             DB::transaction(function () use ($business, $user){
