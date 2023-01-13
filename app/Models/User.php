@@ -393,6 +393,8 @@ class User extends Authenticatable implements JWTSubject
             $userBillable = Cashier::findBillable($user->stripe_id);
             if(count($userBillable->subscriptions) > 0) {
                 $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
+            } else {
+                $userSubscriptionPlan = null;
             }
 
             switch($userSubscriptionPlan) {
