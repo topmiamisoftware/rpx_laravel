@@ -391,6 +391,18 @@ class User extends Authenticatable implements JWTSubject
             $business = $business[0];
 
             $userBillable = Cashier::findBillable($user->stripe_id);
+            $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
+
+            switch($userSubscriptionPlan) {
+                case config('spotbie.business_subscription_price_1'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price_1';
+                    break;
+                case config('spotbie.business_subscription_price_2'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price_2';
+                    break;
+                case config('spotbie.business_subscription_price_2'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price';
+            }
 
             $isSubscribed = $userBillable->subscribed($user->id);
 
@@ -405,6 +417,7 @@ class User extends Authenticatable implements JWTSubject
             $isSubscribed = false;
             $isTrial = false;
             $trialEndsAt = null;
+            $userSubscriptionPlan = null;
         }
 
         $settingsResponse = array(
@@ -414,7 +427,8 @@ class User extends Authenticatable implements JWTSubject
             'business' => $business,
             'is_subscribed' => $isSubscribed,
             'is_trial' => $isTrial,
-            'trial_ends_at' => $trialEndsAt
+            'trial_ends_at' => $trialEndsAt,
+            'userSubscriptionPlan' => $userSubscriptionPlan
         );
 
         return response($settingsResponse);
@@ -744,13 +758,26 @@ class User extends Authenticatable implements JWTSubject
             "uuid" => ['required', 'string', 'max:36'],
             "payment_method" => [
                 "id" => ['required', 'string']
-            ]
+            ],
+            "payment_type" => ['required', 'string'],
         ]);
 
         $uuid = $validatedData['uuid'];
         $paymentMethodId = $validatedData['payment_method']['id'];
 
-        $price_name = config('spotbie.business_subscription_price');
+        switch($validatedData['payment_type']) {
+            case 'business-membership-1':
+                $priceKey = 'spotbie.business_subscription_price_1';
+                break;
+            case 'business-membership-2':
+                $priceKey = 'spotbie.business_subscription_price_2';
+                break;
+            case 'business-membership':
+                $priceKey = 'spotbie.business_subscription_price';
+                break;
+        }
+
+        $price_name = config($priceKey);
 
         $user = User::where('uuid', $uuid)->get();
 
@@ -782,17 +809,18 @@ class User extends Authenticatable implements JWTSubject
     public function membershipStatus(Request $request)
     {
         $validatedData = $request->validate([
-            "uuid" => ['required', 'string', 'max:36']
+            "uuid" => ['required', 'string', 'max:36'],
+            "paymentType" => ['required', 'string', 'max:56'],
         ]);
 
-        $user = User::where('uuid', $validatedData['uuid'])->get();
+        $user = User::where('uuid', $validatedData['uuid'])->first();
         $membershipInfo = null;
 
         if( $user->first() ) {
-            $membershipInfo = Cashier::findBillable($user[0]->stripe_id);
+            $membershipInfo = Cashier::findBillable($user->stripe_id);
 
             if($membershipInfo !== null) {
-                $membershipInfo = $membershipInfo->subscribed($user[0]->id);
+                $membershipInfo = $membershipInfo->subscribed($user->id);
             }
         }
 
@@ -809,7 +837,7 @@ class User extends Authenticatable implements JWTSubject
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
-        if( !!is_null($userBillable) ){
+        if( !is_null($userBillable) ){
             if( $userBillable->subscribed($user->id) ){
                 $userBillable->subscription($user->id)->cancelNow();
             }

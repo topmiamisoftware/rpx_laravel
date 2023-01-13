@@ -57,5 +57,6 @@
 
         'business_subscription_product' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRODUCT'),
         'business_subscription_price' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE'),
-
+        'business_subscription_price_1' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_1'),
+        'business_subscription_price_2' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_2'),
     ];
