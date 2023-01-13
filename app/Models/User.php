@@ -391,7 +391,9 @@ class User extends Authenticatable implements JWTSubject
             $business = $business[0];
 
             $userBillable = Cashier::findBillable($user->stripe_id);
-            $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
+            if($userBillable->subscriptions[0]){
+                $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
+            }
 
             switch($userSubscriptionPlan) {
                 case config('spotbie.business_subscription_price_1'):
@@ -402,6 +404,9 @@ class User extends Authenticatable implements JWTSubject
                     break;
                 case config('spotbie.business_subscription_price_2'):
                     $userSubscriptionPlan = 'spotbie.business_subscription_price';
+                    break;
+                default:
+                    $userSubscriptionPlan = null;
             }
 
             $isSubscribed = $userBillable->subscribed($user->id);
