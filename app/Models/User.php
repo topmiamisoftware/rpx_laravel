@@ -404,7 +404,7 @@ class User extends Authenticatable implements JWTSubject
                 case config('spotbie.business_subscription_price_2'):
                     $userSubscriptionPlan = 'spotbie.business_subscription_price_2';
                     break;
-                case config('spotbie.business_subscription_price_2'):
+                case config('spotbie.business_subscription_price'):
                     $userSubscriptionPlan = 'spotbie.business_subscription_price';
                     break;
                 default:
