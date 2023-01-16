@@ -498,11 +498,11 @@ class Ads extends Model
         if($environment == 'local'){
             $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
             Storage::put($imagePath, $newFile);
-            $imagePath =  UrlHelper::getServerUrl() . $imagePath;
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         } else {
             $imagePath = 'ad-media/images/' . $user->id. '/' . $hashedFileName;
             Storage::put($imagePath, $newFile, 'public');
-            $imagePath = Storage::url($imagePath);
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
 
         $response = array(
