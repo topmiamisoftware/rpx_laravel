@@ -27,6 +27,5 @@ class ChangeLoyaltyPointsLedgerTable extends Migration
      */
     public function down()
     {
-        //
     }
 }

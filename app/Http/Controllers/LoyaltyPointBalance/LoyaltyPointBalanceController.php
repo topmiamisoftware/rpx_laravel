@@ -19,14 +19,16 @@ class LoyaltyPointBalanceController extends Controller
         return $ledger->index($request);
     }
 
-    public function balanceList(LoyaltyPointBalance $loyaltyPointBalance){
+    public function balanceList(LoyaltyPointBalance $loyaltyPointBalance)
+    {
         return $loyaltyPointBalance->balanceList();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(LoyaltyPointBalance $loyaltyPointBalance, Request $request)
@@ -37,7 +39,8 @@ class LoyaltyPointBalanceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     * @param \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(LoyaltyPointBalance $loyaltyPointBalance)
@@ -48,40 +51,39 @@ class LoyaltyPointBalanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     * @param \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(LoyaltyPointBalance $LoyaltyPointBalance)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\LoyaltyPointBalance  $LoyaltyPointBalance
+     * @param \Illuminate\Http\Request        $request
+     * @param \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, LoyaltyPointBalance $LoyaltyPointBalance)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\LoyaltyPointBalance  $LoyaltyPointBalance
+     * @param \App\Models\LoyaltyPointBalance $LoyaltyPointBalance
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(LoyaltyPointBalance $LoyaltyPointBalance)
     {
-        //
     }
 
-    public function reset(LoyaltyPointBalance $loyaltyPointBalance){
+    public function reset(LoyaltyPointBalance $loyaltyPointBalance)
+    {
         return $loyaltyPointBalance->reset();
     }
-
-
 }

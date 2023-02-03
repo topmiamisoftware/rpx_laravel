@@ -13,22 +13,26 @@ class LoyaltyPointBalance extends Model
 {
     use SoftDeletes;
 
-    public $table = "loyalty_point_balances";
+    public $table = 'loyalty_point_balances';
 
     public $fillable = ['balance', 'loyalty_point_dollar_percent_value', 'end_of_month'];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('App\Models\User', 'id', 'id');
     }
 
-    public function fromBusiness(){
+    public function fromBusiness()
+    {
         return $this->belongsTo('App\Models\Business', 'from_business', 'id');
     }
 
-    public function balanceList(){
+    public function balanceList()
+    {
         $user = Auth::user();
 
-        if($user->spotbieUser->user_type === 4){
+        if ($user->spotbieUser->user_type === 4)
+        {
             $balanceList = $user->loyaltyPointBalance()
                 ->whereHas('fromBusiness')
                 ->with('fromBusiness', function ($query) {
@@ -36,30 +40,34 @@ class LoyaltyPointBalance extends Model
                 })
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
-        } else {
+        }
+        else
+        {
             // User is a business
             $balanceList = $user->business()->loyaltyPointBalance()->get();
         }
 
-        $response = array(
-            'success' => true,
-            'balanceList' => $balanceList
-        );
+        $response = [
+            'success'     => true,
+            'balanceList' => $balanceList,
+        ];
 
         return response($response);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
-            'businessLoyaltyPoints' => ['required', 'numeric'],
-            'businessCoinPercentage' => ['required', 'numeric']
+            'businessLoyaltyPoints'  => ['required', 'numeric'],
+            'businessCoinPercentage' => ['required', 'numeric'],
         ]);
 
         $success = false;
         $user = Auth::user();
         $loyaltyPointBalance = null;
 
-        if($user){
+        if ($user)
+        {
             $loyaltyPointBalance = $user->business->loyaltyPointBalance;
             $reset_balance = doubleval($validatedData['businessLoyaltyPoints']);
             $balance = $reset_balance;
@@ -78,34 +86,41 @@ class LoyaltyPointBalance extends Model
             $loyaltyPointBalance = $loyaltyPointBalance->refresh();
         }
 
-        $response = array(
-            'success' => $success,
-            'lp_balance' => $loyaltyPointBalance
-        );
+        $response = [
+            'success'    => $success,
+            'lp_balance' => $loyaltyPointBalance,
+        ];
 
         return response($response);
     }
 
-    public function show() {
+    public function show()
+    {
         $success = false;
         $user = Auth::user();
 
-        if ($user->business){
+        if ($user->business)
+        {
             $loyaltyPoints = $user
                 ->business
                 ->loyaltyPointBalance()
                 ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
                 ->get();
-        } else {
+        }
+        else
+        {
             $loyaltyPoints = $user
                 ->loyaltyPointBalance()
                 ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
                 ->get();
         }
 
-        if( $loyaltyPoints ){
+        if ($loyaltyPoints)
+        {
             $success = true;
-        } else {
+        }
+        else
+        {
             $loyaltyPoints = new LoyaltyPointBalance();
             $loyaltyPoints->balance = 0;
             $loyaltyPoints->reset_balance = 0;
@@ -113,21 +128,23 @@ class LoyaltyPointBalance extends Model
             $loyaltyPoints->end_of_month = null;
         }
 
-        $response = array(
-            'success' => $success,
-            'loyalty_points' => $loyaltyPoints
-        );
+        $response = [
+            'success'        => $success,
+            'loyalty_points' => $loyaltyPoints,
+        ];
 
         return response($response);
     }
 
-    public function reset(){
+    public function reset()
+    {
         $user = Auth::user();
 
-        if($user){
+        if ($user)
+        {
             $user->business->loyaltyPointBalance->balance = $user->business->loyaltyPointBalance->reset_balance;
 
-            DB::transaction(function () use ($user){
+            DB::transaction(function () use ($user) {
                 $user->business->loyaltyPointBalance->save();
             }, 3);
 
@@ -136,15 +153,17 @@ class LoyaltyPointBalance extends Model
             ->get()[0];
 
             $success = true;
-        } else {
+        }
+        else
+        {
             $loyaltyPointBalance = 0;
             $success = false;
         }
 
-        $response = array(
-            'success' => $success,
-            'loyalty_points' => $loyaltyPointBalance
-        );
+        $response = [
+            'success'        => $success,
+            'loyalty_points' => $loyaltyPointBalance,
+        ];
 
         return response($response);
     }

@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\DefaultImages;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class DefaultImagesFactory extends Factory
 {
@@ -23,8 +22,7 @@ class DefaultImagesFactory extends Factory
     public function definition()
     {
         return [
-            'default_image_url' => null
+            'default_image_url' => null,
         ];
-        
     }
 }

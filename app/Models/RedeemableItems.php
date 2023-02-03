@@ -2,59 +2,62 @@
 
 namespace App\Models;
 
-
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\LoyaltyPointLedger;
-use App\Models\LoyaltyPointBalance;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 /**
- * @property mixed $business_id
+ * @property mixed       $business_id
  * @property false|mixed $redeemed
- * @property mixed $loyalty_point_dollar_percent_value
- * @property mixed $dollar_value
- * @property mixed $total_spent
+ * @property mixed       $loyalty_point_dollar_percent_value
+ * @property mixed       $dollar_value
+ * @property mixed       $total_spent
  * @property mixed redeemer_id
  * @property mixed reward_id
  * @property mixed ledger_record_id
- * @property mixed $amount
+ * @property mixed                            $amount
  * @property mixed|\Ramsey\Uuid\UuidInterface $uuid
  */
 class RedeemableItems extends Model
 {
     use HasFactory;
 
-    public function loyaltyPointLedger(){
+    public function loyaltyPointLedger()
+    {
         return $this->hasOne('App\Models\LoyaltyPointLedger', 'id', 'ledger_record_id');
     }
 
-    public function reward(){
+    public function reward()
+    {
         return $this->hasOne('App\Models\Reward', 'id', 'reward_id');
     }
 
-    public function business(){
+    public function business()
+    {
         return $this->hasOne('App\Models\Business', 'id', 'business_id');
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $validatedData = $request->validate([
-            'amount' => ['required', 'numeric'],
-            'total_spent' => ['required', 'numeric'],
+            'amount'       => ['required', 'numeric'],
+            'total_spent'  => ['required', 'numeric'],
             'dollar_value' => ['required', 'numeric'],
         ]);
 
         $user = Auth::user();
 
-        if($user){
-            if($user->business->loyaltyPointBalance->balance < $validatedData['amount']){
-                $response = array(
-                    "success" => false,
-                    "message" => "Business doesn't have enough Loyalty Points."
-                );
+        if ($user)
+        {
+            if ($user->business->loyaltyPointBalance->balance < $validatedData['amount'])
+            {
+                $response = [
+                    'success' => false,
+                    'message' => "Business doesn't have enough Loyalty Points.",
+                ];
                 return response($response);
             }
 
@@ -72,21 +75,24 @@ class RedeemableItems extends Model
             }, 3);
 
             $redeemable->refresh();
-        } else {
+        }
+        else
+        {
             $redeemable = null;
         }
 
-        $response = array(
-            "success" => true,
-            "redeemable" => $redeemable
-        );
+        $response = [
+            'success'    => true,
+            'redeemable' => $redeemable,
+        ];
 
         return response($response);
     }
 
-    public function redeem(Request $request){
+    public function redeem(Request $request)
+    {
         $validatedData = $request->validate([
-            'redeemableHash' => ['required', 'string']
+            'redeemableHash' => ['required', 'string'],
         ]);
 
         $user = Auth::user();
@@ -94,12 +100,14 @@ class RedeemableItems extends Model
         $redeemable = RedeemableItems::where('uuid', $validatedData['redeemableHash'])
         ->first();
 
-        if($redeemable){
-            if($redeemable->redeemed === 1){
-                $response = array(
-                    "success" => false,
-                    "message" => 'Points already redeemed.'
-                );
+        if ($redeemable)
+        {
+            if ($redeemable->redeemed === 1)
+            {
+                $response = [
+                    'success' => false,
+                    'message' => 'Points already redeemed.',
+                ];
                 return response($response);
             }
 
@@ -112,7 +120,7 @@ class RedeemableItems extends Model
             $insertLp->user_id = $user->id;
             $insertLp->uuid = Str::uuid();
             $insertLp->business_id = $redeemable->business->id;
-            $insertLp->loyalty_amount = abs( floatval($redeemable->amount) );
+            $insertLp->loyalty_amount = abs(floatval($redeemable->amount));
             $insertLp->type = 'points';
 
             //Insert expense into ledger
@@ -120,7 +128,7 @@ class RedeemableItems extends Model
             $insertExpense->user_id = $user->id;
             $insertExpense->uuid = Str::uuid();
             $insertExpense->business_id = $redeemable->business->id;
-            $insertExpense->loyalty_amount = ( - abs(floatval($redeemable->amount)) );
+            $insertExpense->loyalty_amount = (-abs(floatval($redeemable->amount)));
             $insertExpense->type = 'points_expense';
 
             //save these variables for later use.
@@ -129,7 +137,8 @@ class RedeemableItems extends Model
 
             //Reflect reward into personal user business balance.
             $userCurrentBalance = $user->loyaltyPointBalance()->where('from_business', $redeemable->business->id)->first();
-            if(is_null($userCurrentBalance)){
+            if (is_null($userCurrentBalance))
+            {
                 $lp = new LoyaltyPointBalance();
                 $lp->id = $user->id;
                 $lp->balance = 0;
@@ -147,55 +156,61 @@ class RedeemableItems extends Model
             $newBusinessBalance = $businessCurrentBalance + $expense;
 
             //Check if the business has enough LP to let the user Redeem
-            if( ($businessCurrentBalance - $expense) <= 0 ){
-                $response = array(
-                    "success" => false,
-                    "message" => "Business doesn't have enough Loyalty Points."
-                );
+            if (($businessCurrentBalance - $expense) <= 0)
+            {
+                $response = [
+                    'success' => false,
+                    'message' => "Business doesn't have enough Loyalty Points.",
+                ];
                 return response($response);
             }
 
             DB::transaction(function () use (
-                    $insertLp, $insertExpense,
-                    $user, $redeemable, $newUserBalance,
-                    $newBusinessBalance)
-            {
+                $insertLp,
+                $insertExpense,
+                $user,
+                $redeemable,
+                $newUserBalance,
+                $newBusinessBalance
+            ) {
                 $insertLp->save();
                 $insertExpense->save();
                 $redeemable->save();
 
                 LoyaltyPointBalance::where('business_id', $redeemable->business_id)
                 ->update([
-                    "balance" => $newBusinessBalance
+                    'balance' => $newBusinessBalance,
                 ]);
 
                 $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
                 $user->loyaltyPointBalanceAggregator->save();
 
                 $user->loyaltyPointBalance()->where('from_business', $redeemable->business_id)->update([
-                    "balance" => $newUserBalance
+                    'balance' => $newUserBalance,
                 ]);
             }, 3);
 
             $redeemable->refresh();
             $user->loyaltyPointBalanceAggregator->refresh();
 
-            $response = array(
-                "success" => true,
-                "redeemable" => $redeemable,
-                "loyalty_points" => $user->loyaltyPointBalanceAggregator->balance
-            );
+            $response = [
+                'success'        => true,
+                'redeemable'     => $redeemable,
+                'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
+            ];
 
             return response($response);
         }
     }
 
-    public function lpRedeemed(Request $request){
+    public function lpRedeemed(Request $request)
+    {
         $user = Auth::user();
-        /**
+        /*
          * Personal account or business account.
          */
-        if($user->spotbieUser->user_type === 4) {
+        if ($user->spotbieUser->user_type === 4)
+        {
             $redeemedList = $user
                 ->redeemed()
                 ->with('loyaltyPointLedger')
@@ -207,18 +222,20 @@ class RedeemableItems extends Model
                 ->paginate(10);
         }
 
-        $response = array(
-            "success" => true,
-            "redeemedList" => $redeemedList
-        );
+        $response = [
+            'success'      => true,
+            'redeemedList' => $redeemedList,
+        ];
 
         return response($response);
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $user = Auth::user();
 
-        if($user->spotbieUser->user_type === 4) {
+        if ($user->spotbieUser->user_type === 4)
+        {
             $rewardList = $user
                 ->redeemed()
                 ->with('loyaltyPointLedger')
@@ -229,28 +246,38 @@ class RedeemableItems extends Model
                 ->where('reward_id', '!=', null)
                 ->orderBy('redeemable_items.created_at', 'desc')
                 ->paginate(10);
-        } else {
+        }
+        else
+        {
             $rewardList = DB::table('redeemable_items')
                 ->join('business', 'redeemable_items.business_id', '=', 'business.id')
                 ->join('users', 'redeemable_items.business_id', '=', 'users.id')
                 ->join('rewards', 'redeemable_items.reward_id', '=', 'rewards.id')
                 ->select(
-                    'redeemable_items.uuid', 'redeemable_items.redeemer_id', 'redeemable_items.amount',
-                    'redeemable_items.total_spent', 'redeemable_items.dollar_value', 'redeemable_items.loyalty_point_dollar_percent_value',
-                    'redeemable_items.redeemed', 'redeemable_items.updated_at',
+                    'redeemable_items.uuid',
+                    'redeemable_items.redeemer_id',
+                    'redeemable_items.amount',
+                    'redeemable_items.total_spent',
+                    'redeemable_items.dollar_value',
+                    'redeemable_items.loyalty_point_dollar_percent_value',
+                    'redeemable_items.redeemed',
+                    'redeemable_items.updated_at',
                     'users.username',
-                    'spotbie_users.default_picture', 'spotbie_users.user_type',
-                    'rewards.name AS reward_name', 'rewards.images AS reward_image', 'rewards.point_cost AS point_cost'
+                    'spotbie_users.default_picture',
+                    'spotbie_users.user_type',
+                    'rewards.name AS reward_name',
+                    'rewards.images AS reward_image',
+                    'rewards.point_cost AS point_cost'
                 )
                 ->where('redeemable_items.business_id', $user->business->id)
                 ->orderBy('redeemable_items.id', 'desc')
                 ->paginate(5);
         }
 
-        $response = array(
-            "success" => true,
-            "rewardList" => $rewardList
-        );
+        $response = [
+            'success'    => true,
+            'rewardList' => $rewardList,
+        ];
 
         return response($response);
     }

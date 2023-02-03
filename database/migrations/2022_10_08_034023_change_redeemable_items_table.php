@@ -25,6 +25,5 @@ class ChangeRedeemableItemsTable extends Migration
      */
     public function down()
     {
-        //
     }
 }

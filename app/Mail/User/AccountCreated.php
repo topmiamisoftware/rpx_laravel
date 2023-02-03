@@ -4,9 +4,7 @@ namespace App\Mail\User;
 
 use App\Models\SpotbieUser;
 use App\Models\User;
-
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -15,6 +13,7 @@ class AccountCreated extends Mailable
     use Queueable, SerializesModels;
 
     protected $user;
+
     protected $spotbieUser;
 
     /**
@@ -34,11 +33,11 @@ class AccountCreated extends Mailable
      * @return $this
      */
     public function build()
-    {   
+    {
         return $this->from('welcome@spotbie.com', 'SpotBie.com')
                     ->subject('Welcome to SpotBie!')
                     ->markdown('emails.account_created', [
-                        'user' => $this->user,
+                        'user'        => $this->user,
                         'spotbieUser' => $this->spotbieUser,
                     ]);
     }

@@ -9,5 +9,4 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DefaultImages extends Model
 {
     use HasFactory, SoftDeletes;
-
 }

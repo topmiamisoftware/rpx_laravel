@@ -22,7 +22,7 @@ class CreateUserLocationsTable extends Migration
             $table->softDeletes();
         });
     }
-    
+
     /**
      * Reverse the migrations.
      *

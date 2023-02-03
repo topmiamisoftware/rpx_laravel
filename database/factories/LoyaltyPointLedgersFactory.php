@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\LoyaltyPointLedger;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class LoyaltyPointLedgersFactory extends Factory
 {
@@ -23,7 +22,6 @@ class LoyaltyPointLedgersFactory extends Factory
     public function definition()
     {
         return [
-            //
         ];
     }
 }

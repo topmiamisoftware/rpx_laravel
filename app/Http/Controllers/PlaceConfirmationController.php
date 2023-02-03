@@ -14,7 +14,6 @@ class PlaceConfirmationController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -24,62 +23,61 @@ class PlaceConfirmationController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PlaceConfirmation  $placeConfirmation
+     * @param \App\Models\PlaceConfirmation $placeConfirmation
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(PlaceConfirmation $placeConfirmation)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PlaceConfirmation  $placeConfirmation
+     * @param \App\Models\PlaceConfirmation $placeConfirmation
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(PlaceConfirmation $placeConfirmation)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PlaceConfirmation  $placeConfirmation
+     * @param \Illuminate\Http\Request      $request
+     * @param \App\Models\PlaceConfirmation $placeConfirmation
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, PlaceConfirmation $placeConfirmation)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PlaceConfirmation  $placeConfirmation
+     * @param \App\Models\PlaceConfirmation $placeConfirmation
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(PlaceConfirmation $placeConfirmation)
     {
-        //
     }
 }

@@ -15,13 +15,13 @@ class RewardFactory extends Factory
      */
     protected $model = Reward::class;
 
-    public $rewardImageList = array(
-        "assets/images/def/rewards/sample_image_0.jpg",
-        "assets/images/def/rewards/sample_image_1.jpg",
-        "assets/images/def/rewards/sample_image_2.jpg",
-        "assets/images/def/rewards/sample_image_3.jpg",
-        "assets/images/def/rewards/sample_image_4.jpg"
-    );
+    public $rewardImageList = [
+        'assets/images/def/rewards/sample_image_0.jpg',
+        'assets/images/def/rewards/sample_image_1.jpg',
+        'assets/images/def/rewards/sample_image_2.jpg',
+        'assets/images/def/rewards/sample_image_3.jpg',
+        'assets/images/def/rewards/sample_image_4.jpg',
+    ];
 
     /**
      * Define the model's default state.
@@ -33,7 +33,7 @@ class RewardFactory extends Factory
         $name = $this->faker->unique()->realText(50);
         $description = $this->faker->unique()->realText(150);
 
-        $images = config('spotbie.spotbie_front_end_ip') . $this->rewardImageList[rand(0,4)];
+        $images = config('spotbie.spotbie_front_end_ip') . $this->rewardImageList[rand(0, 4)];
 
         $point_cost = rand(450, 1200);
         $monthly_times_available = rand(1, 200);
@@ -42,14 +42,14 @@ class RewardFactory extends Factory
         $type = rand(0, 1);
 
         return [
-            'uuid' => Str::uuid(),
-            'type' => $type,
-            'name' => $name,
-            'description' => $description,
-            'images' => $images,
-            'point_cost' => $point_cost,
-            'monthly_times_available' => $monthly_times_available,
-            'times_claimed_this_month' => $times_claimed_this_month
+            'uuid'                     => Str::uuid(),
+            'type'                     => $type,
+            'name'                     => $name,
+            'description'              => $description,
+            'images'                   => $images,
+            'point_cost'               => $point_cost,
+            'monthly_times_available'  => $monthly_times_available,
+            'times_claimed_this_month' => $times_claimed_this_month,
         ];
     }
 }

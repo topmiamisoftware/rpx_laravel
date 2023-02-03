@@ -4,13 +4,10 @@ namespace App\Models;
 
 use Auth;
 use Image;
-
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Business;
-use App\Helpers\UrlHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -20,18 +17,20 @@ class Reward extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = "rewards";
+    public $table = 'rewards';
 
-    public function business(){
+    public function business()
+    {
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     }
 
-    public function uploadMedia(Request $request){
+    public function uploadMedia(Request $request)
+    {
         $success = true;
         $message = null;
 
         $validatedData = $request->validate([
-            'image' => 'required|image|max:25000'
+            'image' => 'required|image|max:25000',
         ]);
 
         $user = Auth::user();
@@ -48,38 +47,42 @@ class Reward extends Model
 
         $environment = App::environment();
 
-        $imagePath = 'rewards-media/images/' . $user->id. '/' . $hashedFileName;
+        $imagePath = 'rewards-media/images/' . $user->id . '/' . $hashedFileName;
 
-        if($environment == 'local'){
+        if ($environment == 'local')
+        {
             Storage::put($imagePath, $newFile);
             $imagePath = config('app.url') . '/' . $imagePath;
-        } else {
+        }
+        else
+        {
             Storage::put($imagePath, $newFile, 'public');
             $imagePath = config('app.url') . '/' . $imagePath;
         }
 
-        $response = array(
+        $response = [
             'success' => $success,
             'message' => $environment,
-            'image' => $imagePath
-        );
+            'image'   => $imagePath,
+        ];
 
         return response($response);
     }
 
-    public function create(Request $request){
-
+    public function create(Request $request)
+    {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:75|min:1',
+            'name'        => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
-            'images' => 'nullable|string|max:500|min:1',
-            'type' => 'required|numeric|max:6',
-            'point_cost' => 'required|numeric|min:1'
+            'images'      => 'nullable|string|max:500|min:1',
+            'type'        => 'required|numeric|max:6',
+            'point_cost'  => 'required|numeric|min:1',
         ]);
 
         $user = Auth::user();
 
-        if($user){
+        if ($user)
+        {
             $business = $user->business;
         }
 
@@ -92,21 +95,22 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
 
-        DB::transaction(function () use ($businessReward){
+        DB::transaction(function () use ($businessReward) {
             $businessReward->save();
         }, 3);
 
-        $response = array(
-            'success' => true,
-            'newBusiness' => $business
-        );
+        $response = [
+            'success'     => true,
+            'newBusiness' => $business,
+        ];
 
         return response($response);
     }
 
-    public function claim(Request $request) {
+    public function claim(Request $request)
+    {
         $validatedData = $request->validate([
-            'redeemableHash' => 'required|string|max:36'
+            'redeemableHash' => 'required|string|max:36',
         ]);
 
         $user = Auth::user();
@@ -114,17 +118,18 @@ class Reward extends Model
         $success = false;
         $reward = null;
 
-        if($user) {
+        if ($user)
+        {
             $reward = Reward::where('uuid', $validatedData['redeemableHash'])->get()->first();
 
-            if($reward) {
-
+            if ($reward)
+            {
                 $rewardLedgerRecord = $user->loyaltyPointLedger()->create([
-                    'uuid' => Str::uuid(),
-                    'business_id' => $reward->business_id,
+                    'uuid'           => Str::uuid(),
+                    'business_id'    => $reward->business_id,
                     'loyalty_amount' => -($reward->point_cost),
-                    'user_id' => $user->id,
-                    'type' => 'reward_expense'
+                    'user_id'        => $user->id,
+                    'type'           => 'reward_expense',
                 ]);
 
                 $redeemed = new RedeemableItems();
@@ -134,17 +139,18 @@ class Reward extends Model
                 $redeemed->total_spent = $reward->point_cost;
                 $redeemed->redeemed = true;
                 $redeemed->reward_id = $reward->id;
-                $redeemed->dollar_value = floatval($reward->point_cost * ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100) );
+                $redeemed->dollar_value = floatval($reward->point_cost * ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100));
                 $redeemed->ledger_record_id = $rewardLedgerRecord->id;
 
                 //Check if the user has enough LP to claim this reward.
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
 
-                if($balanceAfterRedeeming < 0){
+                if ($balanceAfterRedeeming < 0)
+                {
                     //Deny the transaction.
                     $response = response([
-                        "success" => false,
-                        "message" => "Not enough Loyalty Points in your account."
+                        'success' => false,
+                        'message' => 'Not enough Loyalty Points in your account.',
                     ]);
                     return $response;
                 }
@@ -152,7 +158,7 @@ class Reward extends Model
                 //Charge the user the LP Cost.
                 $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
 
-                DB::transaction(function () use ($user, $redeemed){
+                DB::transaction(function () use ($user, $redeemed) {
                     $redeemed->save();
                     $user->loyaltyPointBalanceAggregator->save();
                 });
@@ -161,27 +167,29 @@ class Reward extends Model
         }
 
         $response = response([
-            "success" => $success,
-            "reward" => $reward,
-            "loyalty_points" => $user->loyaltyPointBalanceAggregator->balance
+            'success'        => $success,
+            'reward'         => $reward,
+            'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
         ]);
 
         return $response;
     }
 
-    public function updateReward(Request $request){
+    public function updateReward(Request $request)
+    {
         $validatedData = $request->validate([
-            'id' => 'required|numeric|min:1',
-            'name' => 'required|string|max:75|min:1',
+            'id'          => 'required|numeric|min:1',
+            'name'        => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
-            'images' => 'nullable|string|max:500|min:1',
-            'type' => 'required|numeric|max:6',
-            'point_cost' => 'required|numeric|min:1'
+            'images'      => 'nullable|string|max:500|min:1',
+            'type'        => 'required|numeric|max:6',
+            'point_cost'  => 'required|numeric|min:1',
         ]);
 
         $user = Auth::user();
 
-        if($user){
+        if ($user)
+        {
             $business = $user->business;
         }
 
@@ -194,31 +202,30 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
 
-        DB::transaction(function () use ($businessReward){
+        DB::transaction(function () use ($businessReward) {
             $businessReward->save();
         }, 3);
 
-        $response = array(
-            'success' => true,
-            'newBusiness' => $business
-        );
+        $response = [
+            'success'     => true,
+            'newBusiness' => $business,
+        ];
 
         return response($response);
     }
 
-    public function index(Request $request){
-
+    public function index(Request $request)
+    {
         $validatedData = $request->validate([
-            'qrCodeLink' => ['nullable', 'string']
+            'qrCodeLink' => ['nullable', 'string'],
         ]);
 
         $rewards = null;
         $loyalty_point_dollar_percent_value = null;
 
-        if( isset($validatedData['qrCodeLink']) ){
-
-            $business = Business::
-            select('id', 'name', 'description', 'address', 'qr_code_link', 'loc_x', 'loc_y', 'is_verified', 'categories', 'updated_at')
+        if (isset($validatedData['qrCodeLink']))
+        {
+            $business = Business::select('id', 'name', 'description', 'address', 'qr_code_link', 'loc_x', 'loc_y', 'is_verified', 'categories', 'updated_at')
             ->where('qr_code_link', $validatedData['qrCodeLink'])
             ->get()[0];
 
@@ -229,56 +236,57 @@ class Reward extends Model
             $loyalty_point_dollar_percent_value = LoyaltyPointBalance::where('business_id', $business->id)
             ->get()[0]->loyalty_point_dollar_percent_value;
 
-            if( !is_null($businessMenu) )
+            if (!is_null($businessMenu))
+            {
                 $rewards = $businessMenu;
-
-        } else {
-
+            }
+        }
+        else
+        {
             $user = Auth::user();
 
             $business = $user->business;
 
-            if($business->first())
+            if ($business->first())
+            {
                 $rewards = $business->rewards()->select('*')->get();
+            }
             else
+            {
                 $rewards = [];
-
+            }
         }
 
-        $response = array(
-            'success' => true,
-            'rewards' => $rewards,
-            'business' => $business,
-            'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value
-        );
+        $response = [
+            'success'                            => true,
+            'rewards'                            => $rewards,
+            'business'                           => $business,
+            'loyalty_point_dollar_percent_value' => $loyalty_point_dollar_percent_value,
+        ];
 
         return response($response);
-
     }
 
-    public function deleteMe(Request $request){
-
+    public function deleteMe(Request $request)
+    {
         $validatedData = $request->validate([
-            'id' => 'required|numeric'
+            'id' => 'required|numeric',
         ]);
 
         $user = Auth::user();
         $reward_id = $validatedData['id'];
 
-        if($user){
-
-            DB::transaction(function () use ($user, $reward_id){
+        if ($user)
+        {
+            DB::transaction(function () use ($user, $reward_id) {
                 Reward::where('id', $reward_id)->delete();
             }, 3);
-
         }
 
-        $response = array(
-            'success' => true
-        );
+        $response = [
+            'success' => true,
+        ];
 
         return response($response);
-
     }
-
 }

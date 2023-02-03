@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use App\Models\Reward;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -21,51 +20,59 @@ class Business extends Model
 
     protected $fillable = ['photo'];
 
-    public function rewards(){
+    public function rewards()
+    {
         return $this->hasMany('App\Models\Reward', 'business_id', 'id');
     }
 
-    public function loyaltyPointBalance(){
+    public function loyaltyPointBalance()
+    {
         return $this->hasOne('App\Models\LoyaltyPointBalance', 'business_id', 'id');
     }
 
-    public function loyaltyPointLedger(){
+    public function loyaltyPointLedger()
+    {
         return $this->hasOne('App\Models\LoyaltyPointLedger', 'business_id', 'id');
     }
 
-    public function redeemables(){
+    public function redeemables()
+    {
         return $this->hasMany('App\Models\RedeemableItems', 'business_id');
     }
 
-    public function ads(){
+    public function ads()
+    {
         return $this->hasMany('App\Models\Ads', 'business_id');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('App\Models\User', 'id');
     }
 
-    public function spotbieUser(){
+    public function spotbieUser()
+    {
         return $this->belongsTo('App\Models\SpotbieUser', 'id');
     }
 
-    public function verify(Request $request){
+    public function verify(Request $request)
+    {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:75|min:1',
+            'name'        => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
-            'address' => 'required|string|max:350|min:1',
-            'city' => 'required|string',
-            'country' => 'required|string',
-            'line1' => 'nullable|string',
-            'line2' => 'nullable|string',
+            'address'     => 'required|string|max:350|min:1',
+            'city'        => 'required|string',
+            'country'     => 'required|string',
+            'line1'       => 'nullable|string',
+            'line2'       => 'nullable|string',
             'postal_code' => 'nullable|string',
-            'state' => 'nullable|string',
-            'photo' => 'required|string|max:650|min:1',
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
-            'passkey' => 'required|string|max:20|min:4',
-            'accountType' => 'required|numeric'
+            'state'       => 'nullable|string',
+            'photo'       => 'required|string|max:650|min:1',
+            'loc_x'       => 'required|max:90|min:-90|numeric',
+            'loc_y'       => 'required|max:180|min:-180|numeric',
+            'categories'  => 'required|string',
+            'passkey'     => 'required|string|max:20|min:4',
+            'accountType' => 'required|numeric',
         ]);
 
         $user = Auth::user();
@@ -75,24 +82,27 @@ class Business extends Model
 
         $spotbieBusinessPassKey = $confirmKey;
 
-        if(
+        if (
             $spotbieBusinessPassKey !== $validatedData['passkey'] &&
             $confirmKeyLifeTime !== $validatedData['passkey']
-        ){
-            $response = array(
-                'message' => 'passkey_mismatch'
-            );
+        ) {
+            $response = [
+                'message' => 'passkey_mismatch',
+            ];
             return response($response);
         }
 
         $isLifeTimeMembership = false;
 
-        if( $confirmKeyLifeTime === $validatedData['passkey'] ){
+        if ($confirmKeyLifeTime === $validatedData['passkey'])
+        {
             /**
              * We are setting a false isLifeTimeMembership for now.
              */
             $isLifeTimeMembership = false;
-        } else if( $spotbieBusinessPassKey === $validatedData['passkey'] ) {
+        }
+        elseif ($spotbieBusinessPassKey === $validatedData['passkey'])
+        {
             $isLifeTimeMembership = false;
         }
 
@@ -101,9 +111,12 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;
 
-        if( !is_null($existingBusiness) ) {
+        if (!is_null($existingBusiness))
+        {
             $business = $user->business;
-        } else {
+        }
+        else
+        {
             $business = new Business();
         }
 
@@ -129,17 +142,21 @@ class Business extends Model
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
-        if($userBillable && $user->trial_ends_at === null){
+        if ($userBillable && $user->trial_ends_at === null)
+        {
             $user->update(['trial_ends_at' => Carbon::now()->addDays(60)]);
         }
 
-        if($existingBusiness){
-            DB::transaction(function () use ($business, $user){
+        if ($existingBusiness)
+        {
+            DB::transaction(function () use ($business, $user) {
                 $user->business->save();
                 $user->spotbieUser->save();
             }, 3);
-        } else {
-            DB::transaction(function () use ($business, $user, $userBillable){
+        }
+        else
+        {
+            DB::transaction(function () use ($business, $user, $userBillable) {
                 $business->save();
                 $user->spotbieUser->save();
                 $user->save();
@@ -151,50 +168,53 @@ class Business extends Model
         $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->id)->first();
 
         //Check if the user entered a lifetime membership passkey
-        if( $isLifeTimeMembership && !is_null($existingSubscription) ){
+        if ($isLifeTimeMembership && !is_null($existingSubscription))
+        {
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
 
-            DB::transaction(function () use ($user){
+            DB::transaction(function () use ($user) {
                 $user->save();
             }, 3);
-        } else if($isLifeTimeMembership) {
+        }
+        elseif ($isLifeTimeMembership)
+        {
             //Extend the user's trial for a lifetime
             $user = User::find($user->id);
             $user->trial_ends_at = Carbon::now()->addYears(90);
 
-            DB::transaction(function () use ($user){
+            DB::transaction(function () use ($user) {
                 $user->save();
             }, 3);
         }
 
-        $response = array(
-            'message' => 'success',
-            'business' => $business,
+        $response = [
+            'message'   => 'success',
+            'business'  => $business,
             'giveTrial' => $giveTrial,
-        );
+        ];
 
         return response($response);
-
     }
 
-    public function saveBusiness(Request $request){
+    public function saveBusiness(Request $request)
+    {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:75|min:1',
+            'name'        => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
-            'address' => 'required|string|max:350|min:1',
-            'city' => 'required|string',
-            'country' => 'required|string',
-            'line1' => 'nullable|string',
-            'line2' => 'nullable|string',
+            'address'     => 'required|string|max:350|min:1',
+            'city'        => 'required|string',
+            'country'     => 'required|string',
+            'line1'       => 'nullable|string',
+            'line2'       => 'nullable|string',
             'postal_code' => 'nullable|string',
-            'state' => 'nullable|string',
-            'photo' => 'required|string|max:650|min:1',
-            'loc_x' => 'required|max:90|min:-90|numeric',
-            'loc_y' => 'required|max:180|min:-180|numeric',
-            'categories' => 'required|string',
-            'accountType' => 'required|numeric'
+            'state'       => 'nullable|string',
+            'photo'       => 'required|string|max:650|min:1',
+            'loc_x'       => 'required|max:90|min:-90|numeric',
+            'loc_y'       => 'required|max:180|min:-180|numeric',
+            'categories'  => 'required|string',
+            'accountType' => 'required|numeric',
         ]);
 
         $user = Auth::user();
@@ -204,9 +224,12 @@ class Business extends Model
         //check if the place to eat already exists.
         $existingBusiness = $user->business;
 
-        if( !is_null($existingBusiness) ) {
+        if (!is_null($existingBusiness))
+        {
             $business = $user->business;
-        } else {
+        }
+        else
+        {
             $business = new Business();
         }
 
@@ -233,7 +256,7 @@ class Business extends Model
 
         $business->qr_code_link = Str::uuid();
 
-        DB::transaction(function () use ($business, $user){
+        DB::transaction(function () use ($business, $user) {
             $business->save();
             $user->spotbieUser->save();
 
@@ -250,19 +273,19 @@ class Business extends Model
             $lpBalance->save();
         }, 3);
 
-        $response = array(
-            'message' => 'success',
-            'business' => $business
-        );
+        $response = [
+            'message'  => 'success',
+            'business' => $business,
+        ];
 
         return response($response);
     }
 
-
-    public function getGooglePlacesToEat(Request $request){
+    public function getGooglePlacesToEat(Request $request)
+    {
         $request->validate([
             'url'    => 'required|string|max:250|min:1',
-            'bearer' => 'required|string|max:250|min:1'
+            'bearer' => 'required|string|max:250|min:1',
         ]);
 
         $url = $request->url;
@@ -276,11 +299,11 @@ class Business extends Model
         //return the transfer as a string
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Access-Control-Allow-Credentials: true',
             'Content-Type: application/json',
-            "Authorization: Bearer $gToken"
-        ));
+            "Authorization: Bearer $gToken",
+        ]);
 
         // $output contains the output string
         $output = curl_exec($ch);
@@ -288,23 +311,30 @@ class Business extends Model
         // close curl resource to free up system resources
         curl_close($ch);
 
-        $response = array(
-            'message' => 'success',
-            'g_response' => $output
-        );
+        $response = [
+            'message'    => 'success',
+            'g_response' => $output,
+        ];
 
         return response($response);
-
     }
 
-    public function show(Request $request){
+    public function show(Request $request)
+    {
         $validatedData = $request->validate([
-            'qrCodeLink' => ['required', 'string']
+            'qrCodeLink' => ['required', 'string'],
         ]);
 
         $business = Business::select(
-            'business.qr_code_link', 'business.name', 'business.categories', 'business.description',
-            'business.photo', 'business.qr_code_link', 'business.loc_x', 'business.loc_y', 'business.id',
+            'business.qr_code_link',
+            'business.name',
+            'business.categories',
+            'business.description',
+            'business.photo',
+            'business.qr_code_link',
+            'business.loc_x',
+            'business.loc_y',
+            'business.id',
             'spotbie_users.user_type',
         )
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
@@ -312,16 +342,19 @@ class Business extends Model
         ->where('qr_code_link', $validatedData['qrCodeLink'])
         ->get()[0];
 
-        if($business){
+        if ($business)
+        {
             $success = true;
-        } else {
+        }
+        else
+        {
             $success = false;
         }
 
-        $response = array(
-            'success' => $success,
-            'business' => $business
-        );
+        $response = [
+            'success'  => $success,
+            'business' => $business,
+        ];
 
         return response($response);
     }

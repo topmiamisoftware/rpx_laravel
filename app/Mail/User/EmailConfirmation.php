@@ -3,7 +3,6 @@
 namespace App\Mail\User;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,7 +11,9 @@ class EmailConfirmation extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
+
     public $pin;
+
     public $lang;
 
     /**
@@ -34,17 +35,15 @@ class EmailConfirmation extends Mailable
      */
     public function build()
     {
-
         App::setLocale($this->lang);
 
-        $subject = "Confirm your e-mail."; 
+        $subject = 'Confirm your e-mail.';
 
-        $emailFrom = "welcome@spotbie.com";
+        $emailFrom = 'welcome@spotbie.com';
 
         return $this->subject($subject)
-                    ->from($emailFrom, "SpotBie")
-                    ->to($this->user["email"])
+                    ->from($emailFrom, 'SpotBie')
+                    ->to($this->user['email'])
                     ->view('emails.users.email_confirmation');
-
     }
 }

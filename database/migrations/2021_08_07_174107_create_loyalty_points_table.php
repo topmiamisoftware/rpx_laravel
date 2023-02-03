@@ -15,9 +15,9 @@ class CreateLoyaltyPointsTable extends Migration
     {
         Schema::create('loyalty_point_balances', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
-            $table->float('balance')->nullable(false)->default(0); 
-            $table->float('reset_balance')->nullable(false)->default(0); 
-            $table->float('loyalty_point_dollar_percent_value', 6, 2)->nullable(false)->default(0);    
+            $table->float('balance')->nullable(false)->default(0);
+            $table->float('reset_balance')->nullable(false)->default(0);
+            $table->float('loyalty_point_dollar_percent_value', 6, 2)->nullable(false)->default(0);
             $table->timestamp('end_of_month', $precision = 0)->nullable(true);
             $table->timestamps();
             $table->softDeletes();

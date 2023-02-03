@@ -3,14 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Ads;
-use App\Models\Business;
-use App\Models\User;
-use App\Models\Models;
-use App\Models\SpotbieUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 
 class AdsFactory extends Factory
@@ -29,14 +23,14 @@ class AdsFactory extends Factory
      */
     public function definition()
     {
-
         $name = $this->faker->unique()->realText(25);
 
         $images = '';
 
-        $adType = rand(0,2);
+        $adType = rand(0, 2);
 
-        switch($adType){
+        switch($adType)
+        {
             case 0:
                 $dollar_cost = 19.99;
                 break;
@@ -49,23 +43,21 @@ class AdsFactory extends Factory
         }
 
         return [
-            'uuid' => Str::uuid(),
-            'type' => $adType,
-            'name' => $name,
-            'images' => $images,
+            'uuid'          => Str::uuid(),
+            'type'          => $adType,
+            'name'          => $name,
+            'images'        => $images,
             'images_mobile' => $images,
-            'dollar_cost' => $dollar_cost,
-            'clicks' => rand(0,500),
-            'views' => rand(0,1500),
-            'is_live' => 1
+            'dollar_cost'   => $dollar_cost,
+            'clicks'        => rand(0, 500),
+            'views'         => rand(0, 1500),
+            'is_live'       => 1,
         ];
-
     }
 
-    public function configure(){
-
+    public function configure()
+    {
         return $this->afterCreating(function (Ads $ad) {
-
             $spotbieUserType = $ad->spotbieUser->user_type;
 
             $adImage = $this->getAdsPhoto($spotbieUserType);
@@ -73,19 +65,18 @@ class AdsFactory extends Factory
             $ad->images = $adImage;
             $ad->images_mobile = $adImage;
 
-            DB::transaction(function () use ($ad){
+            DB::transaction(function () use ($ad) {
                 $ad->save();
             });
-
         });
-
     }
 
-    public function getAdsPhoto($userType){
-
+    public function getAdsPhoto($userType)
+    {
         $businessPhotoFolder = 'assets/images/in-house/places-to-eat/';
 
-        switch($userType){
+        switch($userType)
+        {
             case '1':
                 $businessPhotoFolder = 'assets/images/in-house/places-to-eat/';
                 break;
@@ -97,10 +88,8 @@ class AdsFactory extends Factory
                 break;
         }
 
-        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1,25) . '.jpg';
+        $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhotoFolder . rand(1, 25) . '.jpg';
 
         return $businessPhoto;
-
     }
-
 }

@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -14,16 +13,12 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-    'paths' => ['*'],
+    'paths'           => ['*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => ['https://demo.spotbie.com',
-                            'https://spotbie.com',
-                            'https://localhost',
-                            'app://localhost', # You need this line for Cordova.
+        'https://spotbie.com',
+        'https://localhost',
+        'https://localhost:4200',
+        'app://localhost', # You need this line for Cordova.
     ],
-    'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true
 ];

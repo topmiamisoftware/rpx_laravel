@@ -9,19 +9,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class SpotbieUser extends Model
 {
     use HasFactory, SoftDeletes;
-    /* 
+
+    /*
     * SpotBie User belogns to User.
     */
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('App\Models\User', 'id');
     }
 
-    public function userLocation(){
+    public function userLocation()
+    {
         return $this->hasOne('App\Models\UserLocation', 'id');
     }
-    
-    public function store(){
-        
-    }
 
+    public function store()
+    {
+    }
 }

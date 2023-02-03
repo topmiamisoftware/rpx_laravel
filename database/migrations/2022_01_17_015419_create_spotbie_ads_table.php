@@ -17,7 +17,7 @@ class CreateSpotbieAdsTable extends Migration
             $table->id();
             $table->smallInteger('type');
             $table->string('images', 500);
-            $table->string('images_mobile', 500); 
+            $table->string('images_mobile', 500);
             $table->timestamps();
             $table->softDeletes();
         });

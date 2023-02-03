@@ -24,16 +24,16 @@ class UserSeeder extends Seeder
         /* Account #1 */
         User::factory()
             ->state([
-                'email' => 'maindedeux@gmail.com',
+                'email'    => 'maindedeux@gmail.com',
                 'username' => 'agent000',
-                'password' => Hash::make('HelloWorld33!')
+                'password' => Hash::make('HelloWorld33!'),
             ])
             ->count(1)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
                     'first_name' => 'Franco',
-                    'last_name' => 'Petitfour',
-                    'user_type' => 4
+                    'last_name'  => 'Petitfour',
+                    'user_type'  => 4,
                 ];
             })
             ->create();
@@ -41,16 +41,16 @@ class UserSeeder extends Seeder
         /* Account #2 */
         User::factory()
             ->state([
-                'email' => 'agent001@spotbie.com',
+                'email'    => 'agent001@spotbie.com',
                 'username' => 'agent001',
-                'password' => Hash::make('HelloWorld33!')
+                'password' => Hash::make('HelloWorld33!'),
             ])
             ->count(1)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
                     'first_name' => 'Franco',
-                    'last_name' => 'Garcia',
-                    'user_type' => 4
+                    'last_name'  => 'Garcia',
+                    'user_type'  => 4,
                 ];
             })
             ->create();
@@ -62,9 +62,9 @@ class UserSeeder extends Seeder
 
         User::factory()
             ->count($businessesToCreate)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
-                    'user_type' => 1,//create places to eat business account
+                    'user_type' => 1, //create places to eat business account
                 ];
             })
             ->hasBusiness(1)
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
 
         User::factory()
             ->count($businessesToCreate)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
                     'user_type' => 2, // create retail stores business account
                 ];
@@ -82,9 +82,9 @@ class UserSeeder extends Seeder
 
         User::factory()
             ->count($businessesToCreate)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
-                    'user_type' => 3 //Create events business account
+                    'user_type' => 3, //Create events business account
                 ];
             })
             ->hasBusiness(1)
@@ -92,17 +92,17 @@ class UserSeeder extends Seeder
 
         $placeToEatCategories = config('spotbie.my_business_categories_food');
         $indexOfBurgers = array_search('Burgers', $placeToEatCategories);
-        $placeToEatCategory = json_encode(array($indexOfBurgers));
+        $placeToEatCategory = json_encode([$indexOfBurgers]);
 
         // Let's create 20 Burger shops so that this category may always return full paged results.
         User::factory()
             ->count(20)
-            ->hasSpotbieUser(1, function (array $attributes){
+            ->hasSpotbieUser(1, function (array $attributes) {
                 return [
                     'user_type' => 1,
                 ];
             })
-            ->hasBusiness(1, function (array $attributes) use ($placeToEatCategory){
+            ->hasBusiness(1, function (array $attributes) use ($placeToEatCategory) {
                 return [
                     'categories' => $placeToEatCategory,
                 ];

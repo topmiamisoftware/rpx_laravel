@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\RedeemableItems;
 
 use App\Http\Controllers\Controller;
-use App\Models\LoyaltyPointLedger;
 use App\Models\RedeemableItems;
 use Illuminate\Http\Request;
 
@@ -11,7 +10,6 @@ class RedeemableItemsController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
      */
     public function index(Request $request, RedeemableItems $redeemableItems): \Illuminate\Http\Response
     {
@@ -25,7 +23,6 @@ class RedeemableItemsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
      */
     public function create(Request $request, RedeemableItems $redeemableItems): \Illuminate\Http\Response
     {

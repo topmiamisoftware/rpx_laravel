@@ -19,9 +19,9 @@ class CreateRewardsTable extends Migration
             $table->unsignedBigInteger('business_id')->references('id')->on('business')->onDelete('cascade');
             $table->smallInteger('type');
             $table->string('name', 50);
-            $table->string('description', 150);   
+            $table->string('description', 150);
             $table->string('images', 500);
-            $table->float('point_cost')->nullable(false);  
+            $table->float('point_cost')->nullable(false);
             $table->integer('monthly_times_available')->nullable(false)->default(0);
             $table->integer('times_claimed_this_month')->nullable(false)->default(0);
             $table->timestamps();

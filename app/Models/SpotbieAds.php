@@ -9,12 +9,13 @@ class SpotbieAds extends Model
 {
     use HasFactory;
 
-    static function getSpotbieAd($adType){
-
+    public static function getSpotbieAd($adType)
+    {
         $adId = 0;
         $query = null;
 
-        switch($adType){
+        switch($adType)
+        {
             case 0:
             case 2:
                 $adId = rand(1, 2);

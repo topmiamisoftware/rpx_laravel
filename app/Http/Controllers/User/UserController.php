@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\User;
-
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-
     public function signUp(Request $request, User $user)
     {
         return $user->signUp($request);
@@ -31,75 +28,93 @@ class UserController extends Controller
         return $user->deactivate($request);
     }
 
-    public function logIn(User $user, Request $request){
+    public function logIn(User $user, Request $request)
+    {
         return $user->logIn($request);
     }
 
-    public function logOut(User $user, Request $request){
+    public function logOut(User $user, Request $request)
+    {
         return $user->logOut($request);
     }
 
-    public function closeBrowser(User $user, Request $request){
+    public function closeBrowser(User $user, Request $request)
+    {
         return $user->closeBrowser($request);
     }
 
-    public function checkAuth(User $user){
+    public function checkAuth(User $user)
+    {
         return $user->checkIfLoggedIn();
     }
 
-    public function confirmAccount(User $user, Request $request){
+    public function confirmAccount(User $user, Request $request)
+    {
         return $user->confirmAccount($request);
     }
 
-    public function getUser(User $user, Request $request){
+    public function getUser(User $user, Request $request)
+    {
         return $user->getUser($request);
     }
 
-    public function sendPassEmail(User $user, Request $request){
+    public function sendPassEmail(User $user, Request $request)
+    {
         return $user->setPassResetPin($request);
     }
 
-    public function completePassReset(User $user, Request $request){
+    public function completePassReset(User $user, Request $request)
+    {
         return $user->completePassReset($request);
     }
 
-    public function changePassword(User $user, Request $request){
+    public function changePassword(User $user, Request $request)
+    {
         return $user->changePassword($request);
     }
 
-    public function uniqueEmail(User $user, Request $request){
+    public function uniqueEmail(User $user, Request $request)
+    {
         return $user->uniqueEmail($request);
     }
 
-    public function sendCode(User $user, Request $request){
+    public function sendCode(User $user, Request $request)
+    {
         return $user->sendCode($request);
     }
 
-    public function checkConfirm(User $user, Request $request){
+    public function checkConfirm(User $user, Request $request)
+    {
         return $user->sendCode($request);
     }
 
-    public function facebookLogin(User $user, Request $request){
+    public function facebookLogin(User $user, Request $request)
+    {
         return $user->facebookLogin($request);
     }
 
-    public function googleLogin(User $user, Request $request){
+    public function googleLogin(User $user, Request $request)
+    {
         return $user->googleLogin($request);
     }
 
-    public function appleLogin(User $user, Request $request){
+    public function appleLogin(User $user, Request $request)
+    {
         return $user->appleLogin($request);
     }
 
-    public function businessMembership(User $user, Request $request){
+    public function businessMembership(User $user, Request $request)
+    {
         return $user->businessMembership($request);
     }
 
-    public function membershipStatus(User $user, Request $request){
+    public function membershipStatus(User $user, Request $request)
+    {
         return $user->membershipStatus($request);
     }
 
-    public function cancelMembership(User $user){
+    public function cancelMembership(User $user)
+    {
         return $user->cancelMembership();
     }
 }
