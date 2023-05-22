@@ -2,61 +2,47 @@
 
 namespace App\Services\User;
 
-use Illuminate\Support\Facades\Log;
 use Mail;
 use Swift_Mailer;
-
 use Carbon\Carbon;
-
 use App\Helpers\PhoneConfirmation\PhoneConfirmationTwimlHelper;
-
-use App\Http\Requests\v2\User\ValidateUserEmail;
-use App\Http\Requests\v2\User\SendSmsConfirmCode;
-use App\Http\Requests\v2\User\ValidateSmsConfirmCode;
-use App\Http\Requests\v2\User\SendConfirmationEmail;
-use App\Http\Requests\v2\User\ValidateEmailConfirmCode;
-use App\Http\Requests\v2\User\CheckEmailConfirmCode;
-
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-
 use App\Models\PhoneConfirmation;
 use App\Models\EmailConfirmation;
 use App\Mail\User\EmailConfirmation as EmailConfirmationEmail;
-
 use Twilio\Rest\Client;
 use Twilio\Exceptions\TwilioException;
-
 use GuzzleHttp\Client as GuzzleClient;
-
 use Illuminate\Http\Request;
 use Illuminate\Mail\Transport\MailgunTransport;
 
-
 class UserValidationService
 {
+    public function __construct()
+    {
+    }
 
-    public function __construct(){}
-
-    public function checkIfPhoneIsConfirmed(Request $request): bool{
-
+    public function checkIfPhoneIsConfirmed(Request $request): bool
+    {
         $phoneConfirmed = PhoneConfirmation::select(
-            'phone_number', 'phone_is_verified'
+            'phone_number',
+            'phone_is_verified'
         )
         ->where('phone_number', $request->phone_number)
         ->where('phone_is_verified', true)
         ->first();
 
-        if($phoneConfirmed !== null)
+        if ($phoneConfirmed !== null)
+        {
             return true;
+        }
         else
+        {
             return false;
-
+        }
     }
 
-    public function makeConfirmationCall(Request $request) {
-
+    public function makeConfirmationCall(Request $request)
+    {
         $system = $request->system;
         $lang = $request->lang;
 
@@ -69,15 +55,17 @@ class UserValidationService
         $userPhoneNumber = $countryCode . $request->phone_number;
 
         PhoneConfirmation::updateOrCreate(
-        [
-            'phone_number' => $request->phone_number,
-            'phone_is_verified' => false
-        ], [
-            'confirmation_code' => $confirmationCode
-        ]);
-        
-        try {
+            [
+                'phone_number'      => $request->phone_number,
+                'phone_is_verified' => false,
+            ],
+            [
+                'confirmation_code' => $confirmationCode,
+            ]
+        );
 
+        try
+        {
             $client = new Client($sid, $token);
 
             $voice = new PhoneConfirmationTwimlHelper($lang);
@@ -86,35 +74,32 @@ class UserValidationService
                 $userPhoneNumber,
                 config('services.twilio.from'),
                 [
-                    "record" => true,
-                    "twiml" => $voice->getConfirmationCallSpeech($confirmationCode)
+                    'record' => true,
+                    'twiml'  => $voice->getConfirmationCallSpeech($confirmationCode),
                 ]
             );
-            
+
             return 'confirmation.sent';
-
-        } catch(TwilioException $e){
-
-            switch($e->getCode()){
-
+        }
+        catch(TwilioException $e)
+        {
+            switch($e->getCode())
+            {
                 case '21211':
                     return 'phoneNumber.invalid';
                 case '21612':
-                case '21408':  
-                case '21610': 
-                case '21614':                
+                case '21408':
+                case '21610':
+                case '21614':
                     return 'phoneNumber.unavailable';
-                default: 
+                default:
                     return 'phoneNumber.invalid';
-    
             }
-
         }
-
     }
 
-    public function sendSmsConfirmCode(Request $request): string{
-
+    public function sendSmsConfirmCode(Request $request): string
+    {
         $system = $request->system;
         $lang = $request->lang;
 
@@ -127,101 +112,106 @@ class UserValidationService
         $userPhoneNumber = $countryCode . $request->phone_number;
 
         PhoneConfirmation::updateOrCreate(
-        [
-            'phone_number' => $request->phone_number,
-            'phone_is_verified' => false
-        ], [
-            'confirmation_code' => $confirmationCode
-        ]);
+            [
+                'phone_number'      => $request->phone_number,
+                'phone_is_verified' => false,
+            ],
+            [
+                'confirmation_code' => $confirmationCode,
+            ]
+        );
 
-        
-        try {
-
+        try
+        {
             $client = new Client($sid, $token);
 
             $langHelper = new PhoneConfirmationTwimlHelper($lang);
-    
+
             $smsText = $langHelper->getConfirmPhoneSmsText($confirmationCode);
-    
+
             $msg = $client->messages->create(
                 $userPhoneNumber,
                 [
                     'from' => config('services.twilio.from'),
-                    'body' => $smsText
+                    'body' => $smsText,
                 ]
             );
 
             return 'confirmation.sent';
-
-        } catch(TwilioException $e){
-
-            switch($e->getCode()){
-
+        }
+        catch(TwilioException $e)
+        {
+            switch($e->getCode())
+            {
                 case '21211':
                     return 'phoneNumber.invalid';
                 case '21612':
-                case '21408':  
-                case '21610': 
-                case '21614':                
+                case '21408':
+                case '21610':
+                case '21614':
                     return 'phoneNumber.unavailable';
-                default: 
+                default:
                     return 'phoneNumber.invalid';
-    
             }
-
         }
-
     }
 
-    public function validateSmsConfirmCode(Request $request): bool{
-
+    public function validateSmsConfirmCode(Request $request): bool
+    {
         $phoneToConfirm = PhoneConfirmation::select(
-            'phone_number', 'phone_is_verified'
+            'phone_number',
+            'phone_is_verified'
         )
         ->where('phone_number', $request->phone_number)
         ->where('phone_is_verified', false)
         ->where('confirmation_code', $request->confirm_code)
         ->first();
 
-        if($phoneToConfirm !== null){
+        if ($phoneToConfirm !== null)
+        {
             PhoneConfirmation::where('phone_number', $request->phone_number)
             ->where('phone_is_verified', false)
             ->where('confirmation_code', $request->confirm_code)
             ->update(
                 ['phone_is_verified' => true]
             );
-        } else {
+        }
+        else
+        {
             return false;
         }
 
         return true;
-
     }
 
-    public function checkIfEmailIsConfirmed($request){
-
+    public function checkIfEmailIsConfirmed($request)
+    {
         $emailConfirmed = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null)
+        if ($emailConfirmed !== null)
+        {
             return true;
+        }
         else
+        {
             return false;
-
+        }
     }
 
-    public function sendConfirmationEmail(Request $request): bool{
-
+    public function sendConfirmationEmail(Request $request): bool
+    {
         $request->validated();
 
         $system = 'external_mysql_' . $request->system;
         $lang = $request->lang;
 
-        $user = array("email" => $request->email, "first_name" => $request->first_name);
+        $user = ['email' => $request->email, 'first_name' => $request->first_name];
 
         $systemHelper = new SystemHelper($request->system);
 
@@ -237,12 +227,13 @@ class UserValidationService
 
         EmailConfirmation::updateOrCreate(
             [
-                'email' => $request->email,
-                'email_is_verified' => false
-            ], [
-                'confirmation_token' => $pin
-        ]);
-
+                'email'             => $request->email,
+                'email_is_verified' => false,
+            ],
+            [
+                'confirmation_token' => $pin,
+            ]
+        );
 
         // Setup your mailgun transport
         $client = new GuzzleClient();
@@ -255,52 +246,56 @@ class UserValidationService
         Mail::queue(new EmailConfirmationEmail($user, $propertyInfo, $pin, $lang));
 
         return true;
-
     }
 
-    public function validateEmailConfirmCode(Request $request): bool{
-
+    public function validateEmailConfirmCode(Request $request): bool
+    {
         $emailToConfirm = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('email_is_verified', false)
         ->where('confirmation_token', $request->confirm_code)
         ->first();
 
-        if($emailToConfirm !== null){
+        if ($emailToConfirm !== null)
+        {
             EmailConfirmation::where('email', $request->email)
             ->where('email_is_verified', false)
             ->where('confirmation_token', $request->confirm_code)
             ->update(
                 ['email_is_verified' => true]
             );
-        } else
+        }
+        else
+        {
             return false;
-        
+        }
 
         return true;
-
     }
 
-
-    public function checkConfirmCode(Request $request){
-
+    public function checkConfirmCode(Request $request)
+    {
         $now = Carbon::now();
 
         $emailConfirmed = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('expires_at', '>', $now->toDateTimeString())
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null)
+        if ($emailConfirmed !== null)
+        {
             return true;
+        }
         else
+        {
             return false;
-
+        }
     }
-
 }

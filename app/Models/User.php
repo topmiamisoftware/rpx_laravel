@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Auth;
 use Mail;
-
 use App\Mail\User\AccountCreated;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -71,7 +70,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -79,58 +78,71 @@ class User extends Authenticatable implements JWTSubject
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60
+            'token_type'   => 'bearer',
+            'expires_in'   => Auth::factory()->getTTL() * 60,
         ]);
     }
 
-    public function userLocation(){
+    public function userLocation()
+    {
         return $this->hasOne('App\Models\UserLocation', 'id');
     }
 
-    public function business(){
+    public function business()
+    {
         return $this->hasOne('App\Models\Business', 'id');
     }
 
-    public function spotbieUser(){
+    public function spotbieUser()
+    {
         return $this->hasOne('App\Models\SpotbieUser', 'id');
     }
 
-    public function defaultImages(){
+    public function defaultImages()
+    {
         return $this->hasMany('App\Models\DefaultImages', 'id');
     }
 
-    public function myFavorites(){
+    public function myFavorites()
+    {
         return $this->hasMany('App\Models\MyFavorites', 'user_id');
     }
 
-    public function loyaltyPointBalance(){
+    public function loyaltyPointBalance()
+    {
         return $this->hasMany('App\Models\LoyaltyPointBalance', 'id');
     }
 
-    public function loyaltyPointBalanceAggregator(){
+    public function loyaltyPointBalanceAggregator()
+    {
         return $this->hasOne('App\Models\LoyaltyPointBalanceAggregator', 'id');
     }
 
-    public function loyaltyPointLedger(){
+    public function loyaltyPointLedger()
+    {
         return $this->hasMany('App\Models\LoyaltyPointLedger', 'user_id');
     }
 
-    public function redeemed(){
+    public function redeemed()
+    {
         return $this->hasMany('App\Models\RedeemableItems', 'redeemer_id');
     }
 
-    public function signUp(Request $request){
+    public function signUp(Request $request)
+    {
         $validatedData = $request->validate([
             'username' => ['required', 'unique:users', 'max:35', 'min:1', new Username],
-            'email' => ['required', 'unique:users', 'email'],
+            'email'    => ['required', 'unique:users', 'email'],
             'password' => ['required', new Password],
-            'route' => ['required', 'string']
+            'route'    => ['required', 'string'],
         ]);
 
-        if($validatedData['route'] == '/business') {
+        if ($validatedData['route'] == '/business')
+        {
             $accountType = 0;
-        } else {
+        }
+        else
+        {
             $accountType = 4;
         }
 
@@ -147,21 +159,22 @@ class User extends Authenticatable implements JWTSubject
         $newSpotbieUser->last_name = '';
         $newSpotbieUser->user_type = $accountType;
 
-        $description = "Welcome to my Spotbie profile.";
+        $description = 'Welcome to my Spotbie profile.';
 
         $newSpotbieUser->description = $description;
         $newSpotbieUser->last_known_ip_address = $request->ip;
 
         $loyaltyPointBalance = new LoyaltyPointBalance();
 
-        DB::transaction(function () use ($user, $newSpotbieUser, $loyaltyPointBalance){
+        DB::transaction(function () use ($user, $newSpotbieUser, $loyaltyPointBalance) {
             $user->createAsStripeCustomer();
             $user->save();
 
             $newSpotbieUser->id = $user->id;
             $newSpotbieUser->save();
 
-            if( $newSpotbieUser->user_type != '0' ){
+            if ($newSpotbieUser->user_type != '0')
+            {
                 $lpAggregator = new LoyaltyPointBalanceAggregator();
                 $lpAggregator->id = $user->id;
                 $lpAggregator->balance = 0;
@@ -182,25 +195,24 @@ class User extends Authenticatable implements JWTSubject
         ->where('id', $user->id)
         ->first();
 
-        $signUpResponse = array(
-            'token_info' => $this->respondWithToken(Auth::refresh()),
-            'message' => 'success',
-            'user' => $user,
-            'spotbie_user' => $newSpotbieUser
-        );
+        $signUpResponse = [
+            'token_info'   => $this->respondWithToken(Auth::refresh()),
+            'message'      => 'success',
+            'user'         => $user,
+            'spotbie_user' => $newSpotbieUser,
+        ];
 
         return response($signUpResponse);
-
     }
 
-    public function logIn(Request $request){
-
+    public function logIn(Request $request)
+    {
         $validatedData = $request->validate([
-            'login' => ['required', 'string'],
-            'password' => ['required', new Password],
-            'timezone' => ['required', 'string'],
+            'login'           => ['required', 'string'],
+            'password'        => ['required', new Password],
+            'timezone'        => ['required', 'string'],
             'remember_me_opt' => ['required', 'string'],
-            'route' => ['required', 'string']
+            'route'           => ['required', 'string'],
         ]);
 
         $login = $validatedData['login'];
@@ -208,23 +220,27 @@ class User extends Authenticatable implements JWTSubject
         $remember_me = $validatedData['remember_me_opt'];
         $route = $validatedData['route'];
 
-        if($route == '/business'){
+        if ($route == '/business')
+        {
             //Set account to not set and let the user pick their business account type later on.
             $accountType = 0;
-        } else {
+        }
+        else
+        {
             //Set the account type to personal.
             $accountType = 4;
         }
 
         $searchUser = User::onlyTrashed()
             ->select('id', 'password')
-            ->where(function($query) use ($login){
-                    $query->where('username', $login)
-                        ->orWhere('email', $login);
-                })
+            ->where(function ($query) use ($login) {
+                $query->where('username', $login)
+                    ->orWhere('email', $login);
+            })
             ->first();
 
-        if($searchUser !== null && Hash::check($password, $searchUser->password)) {
+        if ($searchUser !== null && Hash::check($password, $searchUser->password))
+        {
             $searchUser->restore();
         }
 
@@ -232,28 +248,35 @@ class User extends Authenticatable implements JWTSubject
             !Auth::attempt(['username' => $login, 'password' => $password])
         ) {
             $login_failed = true;
-        } else {
+        }
+        else
+        {
             $login_failed = false;
         }
 
-        if($login_failed){
-            $loginResponse = array(
-                'message' => 'invalid_cred'
-            );
-        } else {
-            $user = User::select('id', 'username', 'stripe_id')->where(function($query) use ($login){
-                    $query->where('username', $login)
-                            ->orWhere('email', $login);
-                })
+        if ($login_failed)
+        {
+            $loginResponse = [
+                'message' => 'invalid_cred',
+            ];
+        }
+        else
+        {
+            $user = User::select('id', 'username', 'stripe_id')->where(function ($query) use ($login) {
+                $query->where('username', $login)
+                        ->orWhere('email', $login);
+            })
                 ->first();
 
             $accountTypeCheck = $this->checkAccountType($accountType, $user);
 
-            if($accountTypeCheck !== true) {
+            if ($accountTypeCheck !== true)
+            {
                 return $accountTypeCheck;
             }
 
-            if($user->stripe_id == null) {
+            if ($user->stripe_id == null)
+            {
                 $user->createAsStripeCustomer();
             }
 
@@ -263,9 +286,12 @@ class User extends Authenticatable implements JWTSubject
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
 
-            if($remember_me == '1'){
+            if ($remember_me == '1')
+            {
                 Auth::user()->remember_token = $token;
-            } else {
+            }
+            else
+            {
                 Auth::user()->remember_token = null;
             }
 
@@ -273,101 +299,119 @@ class User extends Authenticatable implements JWTSubject
 
             $user = Auth::user();
 
-            $loginResponse = array(
-                'token_info' => $this->respondWithToken($token),
-                'message' => 'success',
-                'user' => $user,
-                'spotbie_user' => $spotbieUser
-            );
+            $loginResponse = [
+                'token_info'   => $this->respondWithToken($token),
+                'message'      => 'success',
+                'user'         => $user,
+                'spotbie_user' => $spotbieUser,
+            ];
         }
         return response($loginResponse);
     }
 
     public function checkAccountType(int $accountType, User $user)
     {
-        if( ($accountType === 0) &&
-            ($user->spotbieUser->user_type == 1 ||
-            $user->spotbieUser->user_type  == 2 ||
-            $user->spotbieUser->user_type  == 3
+        if (($accountType === 0) &&
+            (
+                $user->spotbieUser->user_type == 1 ||
+            $user->spotbieUser->user_type == 2 ||
+            $user->spotbieUser->user_type == 3
             )
         ) {
             return true;
-        } else if($user->spotbieUser->user_type !== $accountType) {
+        }
+        elseif ($user->spotbieUser->user_type !== $accountType)
+        {
             return response([
-                "message" => "wrong_account_type",
-                "account_type" => $accountType,
-                "sb_acc_type" => $user->spotbieUser->user_type
+                'message'      => 'wrong_account_type',
+                'account_type' => $accountType,
+                'sb_acc_type'  => $user->spotbieUser->user_type,
             ]);
-        } else {
+        }
+        else
+        {
             return true;
         }
     }
 
-    public function logOut(Request $request){
+    public function logOut(Request $request)
+    {
         Auth::logout();
 
-        $logoutResponse = array(
-            'success' => true
-        );
+        $logoutResponse = [
+            'success' => true,
+        ];
 
         return response($logoutResponse);
     }
 
-    public function closeBrowser(Request $request){
-        if(Auth::user()->remember_me !== NULL)
+    public function closeBrowser(Request $request)
+    {
+        if (Auth::user()->remember_me !== null)
+        {
             Auth::logout();
+        }
 
-        $logoutResponse = array(
-            'success' => true
-        );
+        $logoutResponse = [
+            'success' => true,
+        ];
 
         return response($logoutResponse);
     }
 
-    public function checkIfLoggedIn(){
-        if(Auth::check()){
+    public function checkIfLoggedIn()
+    {
+        if (Auth::check())
+        {
             $msg = '1';
             $user = Auth::user();
 
             $userId = $user->id;
 
-            if($user->stripe_id !== null){
+            if ($user->stripe_id !== null)
+            {
                 $userBillable = Cashier::findBillable($user->stripe_id);
                 $businessMembership = $userBillable->subscribed($user->id);
-            } else {
+            }
+            else
+            {
                 $businessMembership = null;
             }
-        } else {
+        }
+        else
+        {
             $msg = 'not_logged_in';
             $businessMembership = null;
             $userId = null;
         }
 
-        $response = array(
-            'message' => $msg,
-            'user_id' => $userId,
-            'businessMembership' => $businessMembership
-        );
+        $response = [
+            'message'            => $msg,
+            'user_id'            => $userId,
+            'businessMembership' => $businessMembership,
+        ];
 
         return response($response);
     }
 
-    private function sendConfirmationEmail (){
+    private function sendConfirmationEmail()
+    {
         $user = Auth::user();
         $spotbieUser = $user->spotbieUser()->first();
 
         Mail::to($user->email, $user->username)
-        ->send(new AccountCreated($user, $spotbieUser) );
+        ->send(new AccountCreated($user, $spotbieUser));
     }
 
-    public function getSettings(){
+    public function getSettings()
+    {
         $user = Auth::user();
 
-        $userSettings = array(
-            "hash" => $user->uuid,
-            "username" => $user->username,
-            "email" => $user->email
-        );
+        $userSettings = [
+            'hash'     => $user->uuid,
+            'username' => $user->username,
+            'email'    => $user->email,
+        ];
 
         $spotbieUserSettings = $user
             ->spotbieUser()
@@ -377,9 +421,25 @@ class User extends Authenticatable implements JWTSubject
         $business = $user
             ->business()
             ->select(
-                'id', 'name', 'description', 'address',
-                'city', 'country', 'line1', 'line2', 'postal_code', 'state', 'categories',
-                'photo', 'is_verified', 'qr_code_link', 'loc_x', 'loc_y', 'created_at', 'updated_at')
+                'id',
+                'name',
+                'description',
+                'address',
+                'city',
+                'country',
+                'line1',
+                'line2',
+                'postal_code',
+                'state',
+                'categories',
+                'photo',
+                'is_verified',
+                'qr_code_link',
+                'loc_x',
+                'loc_y',
+                'created_at',
+                'updated_at'
+            )
             ->get();
 
         $isSubscribed = false;
@@ -387,17 +447,22 @@ class User extends Authenticatable implements JWTSubject
 
         $trialEndsAt = $user->trial_ends_at;
 
-        if( count($business) > 0) {
+        if (count($business) > 0)
+        {
             $business = $business[0];
 
             $userBillable = Cashier::findBillable($user->stripe_id);
-            if(count($userBillable->subscriptions) > 0) {
+            if (count($userBillable->subscriptions) > 0)
+            {
                 $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
-            } else {
+            }
+            else
+            {
                 $userSubscriptionPlan = null;
             }
 
-            switch($userSubscriptionPlan) {
+            switch($userSubscriptionPlan)
+            {
                 case config('spotbie.business_subscription_price_1'):
                     $userSubscriptionPlan = 'spotbie.business_subscription_price_1';
                     break;
@@ -413,13 +478,18 @@ class User extends Authenticatable implements JWTSubject
 
             $isSubscribed = $userBillable->subscribed($user->id);
 
-            if($trialEndsAt !== null && $trialEndsAt->gt( Carbon::now() ) && !$isSubscribed) $isTrial = true;
-
-            if($isSubscribed){
-                $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+            if ($trialEndsAt !== null && $trialEndsAt->gt(Carbon::now()) && !$isSubscribed)
+            {
+                $isTrial = true;
             }
 
-        } else {
+            if ($isSubscribed)
+            {
+                $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+            }
+        }
+        else
+        {
             $business = null;
             $isSubscribed = false;
             $isTrial = false;
@@ -427,42 +497,49 @@ class User extends Authenticatable implements JWTSubject
             $userSubscriptionPlan = null;
         }
 
-        $settingsResponse = array(
-            'success' => true,
-            'user' => $userSettings,
-            'spotbie_user' => $spotbieUserSettings,
-            'business' => $business,
-            'is_subscribed' => $isSubscribed,
-            'is_trial' => $isTrial,
-            'trial_ends_at' => $trialEndsAt,
-            'userSubscriptionPlan' => $userSubscriptionPlan
-        );
+        $settingsResponse = [
+            'success'              => true,
+            'user'                 => $userSettings,
+            'spotbie_user'         => $spotbieUserSettings,
+            'business'             => $business,
+            'is_subscribed'        => $isSubscribed,
+            'is_trial'             => $isTrial,
+            'trial_ends_at'        => $trialEndsAt,
+            'userSubscriptionPlan' => $userSubscriptionPlan,
+        ];
 
         return response($settingsResponse);
     }
 
-    public function saveSettings(Request $request){
+    public function saveSettings(Request $request)
+    {
         $user = Auth::user();
 
-        if($user->username === $request->username) {
+        if ($user->username === $request->username)
+        {
             $usernameValidators = 'required|string|max:35|min:1';
-        } else {
+        }
+        else
+        {
             $usernameValidators = 'required|string|unique:users|max:35|min:1';
         }
 
-        if($user->email === $request->email) {
+        if ($user->email === $request->email)
+        {
             $emailValidators = 'required|email';
-        } else {
+        }
+        else
+        {
             $emailValidators = 'required|email|unique:users';
         }
 
         $validatedData = $request->validate([
-            'username' => $usernameValidators,
-            'email' => $emailValidators,
-            'first_name' => ['required', new FirstName],
-            'last_name' => ['required', new LastName],
+            'username'     => $usernameValidators,
+            'email'        => $emailValidators,
+            'first_name'   => ['required', new FirstName],
+            'last_name'    => ['required', new LastName],
             'account_type' => 'required|numeric',
-            'phone_number' => 'string|max:35|nullable'
+            'phone_number' => 'string|max:35|nullable',
         ]);
 
         $user->username = $validatedData['username'];
@@ -472,68 +549,72 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->phone_number = $validatedData['phone_number'];
         $user->spotbieUser->user_type = $validatedData['account_type'];
 
-        DB::transaction(function () use ($user){
+        DB::transaction(function () use ($user) {
             $user->save();
             $user->spotbieUser->save();
         }, 3);
 
-        $response = array(
+        $response = [
             'success' => true,
-            'user' => $user
-        );
+            'user'    => $user,
+        ];
 
         return response($response);
     }
 
-    public function confirmAccount(Request $request){
-
+    public function confirmAccount(Request $request)
+    {
     }
 
-    public function savePassword(Request $request){
+    public function savePassword(Request $request)
+    {
         $validatedData = $request->validate([
-            'password' => ['required', new Password, 'confirmed']
+            'password' => ['required', new Password, 'confirmed'],
         ]);
 
         $user = Auth::user();
         $user->password = Hash::make($validatedData['password']);
         $user->save();
 
-        $response = array(
-            'message' => 'success'
-        );
+        $response = [
+            'message' => 'success',
+        ];
 
         return $response;
     }
 
-    public function getUser(Request $request){
+    public function getUser(Request $request)
+    {
         $user = $this->only('id', 'username');
 
         $spotbieUser = $this->spotbieUser()->select('first_name', 'last_name', 'description', 'default_picture')->first();
 
         $defaultImages = $this->defaultImages()->select('default_image_url')->get();
 
-        $response = array(
-            'message' => 'success',
-            'user' => $user,
-            'spotbie_user' => $spotbieUser,
-            'default_images' => $defaultImages
-        );
+        $response = [
+            'message'        => 'success',
+            'user'           => $user,
+            'spotbie_user'   => $spotbieUser,
+            'default_images' => $defaultImages,
+        ];
 
         return response($response);
     }
 
-    public function setPassResetPin(Request $request){
+    public function setPassResetPin(Request $request)
+    {
         $success = false;
 
         $validatedData = $request->validate([
-            'email' => 'required|string'
+            'email' => 'required|string',
         ]);
 
         $user = User::select('id', 'email')
         ->where('email', $validatedData['email'])
         ->first();
 
-        if($user !== null){
+        if ($user !== null)
+        {
             $userId = $user->id;
 
             $status = IlluminatePassword::sendResetLink(
@@ -543,40 +624,46 @@ class User extends Authenticatable implements JWTSubject
             $isGoogleUser = GoogleUser::find($user->id);
             $isFacebookUser = FacebookUser::find($user->id);
 
-            if($isGoogleUser){
-                $status = 'social_account';
-            } else if($isFacebookUser){
+            if ($isGoogleUser)
+            {
                 $status = 'social_account';
             }
-        } else {
+            elseif ($isFacebookUser)
+            {
+                $status = 'social_account';
+            }
+        }
+        else
+        {
             $status = 'invalid_email';
         }
 
         $success = true;
 
-        $response = array(
+        $response = [
             'success' => $success,
-            'user' => $user,
-            'status' => $status
-        );
+            'user'    => $user,
+            'status'  => $status,
+        ];
 
         return response($response);
     }
 
-    public function completePassReset(Request $request){
+    public function completePassReset(Request $request)
+    {
         $success = true;
 
         $validatedData = $request->validate([
-            'email' => ['required', 'email'],
-            'token' => ['required', 'string'],
-            'password' => ['required', new Password, 'confirmed']
+            'email'    => ['required', 'email'],
+            'token'    => ['required', 'string'],
+            'password' => ['required', new Password, 'confirmed'],
         ]);
 
         $status = IlluminatePassword::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) use ($request) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->save();
 
                 $user->setRememberToken(Str::random(60));
@@ -585,132 +672,160 @@ class User extends Authenticatable implements JWTSubject
             }
         );
 
-        $response = array(
+        $response = [
             'success' => $success,
-            'status' => $status
-        );
+            'status'  => $status,
+        ];
 
         return response($response);
-
     }
 
-    public function changePassword(Request $request){
+    public function changePassword(Request $request)
+    {
         $success = false;
 
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'password' => ['required', new Password, 'confirmed'],
-            'current_password' => ['required', new Password]
+            'password'         => ['required', new Password, 'confirmed'],
+            'current_password' => ['required', new Password],
         ]);
 
-        if(Hash::check($validatedData['current_password'], $user->password)){
+        if (Hash::check($validatedData['current_password'], $user->password))
+        {
             $user->password = Hash::make($validatedData['password']);
             $user->save();
             $success = true;
             $message = 'saved';
-        } else {
+        }
+        else
+        {
             $message = 'SB-E-000';
         }
 
-        $response = array(
+        $response = [
             'success' => $success,
             'message' => $message,
-        );
+        ];
 
         return response($response);
     }
 
-    public function deactivate(Request $request){
+    public function deactivate(Request $request)
+    {
         $success = false;
 
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'password' => ['nullable', new Password],
-            'is_social_account' => ['required', 'boolean']
+            'password'          => ['nullable', new Password],
+            'is_social_account' => ['required', 'boolean'],
         ]);
 
         $passwordCheck = false;
 
-        if($validatedData['is_social_account'] === true){
+        if ($validatedData['is_social_account'] === true)
+        {
             $passwordCheck = true;
-        } else {
-
-            if( Hash::check($validatedData['password'], $user->password) )
+        }
+        else
+        {
+            if (Hash::check($validatedData['password'], $user->password))
+            {
                 $passwordCheck = true;
+            }
             else
+            {
                 $success = false;
-
+            }
         }
 
-        if($passwordCheck){
-
+        if ($passwordCheck)
+        {
             //Deactivate all Stripe Memberships
             $deleteStripeMembership = $this->cancelMembership();
 
-            if($deleteStripeMembership){
-                if( $user->delete() ) $success = true;
-            } else
+            if ($deleteStripeMembership)
+            {
+                if ($user->delete())
+                {
+                    $success = true;
+                }
+            }
+            else
+            {
                 $success = false;
-
+            }
         }
 
-        $response = array(
-            'success' => $success
-        );
+        $response = [
+            'success' => $success,
+        ];
 
         return response($response);
     }
 
-    public function activate(){}
+    public function activate()
+    {
+    }
 
-    public function uniqueEmail(Request $request){
+    public function uniqueEmail(Request $request)
+    {
         $emailConfirmed = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null) {
+        if ($emailConfirmed !== null)
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
-    public function checkConfirm(Request $request){
-
+    public function checkConfirm(Request $request)
+    {
     }
 
-    public function checkIfEmailIsConfirmed($request){
+    public function checkIfEmailIsConfirmed($request)
+    {
         $emailConfirmed = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null) {
+        if ($emailConfirmed !== null)
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
-    public function sendCode(Request $request): bool {
+    public function sendCode(Request $request): bool
+    {
         $request->validated();
 
-        $user = array("email" => $request->email, "first_name" => $request->first_name);
+        $user = ['email' => $request->email, 'first_name' => $request->first_name];
 
         $pin = mt_rand(100000, 999999);
 
         EmailConfirmation::updateOrCreate([
-                'email' => $request->email,
-                'email_is_verified' => false
-            ], [
-                'confirmation_token' => $pin
+            'email'             => $request->email,
+            'email_is_verified' => false,
+        ], [
+            'confirmation_token' => $pin,
         ]);
 
         Mail::queue(new EmailConfirmationEmail($user, $propertyInfo, $pin, $lang));
@@ -718,61 +833,72 @@ class User extends Authenticatable implements JWTSubject
         return true;
     }
 
-    public function validateEmailConfirmCode(ValidateEmailConfirmCode $request): bool{
-
+    public function validateEmailConfirmCode(ValidateEmailConfirmCode $request): bool
+    {
         $emailToConfirm = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('email_is_verified', false)
         ->where('confirmation_token', $request->confirm_code)
         ->first();
 
-        if($emailToConfirm !== null){
+        if ($emailToConfirm !== null)
+        {
             EmailConfirmation::where('email', $request->email)
             ->where('email_is_verified', false)
             ->where('confirmation_token', $request->confirm_code)
             ->update(
                 ['email_is_verified' => true]
             );
-        } else {
+        }
+        else
+        {
             return false;
         }
 
         return true;
     }
 
-    public function checkConfirmCode(CheckEmailConfirmCode $request){
+    public function checkConfirmCode(CheckEmailConfirmCode $request)
+    {
         $now = Carbon::now();
 
         $emailConfirmed = EmailConfirmation::select(
-            'email', 'email_is_verified'
+            'email',
+            'email_is_verified'
         )
         ->where('email', $request->email)
         ->where('expires_at', '>', $now->toDateTimeString())
         ->where('email_is_verified', true)
         ->first();
 
-        if($emailConfirmed !== null)
+        if ($emailConfirmed !== null)
+        {
             return true;
+        }
         else
+        {
             return false;
-
+        }
     }
 
-    public function businessMembership(Request $request){
+    public function businessMembership(Request $request)
+    {
         $validatedData = $request->validate([
-            "uuid" => ['required', 'string', 'max:36'],
-            "payment_method" => [
-                "id" => ['required', 'string']
+            'uuid'           => ['required', 'string', 'max:36'],
+            'payment_method' => [
+                'id' => ['required', 'string'],
             ],
-            "payment_type" => ['required', 'string'],
+            'payment_type' => ['required', 'string'],
         ]);
 
         $uuid = $validatedData['uuid'];
         $paymentMethodId = $validatedData['payment_method']['id'];
 
-        switch($validatedData['payment_type']) {
+        switch($validatedData['payment_type'])
+        {
             case 'business-membership-1':
                 $priceKey = 'spotbie.business_subscription_price_1';
                 break;
@@ -788,7 +914,8 @@ class User extends Authenticatable implements JWTSubject
 
         $user = User::where('uuid', $uuid)->get();
 
-        if($user->first()){
+        if ($user->first())
+        {
             $userStripeId = $user[0]->stripe_id;
 
             $user = Cashier::findBillable($userStripeId);
@@ -796,7 +923,7 @@ class User extends Authenticatable implements JWTSubject
             $user->updateDefaultPaymentMethod($paymentMethodId);
 
             //Create the subscription with the payment method provided by the user.
-            $user->newSubscription($user->id, [$price_name] )->create($paymentMethodId);
+            $user->newSubscription($user->id, [$price_name])->create($paymentMethodId);
 
             //Set existing trial_ends_at to now
             $user->trial_ends_at = Carbon::now();
@@ -805,10 +932,10 @@ class User extends Authenticatable implements JWTSubject
 
         $user = $user->refresh();
 
-        $response = array(
+        $response = [
             'success' => true,
-            'user' => $user
-        );
+            'user'    => $user,
+        ];
 
         return response($response);
     }
@@ -816,36 +943,41 @@ class User extends Authenticatable implements JWTSubject
     public function membershipStatus(Request $request)
     {
         $validatedData = $request->validate([
-            "uuid" => ['required', 'string', 'max:36'],
-            "paymentType" => ['required', 'string', 'max:56'],
+            'uuid'        => ['required', 'string', 'max:36'],
+            'paymentType' => ['required', 'string', 'max:56'],
         ]);
 
         $user = User::where('uuid', $validatedData['uuid'])->first();
         $membershipInfo = null;
 
-        if( $user->first() ) {
+        if ($user->first())
+        {
             $membershipInfo = Cashier::findBillable($user->stripe_id);
 
-            if($membershipInfo !== null) {
+            if ($membershipInfo !== null)
+            {
                 $membershipInfo = $membershipInfo->subscribed($user->id);
             }
         }
 
-        $response = array(
-            'success' => true,
-            'membershipInfo' => $membershipInfo
-        );
+        $response = [
+            'success'        => true,
+            'membershipInfo' => $membershipInfo,
+        ];
 
         return response($response);
     }
 
-    public function cancelMembership(){
+    public function cancelMembership()
+    {
         $user = Auth::user();
 
         $userBillable = Cashier::findBillable($user->stripe_id);
 
-        if( !is_null($userBillable) ){
-            if( $userBillable->subscribed($user->id) ){
+        if (!is_null($userBillable))
+        {
+            if ($userBillable->subscribed($user->id))
+            {
                 $userBillable->subscription($user->id)->cancelNow();
             }
         }
@@ -855,18 +987,21 @@ class User extends Authenticatable implements JWTSubject
         ->where('business_id', '=', $user->id)
         ->get();
 
-        if( $userAdList->first() ) {
-            foreach ( $userAdList as $userAd ) {
-                if( $userBillable->subscribed($userAd->id) ) {
+        if ($userAdList->first())
+        {
+            foreach ($userAdList as $userAd)
+            {
+                if ($userBillable->subscribed($userAd->id))
+                {
                     $userBillable->subscription($userAd->id)->cancelNow();
                 }
                 $userAd->delete();
             }
         }
 
-        $response = array(
-            'success' => true
-        );
+        $response = [
+            'success' => true,
+        ];
 
         return response($response);
     }

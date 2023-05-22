@@ -25,62 +25,61 @@ class LoyaltyPointLedgerController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointLedger  $LoyaltyPointLedger
+     * @param \App\Models\LoyaltyPointLedger $LoyaltyPointLedger
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(LoyaltyPointLedger $LoyaltyPointLedger)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LoyaltyPointLedger  $LoyaltyPointLedger
+     * @param \App\Models\LoyaltyPointLedger $LoyaltyPointLedger
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(LoyaltyPointLedger $LoyaltyPointLedger)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\LoyaltyPointLedger  $LoyaltyPointLedger
+     * @param \Illuminate\Http\Request       $request
+     * @param \App\Models\LoyaltyPointLedger $LoyaltyPointLedger
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, LoyaltyPointLedger $LoyaltyPointLedger)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\LoyaltyPointLedger  $LoyaltyPointLedger
+     * @param \App\Models\LoyaltyPointLedger $LoyaltyPointLedger
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(LoyaltyPointLedger $LoyaltyPointLedger)
     {
-        //
     }
 }

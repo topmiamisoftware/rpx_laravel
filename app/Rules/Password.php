@@ -6,7 +6,6 @@ use Illuminate\Contracts\Validation\Rule;
 
 class Password implements Rule
 {
-
     private $error_message;
 
     /**
@@ -16,48 +15,52 @@ class Password implements Rule
      */
     public function __construct()
     {
-        //
     }
 
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed  $value
+     *
      * @return bool
      */
     public function passes($attribute, $password)
     {
-        if(strlen($password) > 135){
-            $this->error_message = "wrongLength";
+        if (strlen($password) > 135)
+        {
+            $this->error_message = 'wrongLength';
             return false;
         }
 
-        if(strlen($password) < 8){
-            $this->error_message = "wrongLength";
+        if (strlen($password) < 8)
+        {
+            $this->error_message = 'wrongLength';
             return false;
         }
 
         $re = '/[0-9]/';
-        if(!preg_match($re, $password)) {
-            $this->error_message = "oneNumber";
+        if (!preg_match($re, $password))
+        {
+            $this->error_message = 'oneNumber';
             return false;
         }
 
         $re = '/[a-z]/';
-        if(!preg_match($re, $password)) {
-            $this->error_message = "oneLowerCase";
+        if (!preg_match($re, $password))
+        {
+            $this->error_message = 'oneLowerCase';
             return false;
         }
 
         $re = '/[A-Z]/';
-        if(!preg_match($re, $password)) {
-            $this->error_message = "oneUpperCase";
+        if (!preg_match($re, $password))
+        {
+            $this->error_message = 'oneUpperCase';
             return false;
         }
 
         return true;
-
     }
 
     /**

@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 
 /**
  * @property float|int|mixed $loyalty_amount
- * @property int $user_id
- * @property string $uuid
- * @property int $business_id
- * @property string $type
+ * @property int             $user_id
+ * @property string          $uuid
+ * @property int             $business_id
+ * @property string          $type
  */
 class LoyaltyPointLedger extends Model
 {
@@ -22,16 +22,19 @@ class LoyaltyPointLedger extends Model
 
     public $fillable = ['uuid', 'business_id', 'loyalty_amount', 'user_id', 'type'];
 
-    public function business(){
+    public function business()
+    {
         return $this->hasOne('App\Models\Business', 'id', 'business_id');
     }
 
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         $user = Auth::user();
 
-        if($user->spotbieUser->user_type === 4){
+        if ($user->spotbieUser->user_type === 4)
+        {
             $lpLedger = $user->loyaltyPointLedger()
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('type', 'points')
                         ->orWhere('type', 'reward_expense');
                 })
@@ -40,12 +43,14 @@ class LoyaltyPointLedger extends Model
                 })
                 ->orderBy('loyalty_point_ledger.created_at', 'desc')
                 ->paginate(10);
-        } else {
+        }
+        else
+        {
             $lpLedger = $user->business->loyaltyPointLedger()->paginate(10);
         }
 
         return response([
-            'ledger' => $lpLedger
+            'ledger' => $lpLedger,
         ]);
     }
 }

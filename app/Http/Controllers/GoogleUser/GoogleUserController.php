@@ -14,7 +14,6 @@ class GoogleUserController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -24,63 +23,61 @@ class GoogleUserController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param \App\Models\GoogleUser $googleUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(GoogleUser $googleUser)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param \App\Models\GoogleUser $googleUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(GoogleUser $googleUser)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\GoogleUser   $googleUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, GoogleUser $googleUser)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\GoogleUser  $googleUser
+     * @param \App\Models\GoogleUser $googleUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(GoogleUser $googleUser)
     {
-        //
     }
-    
 }

@@ -13,14 +13,14 @@ class SpotbieAdsSeeder extends Seeder
      * @return void
      */
     public function run()
-    {        
+    {
         SpotbieAds::factory()
         ->state([
             'type' => 0,
         ])
         ->count(1)
         ->create();
-        
+
         SpotbieAds::factory()
         ->state([
             'type' => 1,
@@ -33,20 +33,20 @@ class SpotbieAdsSeeder extends Seeder
             'type' => 2,
         ])
         ->count(1)
-        ->create(); 
-        
+        ->create();
+
         SpotbieAds::factory()
         ->state([
             'type' => 3,
         ])
         ->count(1)
-        ->create(); 
-        
+        ->create();
+
         SpotbieAds::factory()
         ->state([
             'type' => 4,
         ])
         ->count(1)
-        ->create();         
+        ->create();
     }
 }

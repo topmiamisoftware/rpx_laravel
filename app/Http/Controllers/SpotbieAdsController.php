@@ -14,7 +14,6 @@ class SpotbieAdsController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -24,62 +23,61 @@ class SpotbieAdsController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SpotbieAds  $spotbieAds
+     * @param \App\Models\SpotbieAds $spotbieAds
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(SpotbieAds $spotbieAds)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\SpotbieAds  $spotbieAds
+     * @param \App\Models\SpotbieAds $spotbieAds
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(SpotbieAds $spotbieAds)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SpotbieAds  $spotbieAds
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\SpotbieAds   $spotbieAds
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, SpotbieAds $spotbieAds)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\SpotbieAds  $spotbieAds
+     * @param \App\Models\SpotbieAds $spotbieAds
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(SpotbieAds $spotbieAds)
     {
-        //
     }
 }

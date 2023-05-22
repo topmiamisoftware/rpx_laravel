@@ -3,14 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\SpotbieAds;
-use App\Models\Business;
-use App\Models\User;
-use App\Models\Models;
-use App\Models\SpotbieUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-
 use Illuminate\Support\Facades\DB;
 
 class SpotbieAdsFactory extends Factory
@@ -33,30 +26,32 @@ class SpotbieAdsFactory extends Factory
 
         $images = '';
 
-        $adType = rand(0,2);
+        $adType = rand(0, 2);
 
         return [
-            'images' => $images,
+            'images'        => $images,
             'images_mobile' => $images,
         ];
     }
 
-    public function configure(){
+    public function configure()
+    {
         return $this->afterCreating(function (SpotbieAds $ad) {
             $ad->images = $this->getAdsPhoto('desktop', $ad->id);
             $ad->images_mobile = $this->getAdsPhoto('mobile', $ad->id);
 
-            DB::transaction(function () use ($ad){
+            DB::transaction(function () use ($ad) {
                 $ad->save();
             });
         });
     }
 
-    public function getAdsPhoto($adType, $adId){
+    public function getAdsPhoto($adType, $adId)
+    {
         $businessPhoto = '';
-        $businessPhoto = 'assets/images/def/spotbie/'. $adType . '/' . $adId;
+        $businessPhoto = 'assets/images/def/spotbie/' . $adType . '/' . $adId;
         $businessPhoto = config('spotbie.spotbie_front_end_ip') . $businessPhoto . '.jpg';
-        
+
         return $businessPhoto;
-    } 
+    }
 }

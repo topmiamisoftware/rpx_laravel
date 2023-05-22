@@ -3,11 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Business;
-use App\Models\LoyaltyPointBalance;
 use App\Models\LoyaltyPointBalanceAggregator;
-use App\Models\RedeemableItems;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -29,37 +26,43 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'uuid' => Str::uuid(),
+            'uuid'     => Str::uuid(),
             'username' => $this->faker->unique()->username,
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('HelloWorld33!')
+            'email'    => $this->faker->unique()->safeEmail,
+            'password' => Hash::make('HelloWorld33!'),
         ];
     }
 
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            if(!$user->business){
-                if($user->username === 'agent000' || $user->username === 'agent001'){
+            if (!$user->business)
+            {
+                if ($user->username === 'agent000' || $user->username === 'agent001')
+                {
                     $toCreate = 30;
-                } else {
+                }
+                else
+                {
                     $toCreate = 10;
                 }
                 $aggregateBalance = 0;
                 // Let's attach some Loyalty Point Balances from different stores.
-                for($i = 0; $i < $toCreate; $i++) {
+                for ($i = 0; $i < $toCreate; $i++)
+                {
                     // We seed DB with 90 business accounts;
                     $randBusinessId = rand(12, 122);
 
-                    while( in_array($randBusinessId, $user->loyaltyPointBalance()->pluck('from_business')->toArray()) ){
+                    while (in_array($randBusinessId, $user->loyaltyPointBalance()->pluck('from_business')->toArray()))
+                    {
                         $randBusinessId = rand(12, 122);
                     }
 
                     $balance = rand(1000, 2000);
                     $user->loyaltyPointBalance()->create([
-                        'balance' => $balance,
+                        'balance'       => $balance,
                         'from_business' => $randBusinessId,
-                        'business_id' => 0,
+                        'business_id'   => 0,
                     ]);
                     $aggregateBalance += $balance;
                 }

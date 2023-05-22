@@ -14,7 +14,6 @@ class CreateSubscriptionItemsTable extends Migration
     public function up()
     {
         Schema::create('subscription_items', function (Blueprint $table) {
-
             $table->id();
             $table->unsignedBigInteger('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade')->nullable();
             $table->string('stripe_id')->nullable();
@@ -25,7 +24,6 @@ class CreateSubscriptionItemsTable extends Migration
             $table->softDeletes();
 
             $table->unique(['subscription_id', 'stripe_price']);
-
         });
     }
 

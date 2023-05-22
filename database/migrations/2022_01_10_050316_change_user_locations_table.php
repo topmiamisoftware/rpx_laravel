@@ -26,6 +26,5 @@ class ChangeUserLocationsTable extends Migration
      */
     public function down()
     {
-        //
     }
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Illuminate\Auth\Notifications\ResetPassword; // add this.
 
@@ -14,7 +14,8 @@ class CustomPasswordReset extends ResetPassword // change extends from Notificat
     /**
      * Create a notification instance.
      *
-     * @param  string  $token
+     * @param string $token
+     *
      * @return void
      */
     public function __construct($token)
@@ -25,7 +26,8 @@ class CustomPasswordReset extends ResetPassword // change extends from Notificat
     /**
      * Get the notification's channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array|string
      */
     public function via($notifiable)
@@ -36,7 +38,8 @@ class CustomPasswordReset extends ResetPassword // change extends from Notificat
     /**
      * Build the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)

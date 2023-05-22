@@ -14,7 +14,6 @@ class FacebookUserController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -24,62 +23,61 @@ class FacebookUserController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\FacebookUser  $facebookUser
+     * @param \App\Models\FacebookUser $facebookUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(FacebookUser $facebookUser)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\FacebookUser  $facebookUser
+     * @param \App\Models\FacebookUser $facebookUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit(FacebookUser $facebookUser)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\FacebookUser  $facebookUser
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\FacebookUser $facebookUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, FacebookUser $facebookUser)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\FacebookUser  $facebookUser
+     * @param \App\Models\FacebookUser $facebookUser
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy(FacebookUser $facebookUser)
     {
-        //
     }
 }

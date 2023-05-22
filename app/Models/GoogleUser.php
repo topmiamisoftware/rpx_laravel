@@ -10,8 +10,8 @@ class GoogleUser extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('App\Models\User', 'id');
     }
-
 }

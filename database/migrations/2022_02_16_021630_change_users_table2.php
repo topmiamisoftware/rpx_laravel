@@ -13,7 +13,8 @@ class ChangeUsersTable2 extends Migration
      */
     public function up()
     {
-        if( Schema::hasColumn('users', 'city') ){
+        if (Schema::hasColumn('users', 'city'))
+        {
             Schema::table('users', function (Blueprint $table) {
                 $table->string('city', 255)->nullable()->default(config('spotbie.my_city'))->change();
                 $table->string('country', 255)->nullable()->default(config('spotbie.my_country'))->change();

@@ -2,19 +2,19 @@
 
 namespace App\Helpers\PhoneConfirmation;
 
-use Twilio\TwiML\VoiceResponse;
-
 class PhoneConfirmationTwimlHelper
 {
-
     private $language;
+
     private $twimlLocale;
 
-    public function __construct(){}
+    public function __construct()
+    {
+    }
 
-    public function getConfirmationCallSpeech($confirmationCode){
-        
-        $confirmationCode = implode('. ',str_split($confirmationCode));
+    public function getConfirmationCallSpeech($confirmationCode)
+    {
+        $confirmationCode = implode('. ', str_split($confirmationCode));
 
         $greeting = trans('phoneConfirmation.greeting');
         $codeOne = trans('phoneConfirmation.code_1', ['confirmationCode' => $confirmationCode]);
@@ -29,15 +29,12 @@ class PhoneConfirmationTwimlHelper
         </Response>";
 
         return $text;
-
     }
 
-    public function getConfirmPhoneSmsText($confirmationCode){
-
+    public function getConfirmPhoneSmsText($confirmationCode)
+    {
         $smsText = trans('phoneConfirmation.smsText', ['confirmationCode' => $confirmationCode]);
 
         return $smsText;
-
     }
-
-}   
+}

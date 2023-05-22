@@ -15,7 +15,7 @@ class CreateFacebookUsersTable extends Migration
     {
         Schema::create('facebook_users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
-            $table->unsignedBigInteger('facebook_user_id')->unique();                     
+            $table->unsignedBigInteger('facebook_user_id')->unique();
             $table->timestamps();
             $table->softDeletes();
         });

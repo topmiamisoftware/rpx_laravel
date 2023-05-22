@@ -16,7 +16,7 @@ class CreateLoyaltyPointLedgerTable extends Migration
         Schema::create('loyalty_point_ledger', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->references('user_id')->on('loyalty_point_balances')->onDelete('cascade');
-            $table->float('loyalty_amount')->nullable(false)->default(0); 
+            $table->float('loyalty_amount')->nullable(false)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

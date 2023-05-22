@@ -15,7 +15,7 @@ class CreateAppleUsersTable extends Migration
     {
         Schema::create('apple_users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->references('id')->on('users')->onDelete('cascade')->id()->unique();
-            $table->string('apple_user_id', 100)->unique();                     
+            $table->string('apple_user_id', 100)->unique();
             $table->timestamps();
             $table->softDeletes();
         });

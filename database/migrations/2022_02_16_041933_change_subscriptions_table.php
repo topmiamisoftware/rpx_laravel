@@ -25,6 +25,5 @@ class ChangeSubscriptionsTable extends Migration
      */
     public function down()
     {
-        //
     }
 }

@@ -10,41 +10,50 @@ class LoyaltyPointBalanceAggregator extends Model
 {
     use SoftDeletes;
 
-    public $table = "loyalty_point_balance_aggregator";
+    public $table = 'loyalty_point_balance_aggregator';
 
     public $fillable = ['balance'];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('App\Models\User', 'id', 'id');
     }
 
-    public function show(){
+    public function show()
+    {
         $user = Auth::user();
 
-        if(!$user->business){
-            if($user->loyaltyPointBalanceAggregator){
+        if (!$user->business)
+        {
+            if ($user->loyaltyPointBalanceAggregator)
+            {
                 $loyaltyPointBalanceAggregate = $user->loyaltyPointBalanceAggregator->balance;
-            } else {
+            }
+            else
+            {
                 $loyaltyPointBalanceAggregate = 0;
             }
 
-            $response = array(
-                'success' => true,
-                'loyalty_points' => $loyaltyPointBalanceAggregate
-            );
-        } else {
+            $response = [
+                'success'        => true,
+                'loyalty_points' => $loyaltyPointBalanceAggregate,
+            ];
+        }
+        else
+        {
             $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get()[0];
 
-            $response = array(
-                'success' => true,
-                'loyalty_points' => $loyaltyPointBalance
-            );
+            $response = [
+                'success'        => true,
+                'loyalty_points' => $loyaltyPointBalance,
+            ];
         }
 
         return response($response);
     }
 
-    public function updateAggregate(int $lp){
+    public function updateAggregate(int $lp)
+    {
         $user = Auth::user();
 
         $user->loyaltyPointBalanceAggregator()->balance += $lp;
