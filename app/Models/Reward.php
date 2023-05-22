@@ -127,7 +127,8 @@ class Reward extends Model
                 // Check if the user has enough LP to claim this reward.
                 // To do this we check the user balance in the corresponding business.
 
-                $balanceInBusiness = LoyaltyPointBalance::where('business_id', $reward->business_id)->where('id', $user->id)->first();
+                $balanceInBusiness = $user->loyaltyPointBalance()
+                    ->where('from_business', $reward->business_id)->first();
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
                 $balanceInBusinessAfterRedeeming = $balanceInBusiness - $reward->point_cost;
@@ -137,7 +138,7 @@ class Reward extends Model
                     // Deny the transaction.
                     $response = response([
                         'success' => false,
-                        'message' => $balanceInBusiness . " - " . $balanceInBusinessAfterRedeeming,
+                        'message' => $balanceInBusiness . "" . $balanceInBusinessAfterRedeeming,
                     ]);
                     return $response;
                 }
