@@ -128,7 +128,7 @@ class Reward extends Model
                 // To do this we check the user balance in the corresponding business.
 
                 $balanceInBusiness = $user->loyaltyPointBalance()
-                    ->where('from_business', $reward->business_id)->first();
+                    ->where('from_business', $reward->business_id)->first()->balance;
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
                 $balanceInBusinessAfterRedeeming = intval($balanceInBusiness) - intval($reward->point_cost);
