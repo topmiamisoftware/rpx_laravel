@@ -131,7 +131,7 @@ class Reward extends Model
                     ->where('from_business', $reward->business_id)->first();
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
-                $balanceInBusinessAfterRedeeming = $balanceInBusiness - $reward->point_cost;
+                $balanceInBusinessAfterRedeeming = intval($balanceInBusiness) - intval($reward->point_cost);
 
                 if ($balanceAfterRedeeming < 0 || $balanceInBusinessAfterRedeeming < 0)
                 {
