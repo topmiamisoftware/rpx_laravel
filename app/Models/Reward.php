@@ -127,8 +127,7 @@ class Reward extends Model
                 // Check if the user has enough LP to claim this reward.
                 // To do this we check the user balance in the corresponding business.
 
-                $balanceInBusiness = $user->loyaltyPointBalance()
-                    ->where('business_id', $reward->business_id)->first();
+                $balanceInBusiness = LoyaltyPointBalance::where('business_id', $reward->business_id)->andWhere('id', $user->id)->first();
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
                 $balanceInBusinessAfterRedeeming = $balanceInBusiness - $reward->point_cost;
