@@ -124,6 +124,25 @@ class Reward extends Model
 
             if ($reward)
             {
+                // Check if the user has enough LP to claim this reward.
+                // To do this we check the user balance in the corresponding business.
+
+                $balanceInBusiness = $user->loyaltyPointBalance()
+                    ->where('business_id', $reward->business_id)->first();
+
+                $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
+                $balanceInBusinessAfterRedeeming = $balanceInBusiness - $reward->point_cost;
+
+                if ($balanceAfterRedeeming < 0 || $balanceInBusinessAfterRedeeming < 0)
+                {
+                    // Deny the transaction.
+                    $response = response([
+                        'success' => false,
+                        'message' => 'Not enough Loyalty Points in your account.',
+                    ]);
+                    return $response;
+                }
+
                 $rewardLedgerRecord = $user->loyaltyPointLedger()->create([
                     'uuid'           => Str::uuid(),
                     'business_id'    => $reward->business_id,
@@ -141,19 +160,6 @@ class Reward extends Model
                 $redeemed->reward_id = $reward->id;
                 $redeemed->dollar_value = floatval($reward->point_cost * ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100));
                 $redeemed->ledger_record_id = $rewardLedgerRecord->id;
-
-                //Check if the user has enough LP to claim this reward.
-                $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
-
-                if ($balanceAfterRedeeming < 0)
-                {
-                    //Deny the transaction.
-                    $response = response([
-                        'success' => false,
-                        'message' => 'Not enough Loyalty Points in your account.',
-                    ]);
-                    return $response;
-                }
 
                 //Charge the user the LP Cost.
                 $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
