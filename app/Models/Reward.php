@@ -138,7 +138,7 @@ class Reward extends Model
                     // Deny the transaction.
                     $response = response([
                         'success' => false,
-                        'message' => 'Not enough Loyalty Points in your account.',
+                        'message' => $balanceInBusiness . " - " . $balanceInBusinessAfterRedeeming,
                     ]);
                     return $response;
                 }
