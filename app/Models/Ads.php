@@ -13,32 +13,42 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
 
+/** @property int $business_id */
+/** @property int $clicks */
+/** @property string $created_at */
+/** @property string $deleted_at */
+/** @property float $dollar_cost */
+/** @property string $ends_at */
+/** @property string $images */
+/** @property string $images_mobile */
+/** @property bool $is_live */
+/** @property string $name */
+/** @property int $subscription_id */
+/** @property int $type */
+/** @property string $updated_at */
+/** @property string $uuid */
+/** @property int $views */
 class Ads extends Model
 {
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $table = 'ads';
 
     protected $fillable = ['business_id'];
 
-    public function business()
+    /**
+     * Every ad belongs to a business. Not every business has an ad. A business can have multiple ads.
+     */
+    public function business(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     }
 
-    public function spotbieUser()
-    {
-        return $this->belongsTo('App\Models\SpotbieUser', 'business_id', 'id');
-    }
-
-    public function ad()
-    {
-        return $this->belongsTo('App\Models\User', 'business_id', 'id');
-    }
-
-    public function nearbyBusinessNoCategory($loc_x, $loc_y, $userType)
+    /**
+     * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
+     * a random nearby business is pulled up based on the user's location and user type.
+     */
+    public function nearbyBusinessNoCategory(string $loc_x, string $loc_y, int $businessType): Model
     {
         return Business::select(
             'business.id',
@@ -59,11 +69,10 @@ class Ads extends Model
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
                     ->where('loyalty_point_balances.balance', '>', 0)
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0)
-                ;
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
             })
             ->where('business.is_verified', 1)
-            ->where('spotbie_users.user_type', '=', $userType)
+            ->where('spotbie_users.user_type', '=', $businessType)
             ->whereRaw("(
                 (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
                 OR (
@@ -79,11 +88,14 @@ class Ads extends Model
             ->has('rewards')
             ->inRandomOrder()
             ->limit(1)
-            ->get()
-        ;
+            ->get();
     }
 
-    public function nearbyBusiness($loc_x, $loc_y, $category, $userType)
+    /**
+     * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
+     * a nearby business in the chosen $category is pulled up based on the user's location and businessType.
+     */
+    public function nearbyBusiness($loc_x, $loc_y, $category, $businessType): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return Business::select(
             'business.id',
@@ -104,11 +116,10 @@ class Ads extends Model
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
                     ->where('loyalty_point_balances.balance', '>', 0)
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0)
-                ;
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
             })
             ->where('business.is_verified', 1)
-            ->where('spotbie_users.user_type', '=', $userType)
+            ->where('spotbie_users.user_type', '=', $businessType)
             ->whereJsonContains('business.categories', $category)
             ->whereRaw("(
                 (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
@@ -125,10 +136,14 @@ class Ads extends Model
             ->has('rewards')
             ->inRandomOrder()
             ->limit(1)
-            ->get()
-        ;
+            ->get();
     }
 
+    /**
+     * A header banner is displayed at the bottom of the interactive map we have on the front end of the app. This method
+     * basically takes in a Request with the user's location, picked categories, account type, and account id. Additionally
+     * this method adds a view to the ad.
+     */
     public function headerBanner(Request $request)
     {
         $validatedData = $request->validate([

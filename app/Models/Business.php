@@ -25,6 +25,11 @@ class Business extends Model
         return $this->hasMany('App\Models\Reward', 'business_id', 'id');
     }
 
+    public function loyaltyTiers()
+    {
+        return $this->hasMany('App\Models\LoyaltyTier', 'business_id', 'id');
+    }
+
     public function loyaltyPointBalance()
     {
         return $this->hasOne('App\Models\LoyaltyPointBalance', 'business_id', 'id');
@@ -82,8 +87,7 @@ class Business extends Model
 
         $spotbieBusinessPassKey = $confirmKey;
 
-        if (
-            $spotbieBusinessPassKey !== $validatedData['passkey'] &&
+        if ($spotbieBusinessPassKey !== $validatedData['passkey'] &&
             $confirmKeyLifeTime !== $validatedData['passkey']
         ) {
             $response = [

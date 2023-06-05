@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Auth;
+use Illuminate\Validation\Rule;
 use Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +23,11 @@ class Reward extends Model
     public function business()
     {
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
+    }
+
+    public function loyaltyTier()
+    {
+        return $this->belongsTo('App\Models\LoyaltyTier', 'tier_id', 'id');
     }
 
     public function uploadMedia(Request $request)
@@ -71,20 +77,22 @@ class Reward extends Model
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+        $business = $user->business;
+
         $validatedData = $request->validate([
             'name'        => 'required|string|max:75|min:1',
             'description' => 'required|string|max:350|min:1',
             'images'      => 'nullable|string|max:500|min:1',
             'type'        => 'required|numeric|max:6',
             'point_cost'  => 'required|numeric|min:1',
+            'tier_id'     => [
+                'nullable',
+                Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
+                    $qry->where('business_id', $business->id);
+                }),
+            ]
         ]);
-
-        $user = Auth::user();
-
-        if ($user)
-        {
-            $business = $user->business;
-        }
 
         $businessReward = new Reward();
         $businessReward->uuid = Str::uuid();
@@ -94,6 +102,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
+        $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
@@ -126,9 +135,22 @@ class Reward extends Model
             {
                 // Check if the user has enough LP to claim this reward.
                 // To do this we check the user balance in the corresponding business.
-
                 $balanceInBusiness = $user->loyaltyPointBalance()
                     ->where('from_business', $reward->business_id)->first();
+
+                // Check if the user has entered this tier.
+                if($reward->tier_id){
+                    $tier = LoyaltyTier::select('lp_entrance')->where('id', $reward->tier_id)->first();
+
+                    if($tier->lp_entrance > $balanceInBusiness) {
+                        // Deny the transaction.
+                        $response = response([
+                            'success' => false,
+                            'message' => "You need ".$tier->lp_entrance." to enter this loyalty tier.",
+                        ]);
+                        return $response;
+                    }
+                }
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
                 $balanceInBusinessAfterRedeeming = $balanceInBusiness->balance - $reward->point_cost;
@@ -138,7 +160,7 @@ class Reward extends Model
                     // Deny the transaction.
                     $response = response([
                         'success' => false,
-                        'message' => "No enough loyalty points in this account.",
+                        'message' => 'Not enough loyalty points in this account.',
                     ]);
                     return $response;
                 }
@@ -185,6 +207,9 @@ class Reward extends Model
 
     public function updateReward(Request $request)
     {
+        $user = Auth::user();
+        $business = $user->business;
+
         $validatedData = $request->validate([
             'id'          => 'required|numeric|min:1',
             'name'        => 'required|string|max:75|min:1',
@@ -192,14 +217,13 @@ class Reward extends Model
             'images'      => 'nullable|string|max:500|min:1',
             'type'        => 'required|numeric|max:6',
             'point_cost'  => 'required|numeric|min:1',
+            'tier_id'     => [
+                'nullable',
+                Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
+                    $qry->where('business_id', $business->id);
+                }),
+            ]
         ]);
-
-        $user = Auth::user();
-
-        if ($user)
-        {
-            $business = $user->business;
-        }
 
         $businessReward = $business->rewards()->find($validatedData['id']);
 
@@ -209,6 +233,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
+        $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
@@ -258,8 +283,7 @@ class Reward extends Model
             if ($business->first())
             {
                 $rewards = $business->rewards()->select('*')->get();
-            }
-            else
+            } else
             {
                 $rewards = [];
             }

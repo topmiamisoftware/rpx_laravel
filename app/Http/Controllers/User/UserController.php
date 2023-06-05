@@ -58,6 +58,11 @@ class UserController extends Controller
         return $user->getUser($request);
     }
 
+    public function privateProfile(User $user, Request $request)
+    {
+        return $user->privateProfile($request);
+    }
+
     public function sendPassEmail(User $user, Request $request)
     {
         return $user->setPassResetPin($request);

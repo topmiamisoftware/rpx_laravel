@@ -22,4 +22,6 @@ Route::prefix('business')->group(__DIR__ . '/Business/Business.routes.php');
 Route::prefix('reward')->group(__DIR__ . '/Reward/Reward.routes.php');
 Route::prefix('my-favorites')->group(__DIR__ . '/MyFavorites/MyFavorites.routes.php');
 Route::prefix('loyalty-points')->group(__DIR__ . '/LoyaltyPoints/LoyaltyPoints.routes.php');
+Route::prefix('customer-manager')->group(__DIR__ . '/CustomerManager/CustomerManager.routes.php');
 Route::prefix('redeemable')->group(__DIR__ . '/Redeemable/Redeemable.routes.php');
+Route::prefix('lp-tiers')->group(__DIR__ . '/LoyaltyTiers/LoyaltyTiers.routes.php');
