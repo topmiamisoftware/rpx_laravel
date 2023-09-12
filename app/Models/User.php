@@ -110,7 +110,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function loyaltyPointBalance()
     {
-        return $this->hasMany('App\Models\LoyaltyPointBalance', 'id');
+        return $this->hasMany('App\Models\LoyaltyPointBalance', 'user_id');
     }
 
     public function loyaltyPointBalanceAggregator()
@@ -483,7 +483,7 @@ class User extends Authenticatable implements JWTSubject
                 $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
             }
 
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get()[0];
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->first();
         }
         else
         {

@@ -41,7 +41,7 @@ class LoyaltyPointBalanceAggregator extends Model
         }
         else
         {
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->get()[0];
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->first();
 
             $response = [
                 'success'        => true,

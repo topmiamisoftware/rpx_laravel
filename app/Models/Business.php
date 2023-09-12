@@ -32,7 +32,7 @@ class Business extends Model
 
     public function loyaltyPointBalance()
     {
-        return $this->hasOne('App\Models\LoyaltyPointBalance', 'business_id', 'id');
+        return $this->hasOne('App\Models\LoyaltyPointBalance', 'user_id', 'id');
     }
 
     public function loyaltyPointLedger()
