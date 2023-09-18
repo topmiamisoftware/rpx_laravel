@@ -110,7 +110,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function loyaltyPointBalance()
     {
-        return $this->hasMany('App\Models\LoyaltyPointBalance', 'id');
+        return $this->hasMany('App\Models\LoyaltyPointBalance', 'user_id');
     }
 
     public function loyaltyPointBalanceAggregator()
@@ -147,14 +147,12 @@ class User extends Authenticatable implements JWTSubject
         }
 
         $user = new User();
-
         $user->username = $validatedData['username'];
         $user->email = $validatedData['email'];
         $user->password = Hash::make($validatedData['password']);
         $user->uuid = Str::uuid();
 
         $newSpotbieUser = new SpotbieUser();
-
         $newSpotbieUser->first_name = '';
         $newSpotbieUser->last_name = '';
         $newSpotbieUser->user_type = $accountType;
@@ -311,12 +309,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function checkAccountType(int $accountType, User $user)
     {
-        if (($accountType === 0) &&
-            (
-                $user->spotbieUser->user_type == 1 ||
-            $user->spotbieUser->user_type == 2 ||
-            $user->spotbieUser->user_type == 3
-            )
+        if ($accountType === 0 &&
+            ($user->spotbieUser->user_type == 1 ||
+             $user->spotbieUser->user_type == 2 ||
+             $user->spotbieUser->user_type == 3)
         ) {
             return true;
         }
@@ -439,8 +435,7 @@ class User extends Authenticatable implements JWTSubject
                 'loc_y',
                 'created_at',
                 'updated_at'
-            )
-            ->get();
+            )->get();
 
         $isSubscribed = false;
         $isTrial = false;
@@ -487,6 +482,8 @@ class User extends Authenticatable implements JWTSubject
             {
                 $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
             }
+
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance()->first();
         }
         else
         {
@@ -495,17 +492,19 @@ class User extends Authenticatable implements JWTSubject
             $isTrial = false;
             $trialEndsAt = null;
             $userSubscriptionPlan = null;
+            $loyaltyPointBalance = null;
         }
 
         $settingsResponse = [
-            'success'              => true,
-            'user'                 => $userSettings,
-            'spotbie_user'         => $spotbieUserSettings,
-            'business'             => $business,
-            'is_subscribed'        => $isSubscribed,
-            'is_trial'             => $isTrial,
-            'trial_ends_at'        => $trialEndsAt,
-            'userSubscriptionPlan' => $userSubscriptionPlan,
+            'success'               => true,
+            'user'                  => $userSettings,
+            'spotbie_user'          => $spotbieUserSettings,
+            'business'              => $business,
+            'is_subscribed'         => $isSubscribed,
+            'is_trial'              => $isTrial,
+            'trial_ends_at'         => $trialEndsAt,
+            'userSubscriptionPlan'  => $userSubscriptionPlan,
+            'loyalty_point_balance' => $loyaltyPointBalance,
         ];
 
         return response($settingsResponse);
@@ -596,6 +595,22 @@ class User extends Authenticatable implements JWTSubject
             'user'           => $user,
             'spotbie_user'   => $spotbieUser,
             'default_images' => $defaultImages,
+        ];
+
+        return response($response);
+    }
+
+    public function privateProfile()
+    {
+        $spotbieUser = $this->spotbieUser()->select('first_name', 'last_name', 'description', 'default_picture')->first();
+        $defaultImages = $this->defaultImages()->select('default_image_url')->get();
+        $business = $this->business;
+
+        $response = [
+            'user'           => $this->only('id', 'username', 'email'),
+            'spotbie_user'   => $spotbieUser,
+            'default_images' => $defaultImages,
+            'business'       => $business,
         ];
 
         return response($response);

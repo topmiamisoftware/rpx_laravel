@@ -114,8 +114,8 @@ class RedeemableItems extends Model
             $redeemable->redeemed = 1;
             $redeemable->redeemer_id = $user->id;
 
-            //Add to ledger and to LP Balance
-            //Insert reward into ledger
+            // Add to ledger and to LP Balance
+            // Insert reward into ledger
             $insertLp = new LoyaltyPointLedger();
             $insertLp->user_id = $user->id;
             $insertLp->uuid = Str::uuid();
@@ -123,7 +123,7 @@ class RedeemableItems extends Model
             $insertLp->loyalty_amount = abs(floatval($redeemable->amount));
             $insertLp->type = 'points';
 
-            //Insert expense into ledger
+            // Insert expense into ledger
             $insertExpense = new LoyaltyPointLedger();
             $insertExpense->user_id = $user->id;
             $insertExpense->uuid = Str::uuid();
@@ -131,16 +131,16 @@ class RedeemableItems extends Model
             $insertExpense->loyalty_amount = (-abs(floatval($redeemable->amount)));
             $insertExpense->type = 'points_expense';
 
-            //save these variables for later use.
+            // save these variables for later use.
             $expense = $insertExpense->loyalty_amount;
             $reward = $insertLp->loyalty_amount;
 
-            //Reflect reward into personal user business balance.
+            // Reflect reward into personal user business balance.
             $userCurrentBalance = $user->loyaltyPointBalance()->where('from_business', $redeemable->business->id)->first();
             if (is_null($userCurrentBalance))
             {
                 $lp = new LoyaltyPointBalance();
-                $lp->id = $user->id;
+                $lp->user_id = $user->id;
                 $lp->balance = 0;
                 $lp->from_business = $redeemable->business_id;
                 $lp->business_id = 0;
@@ -151,12 +151,12 @@ class RedeemableItems extends Model
             }
             $newUserBalance = $userCurrentBalance->balance + $reward;
 
-            //Reflect the expense into the business balance.
+            // Reflect the expense into the business balance.
             $businessCurrentBalance = LoyaltyPointBalance::where('business_id', $redeemable->business_id)->first()->balance;
             $newBusinessBalance = $businessCurrentBalance + $expense;
 
-            //Check if the business has enough LP to let the user Redeem
-            if (($businessCurrentBalance - $expense) <= 0)
+            // Check if the business has enough LP to let the user Redeem
+            if (($businessCurrentBalance - $expense) < 0)
             {
                 $response = [
                     'success' => false,

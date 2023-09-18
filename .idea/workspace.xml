@@ -4,10 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="Lp Aggregator fix">
+    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="testing something">
+      <change afterPath="$PROJECT_DIR$/routes/CustomerManager/CustomerManager.routes.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/LoyaltyTiers/LoyaltyTiers.routes.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Ads.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Ads.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Business.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Business.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Reward.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Reward.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/cors.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/cors.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/User/User.routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/User/User.routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,14 +72,10 @@
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/vendor/simplesoftwareio/simple-qrcode" />
       <path value="$PROJECT_DIR$/vendor/graham-campbell/result-type" />
-      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
       <path value="$PROJECT_DIR$/vendor/dragonmantank/cron-expression" />
-      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
-      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/vendor/intervention/image" />
       <path value="$PROJECT_DIR$/vendor/swiftmailer/swiftmailer" />
       <path value="$PROJECT_DIR$/vendor/tijsverkoyen/css-to-inline-styles" />
-      <path value="$PROJECT_DIR$/vendor/stella-maris/clock" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/sabberworm/php-css-parser" />
@@ -149,7 +154,6 @@
       <path value="$PROJECT_DIR$/vendor/phpunit/php-invoker" />
       <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
       <path value="$PROJECT_DIR$/vendor/myclabs/deep-copy" />
-      <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
       <path value="$PROJECT_DIR$/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/vendor/laravel/framework" />
       <path value="$PROJECT_DIR$/vendor/laravel/serializable-closure" />
@@ -172,6 +176,33 @@
       <path value="$PROJECT_DIR$/vendor/league/config" />
       <path value="$PROJECT_DIR$/vendor/league/flysystem-aws-s3-v3" />
       <path value="$PROJECT_DIR$/vendor/laravel/sail" />
+      <path value="$PROJECT_DIR$/vendor/sentry/sentry-laravel" />
+      <path value="$PROJECT_DIR$/vendor/sentry/sentry" />
+      <path value="$PROJECT_DIR$/vendor/jean85/pretty-package-versions" />
+      <path value="$PROJECT_DIR$/vendor/http-interop/http-factory-guzzle" />
+      <path value="$PROJECT_DIR$/vendor/nyholm/psr7" />
+      <path value="$PROJECT_DIR$/vendor/clue/stream-filter" />
+      <path value="$PROJECT_DIR$/vendor/php-http/client-common" />
+      <path value="$PROJECT_DIR$/vendor/php-http/promise" />
+      <path value="$PROJECT_DIR$/vendor/php-http/httplug" />
+      <path value="$PROJECT_DIR$/vendor/php-http/message" />
+      <path value="$PROJECT_DIR$/vendor/php-http/message-factory" />
+      <path value="$PROJECT_DIR$/vendor/php-http/discovery" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-client-contracts" />
+      <path value="$PROJECT_DIR$/vendor/symfony/psr-http-message-bridge" />
+      <path value="$PROJECT_DIR$/vendor/symfony/http-client" />
+      <path value="$PROJECT_DIR$/vendor/symfony/options-resolver" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/annotations" />
+      <path value="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer" />
+      <path value="$PROJECT_DIR$/vendor/symfony/stopwatch" />
+      <path value="$PROJECT_DIR$/vendor/symfony/filesystem" />
+      <path value="$PROJECT_DIR$/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/vendor/psr/clock" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/vendor/stella-maris/clock" />
+      <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
     </include_path>
   </component>
   <component name="ProjectId" id="2BKS3jl9fcBpzwBGY0QwCuL1ixX" />
@@ -180,23 +211,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/spotbie/spotbie_laravel/app/Models&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/spotbie/spotbie_laravel/routes/CustomerManager",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/routes/CustomerManager" />
       <recent name="$PROJECT_DIR$/app/Models" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/routes" />
     </key>
   </component>
   <component name="RunManager">
@@ -247,6 +282,28 @@
       <workItem from="1667444274538" duration="8890000" />
       <workItem from="1667490739157" duration="16211000" />
       <workItem from="1667545767096" duration="1902000" />
+      <workItem from="1675619170596" duration="4649000" />
+      <workItem from="1675698789391" duration="5965000" />
+      <workItem from="1675717250004" duration="1260000" />
+      <workItem from="1675831584082" duration="672000" />
+      <workItem from="1675864815584" duration="1751000" />
+      <workItem from="1675958042432" duration="659000" />
+      <workItem from="1676041660362" duration="2449000" />
+      <workItem from="1676233488741" duration="620000" />
+      <workItem from="1676236655708" duration="683000" />
+      <workItem from="1676249677874" duration="599000" />
+      <workItem from="1676386065576" duration="1199000" />
+      <workItem from="1676647139734" duration="676000" />
+      <workItem from="1676991945448" duration="843000" />
+      <workItem from="1677091988643" duration="604000" />
+      <workItem from="1677511017531" duration="602000" />
+      <workItem from="1677865610188" duration="23000" />
+      <workItem from="1678224102950" duration="626000" />
+      <workItem from="1678469424698" duration="599000" />
+      <workItem from="1679270918418" duration="10000" />
+      <workItem from="1684717118462" duration="13847000" />
+      <workItem from="1684992765056" duration="650000" />
+      <workItem from="1685679143571" duration="30877000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the subscription with regular key issue.">
       <created>1657433063930</created>
@@ -318,7 +375,77 @@
       <option name="project" value="LOCAL" />
       <updated>1667536950541</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Cors was messed up. &#10;For some reason, the bottom half of the file had been deleted. I'm not sure how this happened but it was probably somewhere during the installation of cs-fixer.">
+      <created>1675621188889</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1675621188889</updated>
+    </task>
+    <task id="LOCAL-00012" summary="re-enabled Separate LP balances per business">
+      <created>1684722468286</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1684722468286</updated>
+    </task>
+    <task id="LOCAL-00013" summary="testing something">
+      <created>1684733895620</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1684733895620</updated>
+    </task>
+    <task id="LOCAL-00014" summary="testing something">
+      <created>1684734331410</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1684734331410</updated>
+    </task>
+    <task id="LOCAL-00015" summary="testing something">
+      <created>1684734487219</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1684734487219</updated>
+    </task>
+    <task id="LOCAL-00016" summary="testing something">
+      <created>1684735481064</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1684735481064</updated>
+    </task>
+    <task id="LOCAL-00017" summary="testing something">
+      <created>1684735645919</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1684735645919</updated>
+    </task>
+    <task id="LOCAL-00018" summary="testing something">
+      <created>1684737199234</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1684737199234</updated>
+    </task>
+    <task id="LOCAL-00019" summary="testing something">
+      <created>1684737532930</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1684737532930</updated>
+    </task>
+    <task id="LOCAL-00020" summary="testing something">
+      <created>1684737588687</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1684737588687</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -329,7 +456,26 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="text">
+                    <value>
+                      <list>
+                        <option value="time" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -343,6 +489,9 @@
     <MESSAGE value="Lp &amp; business ad fix" />
     <MESSAGE value="cors fix" />
     <MESSAGE value="Lp Aggregator fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Lp Aggregator fix" />
+    <MESSAGE value="Cors was messed up. &#10;For some reason, the bottom half of the file had been deleted. I'm not sure how this happened but it was probably somewhere during the installation of cs-fixer." />
+    <MESSAGE value="re-enabled Separate LP balances per business" />
+    <MESSAGE value="testing something" />
+    <option name="LAST_COMMIT_MESSAGE" value="testing something" />
   </component>
 </project>

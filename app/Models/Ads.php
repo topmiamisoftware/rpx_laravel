@@ -13,32 +13,42 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
 
+/** @property int $business_id */
+/** @property int $clicks */
+/** @property string $created_at */
+/** @property string $deleted_at */
+/** @property float $dollar_cost */
+/** @property string $ends_at */
+/** @property string $images */
+/** @property string $images_mobile */
+/** @property bool $is_live */
+/** @property string $name */
+/** @property int $subscription_id */
+/** @property int $type */
+/** @property string $updated_at */
+/** @property string $uuid */
+/** @property int $views */
 class Ads extends Model
 {
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $table = 'ads';
 
     protected $fillable = ['business_id'];
 
-    public function business()
+    /**
+     * Every ad belongs to a business. Not every business has an ad. A business can have multiple ads.
+     */
+    public function business(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo('App\Models\Business', 'business_id', 'id');
     }
 
-    public function spotbieUser()
-    {
-        return $this->belongsTo('App\Models\SpotbieUser', 'business_id', 'id');
-    }
-
-    public function ad()
-    {
-        return $this->belongsTo('App\Models\User', 'business_id', 'id');
-    }
-
-    public function nearbyBusinessNoCategory($loc_x, $loc_y, $userType)
+    /**
+     * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
+     * a random nearby business is pulled up based on the user's location and user type.
+     */
+    public function nearbyBusinessNoCategory(string $loc_x, string $loc_y, int $businessType): \Illuminate\Database\Eloquent\Collection
     {
         return Business::select(
             'business.id',
@@ -59,11 +69,10 @@ class Ads extends Model
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
                     ->where('loyalty_point_balances.balance', '>', 0)
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0)
-                ;
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
             })
             ->where('business.is_verified', 1)
-            ->where('spotbie_users.user_type', '=', $userType)
+            ->where('spotbie_users.user_type', '=', $businessType)
             ->whereRaw("(
                 (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
                 OR (
@@ -79,11 +88,14 @@ class Ads extends Model
             ->has('rewards')
             ->inRandomOrder()
             ->limit(1)
-            ->get()
-        ;
+            ->get();
     }
 
-    public function nearbyBusiness($loc_x, $loc_y, $category, $userType)
+    /**
+     * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
+     * a nearby business in the chosen $category is pulled up based on the user's location and businessType.
+     */
+    public function nearbyBusiness($loc_x, $loc_y, $category, $businessType): \Illuminate\Database\Eloquent\Collection
     {
         return Business::select(
             'business.id',
@@ -104,11 +116,10 @@ class Ads extends Model
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
                     ->where('loyalty_point_balances.balance', '>', 0)
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0)
-                ;
+                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
             })
             ->where('business.is_verified', 1)
-            ->where('spotbie_users.user_type', '=', $userType)
+            ->where('spotbie_users.user_type', '=', $businessType)
             ->whereJsonContains('business.categories', $category)
             ->whereRaw("(
                 (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
@@ -125,10 +136,14 @@ class Ads extends Model
             ->has('rewards')
             ->inRandomOrder()
             ->limit(1)
-            ->get()
-        ;
+            ->get();
     }
 
+    /**
+     * A header banner is displayed at the bottom of the interactive map we have on the front end of the app. This method
+     * basically takes in a Request with the user's location, picked categories, account type, and account id. Additionally
+     * this method adds a view to the ad.
+     */
     public function headerBanner(Request $request)
     {
         $validatedData = $request->validate([
@@ -141,8 +156,7 @@ class Ads extends Model
 
         $accountType = $validatedData['account_type'];
 
-        if (!is_null($validatedData['id']))
-        {
+        if (!is_null($validatedData['id'])) {
             $ad = Ads::find($validatedData['id']);
 
             $this->addClickToAd($ad);
@@ -172,58 +186,45 @@ class Ads extends Model
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (0 === count($nearbyBusiness)) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (0 === count($nearbyBusiness)) {
             $ad = $this->getSpotbieAd(0);
 
             $nearbyBusiness = null;
             $totalRewards = 0;
-        }
-        else
-        {
+        } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
             $k = 0;
-            while (0 === count($ad))
-            {
-                if (10 === $k)
-                {
+            while (0 === count($ad)) {
+                if (10 === $k) {
                     $ad = $this->getSpotbieAd(0);
                     $nearbyBusiness = null;
 
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
-                if (!is_null($nearbyBusiness))
-                {
+                if (!is_null($nearbyBusiness)) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 0);
-                }
-                else
-                {
+                } else {
                     $ad = $this->getSpotbieAd(0);
                     $nearbyBusiness = null;
                 }
                 ++$k;
             }
 
-            if (!is_null($nearbyBusiness))
-            {
+            if (!is_null($nearbyBusiness)) {
                 $ad = $ad[0];
-                if ($nearbyBusiness[0])
-                {
+                if ($nearbyBusiness[0]) {
                     $nearbyBusiness = $nearbyBusiness[0];
                 }
                 $totalRewards = count(Reward::select('business_id')
                     ->where('business_id', '=', $nearbyBusiness->id)
                     ->get());
                 $this->addViewToAd($ad);
-            }
-            else
-            {
+            } else {
                 $totalRewards = 0;
             }
         }
@@ -274,12 +275,10 @@ class Ads extends Model
 
         $ad = Ads::select('*')
             ->where('uuid', '=', $validatedData['uuid'])
-            ->first()
-        ;
+            ->first();
 
         $business = Business::where('id', '=', $ad->business_id)
-            ->first()
-        ;
+            ->first();
 
         $response = [
             'success'  => true,
@@ -302,8 +301,7 @@ class Ads extends Model
 
         $accountType = $validatedData['account_type'];
 
-        if (isset($validatedData['id']))
-        {
+        if (isset($validatedData['id'])) {
             $ad = Ads::find($validatedData['id']);
 
             $this->addClickToAd($ad);
@@ -327,32 +325,26 @@ class Ads extends Model
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
 
-        $categories = $validatedData['categories'];
+        $categories = $validatedData['categories'] ?? null;
         $categories = $this->returnCategory($categories, $accountType);
 
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (count($nearbyBusiness) === 0) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (count($nearbyBusiness) === 0) {
             $ad = $this->getSpotbieAd(2);
 
             $nearbyBusiness = null;
             $totalRewards = 0;
-        }
-        else
-        {
+        } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 2);
             $k = 0;
-            while (0 === count($ad))
-            {
-                if (10 === $k)
-                {
+            while (count($ad) === 0) {
+                if ($k === 10) {
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
 
@@ -360,32 +352,25 @@ class Ads extends Model
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
 
-                if (!is_null($nearbyBusiness))
-                {
+                if (!is_null($nearbyBusiness)) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 2);
-                }
-                else
-                {
+                } else {
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(2);
                 }
                 ++$k;
             }
 
-            if (!is_null($nearbyBusiness))
-            {
+            if (!is_null($nearbyBusiness)) {
                 $ad = $ad[0];
-                if ($nearbyBusiness[0])
-                {
+                if ($nearbyBusiness[0]) {
                     $nearbyBusiness = $nearbyBusiness[0];
                 }
                 $totalRewards = count(Reward::select('business_id')
                     ->where('business_id', '=', $nearbyBusiness->id)
                     ->get());
                 $this->addViewToAd($ad);
-            }
-            else
-            {
+            } else {
                 $totalRewards = 0;
             }
         }
@@ -422,8 +407,7 @@ class Ads extends Model
 
         $accountType = $validatedData['account_type'];
 
-        if (isset($validatedData['id']))
-        {
+        if (isset($validatedData['id'])) {
             $ad = Ads::find($validatedData['id']);
 
             $this->addClickToAd($ad);
@@ -453,46 +437,37 @@ class Ads extends Model
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (0 === count($nearbyBusiness)) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
         }
 
-        if (0 === count($nearbyBusiness))
-        {
+        if (0 === count($nearbyBusiness)) {
             $ad = $this->getSpotbieAdList();
 
             $nearbyBusiness = null;
             $totalRewards = 0;
-        }
-        else
-        {
+        } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 1);
             $k = 0;
-            while (0 === count($ad))
-            {
-                if (10 === $k)
-                {
+
+            while (0 === count($ad)) {
+                if (10 === $k) {
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(1);
 
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
-                if (!is_null($nearbyBusiness))
-                {
+                if (!is_null($nearbyBusiness)) {
                     $ad = $this->nearbyAd($nearbyBusiness->id, 1);
-                }
-                else
-                {
+                } else {
                     $nearbyBusiness = null;
                     $ad = $this->getSpotbieAd(1);
                 }
                 ++$k;
             }
 
-            if (!is_null($nearbyBusiness))
-            {
+            if (!is_null($nearbyBusiness)) {
                 $ad = $ad[0];
                 if ($nearbyBusiness[0])
                 {
@@ -502,9 +477,7 @@ class Ads extends Model
                     ->where('business_id', '=', $nearbyBusiness->id)
                     ->get());
                 $this->addViewToAd($ad);
-            }
-            else
-            {
+            } else {
                 $totalRewards = 0;
             }
         }
@@ -824,7 +797,7 @@ class Ads extends Model
 
     private function returnCategory($categories, $accountType)
     {
-        if (-1 == $categories)
+        if (!$categories)
         {
             $parentCategory = null;
 

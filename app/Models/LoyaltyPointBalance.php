@@ -19,7 +19,7 @@ class LoyaltyPointBalance extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'id', 'id');
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
     }
 
     public function fromBusiness()
