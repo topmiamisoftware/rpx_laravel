@@ -162,15 +162,14 @@ class User extends Authenticatable implements JWTSubject
         $newSpotbieUser->description = $description;
         $newSpotbieUser->last_known_ip_address = $request->ip;
 
-        $loyaltyPointBalance = new LoyaltyPointBalance();
-
-        DB::transaction(function () use ($user, $newSpotbieUser, $loyaltyPointBalance) {
+        DB::transaction(function () use ($user, $newSpotbieUser) {
             $user->createAsStripeCustomer();
             $user->save();
 
             $newSpotbieUser->id = $user->id;
             $newSpotbieUser->save();
 
+            // Only make the aggregated Balance if the user is not a business
             if ($newSpotbieUser->user_type != '0')
             {
                 $lpAggregator = new LoyaltyPointBalanceAggregator();
@@ -437,35 +436,30 @@ class User extends Authenticatable implements JWTSubject
                 'updated_at'
             )->get();
 
-        $isSubscribed = false;
-        $isTrial = false;
-
-        $trialEndsAt = $user->trial_ends_at;
+        $nextPayment = null;
+        $endsAt = null;
 
         if (count($business) > 0)
         {
             $business = $business[0];
 
             $userBillable = Cashier::findBillable($user->stripe_id);
-            if (count($userBillable->subscriptions) > 0)
-            {
+            if (count($userBillable->subscriptions) > 0) {
                 $userSubscriptionPlan = $userBillable->subscriptions[0]->stripe_price;
-            }
-            else
-            {
+            } else {
                 $userSubscriptionPlan = null;
             }
 
             switch($userSubscriptionPlan)
             {
-                case config('spotbie.business_subscription_price_1'):
-                    $userSubscriptionPlan = 'spotbie.business_subscription_price_1';
+                case config('spotbie.business_subscription_price_1_2'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price_1_2';
                     break;
-                case config('spotbie.business_subscription_price_2'):
-                    $userSubscriptionPlan = 'spotbie.business_subscription_price_2';
+                case config('spotbie.business_subscription_price_2_2'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price_2_2';
                     break;
-                case config('spotbie.business_subscription_price'):
-                    $userSubscriptionPlan = 'spotbie.business_subscription_price';
+                case config('spotbie.business_subscription_price1'):
+                    $userSubscriptionPlan = 'spotbie.business_subscription_price1';
                     break;
                 default:
                     $userSubscriptionPlan = null;
@@ -473,14 +467,12 @@ class User extends Authenticatable implements JWTSubject
 
             $isSubscribed = $userBillable->subscribed($user->id);
 
-            if ($trialEndsAt !== null && $trialEndsAt->gt(Carbon::now()) && !$isSubscribed)
-            {
-                $isTrial = true;
-            }
-
             if ($isSubscribed)
             {
-                $trialEndsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+                $nextPayment = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+                if($user->subscription($user->id)->asStripeSubscription()->cancel_at) {
+                    $endsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->cancel_at);
+                }
             }
 
             $loyaltyPointBalance = $user->business->loyaltyPointBalance()->first();
@@ -489,8 +481,6 @@ class User extends Authenticatable implements JWTSubject
         {
             $business = null;
             $isSubscribed = false;
-            $isTrial = false;
-            $trialEndsAt = null;
             $userSubscriptionPlan = null;
             $loyaltyPointBalance = null;
         }
@@ -501,10 +491,10 @@ class User extends Authenticatable implements JWTSubject
             'spotbie_user'          => $spotbieUserSettings,
             'business'              => $business,
             'is_subscribed'         => $isSubscribed,
-            'is_trial'              => $isTrial,
-            'trial_ends_at'         => $trialEndsAt,
             'userSubscriptionPlan'  => $userSubscriptionPlan,
             'loyalty_point_balance' => $loyaltyPointBalance,
+            'next_payment'          => $nextPayment,
+            'ends_at' => $endsAt,
         ];
 
         return response($settingsResponse);
@@ -635,18 +625,6 @@ class User extends Authenticatable implements JWTSubject
             $status = IlluminatePassword::sendResetLink(
                 $request->only('email')
             );
-
-            $isGoogleUser = GoogleUser::find($user->id);
-            $isFacebookUser = FacebookUser::find($user->id);
-
-            if ($isGoogleUser)
-            {
-                $status = 'social_account';
-            }
-            elseif ($isFacebookUser)
-            {
-                $status = 'social_account';
-            }
         }
         else
         {
@@ -912,16 +890,21 @@ class User extends Authenticatable implements JWTSubject
         $uuid = $validatedData['uuid'];
         $paymentMethodId = $validatedData['payment_method']['id'];
 
+        $totalLp = 0;
+        $rate = 2;
         switch($validatedData['payment_type'])
         {
+            case 'business-membership':
+                $priceKey = 'spotbie.business_subscription_price1';
+                $totalLp = 2000;
+                break;
             case 'business-membership-1':
-                $priceKey = 'spotbie.business_subscription_price_1';
+                $priceKey = 'spotbie.business_subscription_price_1_2';
+                $totalLp = 3250;
                 break;
             case 'business-membership-2':
-                $priceKey = 'spotbie.business_subscription_price_2';
-                break;
-            case 'business-membership':
-                $priceKey = 'spotbie.business_subscription_price';
+                $priceKey = 'spotbie.business_subscription_price_2_2';
+                $totalLp = 4500;
                 break;
         }
 
@@ -937,12 +920,21 @@ class User extends Authenticatable implements JWTSubject
 
             $user->updateDefaultPaymentMethod($paymentMethodId);
 
-            //Create the subscription with the payment method provided by the user.
+            // Create the subscription with the payment method provided by the user.
             $user->newSubscription($user->id, [$price_name])->create($paymentMethodId);
 
-            //Set existing trial_ends_at to now
+            // Set existing trial_ends_at to now
             $user->trial_ends_at = Carbon::now();
-            $user->save();
+
+            $loyaltyPointBalance = $user->business->loyaltyPointBalance;
+            $loyaltyPointBalance->balance = $totalLp;
+            $loyaltyPointBalance->reset_balance = $totalLp;
+            $loyaltyPointBalance->loyalty_point_dollar_percent_value = $rate;
+
+            DB::transaction(function () use ($user, $loyaltyPointBalance) {
+                $user->save();
+                $loyaltyPointBalance->save();
+            }, 3);
         }
 
         $user = $user->refresh();
@@ -993,7 +985,7 @@ class User extends Authenticatable implements JWTSubject
         {
             if ($userBillable->subscribed($user->id))
             {
-                $userBillable->subscription($user->id)->cancelNow();
+                $userBillable->subscription($user->id)->cancel();
             }
         }
 
@@ -1008,7 +1000,7 @@ class User extends Authenticatable implements JWTSubject
             {
                 if ($userBillable->subscribed($userAd->id))
                 {
-                    $userBillable->subscription($userAd->id)->cancelNow();
+                    $userBillable->subscription($userAd->id)->cancel();
                 }
                 $userAd->delete();
             }
