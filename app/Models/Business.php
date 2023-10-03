@@ -81,38 +81,20 @@ class Business extends Model
         ]);
 
         $user = Auth::user();
-
-        $confirmKeyLifeTime = 'ITS-ON-US-BRO';
         $confirmKey = 'K23' . $user->id;
 
         $spotbieBusinessPassKey = $confirmKey;
 
-        if ($spotbieBusinessPassKey !== $validatedData['passkey'] &&
-            $confirmKeyLifeTime !== $validatedData['passkey']
-        ) {
+        if ($spotbieBusinessPassKey !== $validatedData['passkey']) {
             $response = [
                 'message' => 'passkey_mismatch',
             ];
             return response($response);
         }
 
-        $isLifeTimeMembership = false;
-
-        if ($confirmKeyLifeTime === $validatedData['passkey'])
-        {
-            /**
-             * We are setting a false isLifeTimeMembership for now.
-             */
-            $isLifeTimeMembership = false;
-        }
-        elseif ($spotbieBusinessPassKey === $validatedData['passkey'])
-        {
-            $isLifeTimeMembership = false;
-        }
-
         $user->spotbieUser->user_type = $validatedData['accountType'];
 
-        //check if the place to eat already exists.
+        // Check if the business already exists.
         $existingBusiness = $user->business;
 
         if (!is_null($existingBusiness))
@@ -142,15 +124,6 @@ class Business extends Model
         $business->is_verified = 1;
         $business->qr_code_link = Str::uuid();
 
-        $giveTrial = false;
-
-        $userBillable = Cashier::findBillable($user->stripe_id);
-
-        if ($userBillable && $user->trial_ends_at === null)
-        {
-            $user->update(['trial_ends_at' => Carbon::now()->addDays(60)]);
-        }
-
         if ($existingBusiness)
         {
             DB::transaction(function () use ($business, $user) {
@@ -160,35 +133,10 @@ class Business extends Model
         }
         else
         {
-            DB::transaction(function () use ($business, $user, $userBillable) {
+            // I'm not sure this whole IF BLOCK belongs here.
+            DB::transaction(function () use ($business, $user) {
                 $business->save();
                 $user->spotbieUser->save();
-                $user->save();
-            }, 3);
-
-            $giveTrial = true;
-        }
-
-        $existingSubscription = $userBillable->subscriptions()->where('name', '=', $user->id)->first();
-
-        //Check if the user entered a lifetime membership passkey
-        if ($isLifeTimeMembership && !is_null($existingSubscription))
-        {
-            //Extend the user's trial for a lifetime
-            $user = User::find($user->id);
-            $user->trial_ends_at = Carbon::now()->addYears(90);
-
-            DB::transaction(function () use ($user) {
-                $user->save();
-            }, 3);
-        }
-        elseif ($isLifeTimeMembership)
-        {
-            //Extend the user's trial for a lifetime
-            $user = User::find($user->id);
-            $user->trial_ends_at = Carbon::now()->addYears(90);
-
-            DB::transaction(function () use ($user) {
                 $user->save();
             }, 3);
         }
@@ -196,7 +144,6 @@ class Business extends Model
         $response = [
             'message'   => 'success',
             'business'  => $business,
-            'giveTrial' => $giveTrial,
         ];
 
         return response($response);
@@ -225,7 +172,7 @@ class Business extends Model
 
         $user->spotbieUser->user_type = $validatedData['accountType'];
 
-        //check if the place to eat already exists.
+        // check if the business already exists.
         $existingBusiness = $user->business;
 
         if (!is_null($existingBusiness))
@@ -266,15 +213,18 @@ class Business extends Model
 
             $business->refresh();
 
-            $lpBalance = new LoyaltyPointBalance();
-            $lpBalance->id = 0;
-            $lpBalance->from_business = 0;
-            $lpBalance->business_id = $business->id;
-            $lpBalance->balance = 0;
-            $lpBalance->reset_balance = 0;
-            $lpBalance->loyalty_point_dollar_percent_value = 0;
-            $lpBalance->end_of_month = Carbon::now()->addMonth();
-            $lpBalance->save();
+            if($business->loyaltyPointBalance === null) {
+                $lpBalance = new LoyaltyPointBalance();
+                $lpBalance->user_id = $user->id;
+                $lpBalance->from_business = 0;
+                $lpBalance->business_id = $business->id;
+                $lpBalance->balance = 0;
+                $lpBalance->reset_balance = 0;
+                $lpBalance->loyalty_point_dollar_percent_value = 2; // Default start value
+                $lpBalance->end_of_month = Carbon::now()->addMonth();
+                $lpBalance->save();
+            }
+
         }, 3);
 
         $response = [

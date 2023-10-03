@@ -86,12 +86,6 @@ class Reward extends Model
             'images'      => 'nullable|string|max:500|min:1',
             'type'        => 'required|numeric|max:6',
             'point_cost'  => 'required|numeric|min:1',
-            'tier_id'     => [
-                'nullable',
-                Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
-                    $qry->where('business_id', $business->id);
-                }),
-            ]
         ]);
 
         $businessReward = new Reward();
@@ -102,7 +96,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
-        $businessReward->tier_id = $validatedData['tier_id'];
+        // $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
@@ -139,7 +133,7 @@ class Reward extends Model
                     ->where('from_business', $reward->business_id)->first();
 
                 // Check if the user has entered this tier.
-                if($reward->tier_id){
+/*                if($reward->tier_id){
                     $tier = LoyaltyTier::select('lp_entrance')->where('id', $reward->tier_id)->first();
 
                     if($tier->lp_entrance > $balanceInBusiness) {
@@ -150,25 +144,13 @@ class Reward extends Model
                         ]);
                         return $response;
                     }
-                }
+                }*/
+
+                $lpValue = ($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100));
 
                 // Turn this on if we ever want to enable balance checks for GLOBAL LP points.
-                $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $reward->point_cost;
-
-                if ($balanceInBusiness) {
-                    $balanceInBusinessAfterRedeeming = $balanceInBusiness->balance - $reward->point_cost;
-                } else {
-                   // The user never claimed any LP from this business.
-                    // Deny the transaction.
-                    $response = response([
-                        'success' => false,
-                        'message' => 'Not enough loyalty points in this business.',
-                    ]);
-                    return $response;
-                }
-
-
-                if ($balanceInBusinessAfterRedeeming < 0)
+                $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;
+                if ($balanceAfterRedeeming < 0)
                 {
                     // Deny the transaction.
                     $response = response([
@@ -182,7 +164,7 @@ class Reward extends Model
                 $rewardLedgerRecord = $user->loyaltyPointLedger()->create([
                     'uuid'           => Str::uuid(),
                     'business_id'    => $reward->business_id,
-                    'loyalty_amount' => -($reward->point_cost),
+                    'loyalty_amount' => -($lpValue),
                     'user_id'        => $user->id,
                     'type'           => 'reward_expense',
                 ]);
@@ -192,25 +174,24 @@ class Reward extends Model
                 $redeemed->uuid = Str::uuid();
                 $redeemed->business_id = $reward->business_id;
                 $redeemed->redeemer_id = $user->id;
-                $redeemed->total_spent = $reward->point_cost;
+                $redeemed->total_spent = $lpValue;
                 $redeemed->redeemed = true;
                 $redeemed->reward_id = $reward->id;
-                $redeemed->dollar_value = floatval($reward->point_cost * ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value / 100));
+                $redeemed->dollar_value = floatval($reward->point_cost);
                 $redeemed->ledger_record_id = $rewardLedgerRecord->id;
 
                 // Charge the user the LP Cost.
                 $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
-                $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
 
-                DB::transaction(function () use ($user, $redeemed, $balanceInBusiness) {
+                DB::transaction(function () use ($user, $redeemed) {
                     $redeemed->save();
-                    $balanceInBusiness->save();
                     $user->loyaltyPointBalanceAggregator->save();
                 });
             }
             $success = true;
         }
 
+        $reward->point_cost = $lpValue;
         $response = response([
             'success'        => $success,
             'reward'         => $reward,
@@ -248,7 +229,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
-        $businessReward->tier_id = $validatedData['tier_id'];
+        // $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();

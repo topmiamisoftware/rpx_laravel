@@ -56,7 +56,13 @@
         'footer_banner_price'      => env('SPOTBIE_FOOTER_AD_PRICE'),
 
         'business_subscription_product' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRODUCT'),
+        // Legacy Price. My account still uses this one
         'business_subscription_price'   => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE'),
-        'business_subscription_price_1' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_1'),
-        'business_subscription_price_2' => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_2'),
+
+        // $199.99 monthly
+        'business_subscription_price1'   => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE1'),
+        // $299.99 monthly
+        'business_subscription_price_1_2'   => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_1_2'),
+        // $399.99 monthly
+        'business_subscription_price_2_2'   => env('SPOTBIE_BUSINESS_SUBSCRIPTION_PRICE_2_2'),
     ];
