@@ -900,11 +900,11 @@ class User extends Authenticatable implements JWTSubject
                 break;
             case 'business-membership-1':
                 $priceKey = 'spotbie.business_subscription_price_1_2';
-                $totalLp = 3250;
+                $totalLp = 3500;
                 break;
             case 'business-membership-2':
                 $priceKey = 'spotbie.business_subscription_price_2_2';
-                $totalLp = 4500;
+                $totalLp = 4750;
                 break;
         }
 
