@@ -121,7 +121,7 @@ class RedeemableItems extends Model
         else
         {
             Storage::put($imagePath, $request->file('file'), 'public');
-            $imagePath = config('app.url') . '/' . $imagePath;
+            $imagePath = config('app.url') . '/' . $imagePath . $hashedFileName;
         }
 
         $redeemable = new RedeemableItems();
