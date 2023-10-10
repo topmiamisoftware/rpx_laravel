@@ -5,6 +5,8 @@ namespace App\Models;
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -33,6 +35,11 @@ class RedeemableItems extends Model
     public function reward()
     {
         return $this->hasOne('App\Models\Reward', 'id', 'reward_id');
+    }
+
+    public function receiptData()
+    {
+        return $this->hasOne('App\Models\ReceiptData', 'redeemable_id', 'id');
     }
 
     public function business()
@@ -88,6 +95,84 @@ class RedeemableItems extends Model
 
         return response($response);
     }
+
+    public function scanReceipt(Request $request)
+    {
+        $success = true;
+        $message = null;
+
+        $validatedData = $request->validate([
+            'file' => 'required|image|max:25000',
+        ]);
+
+        $user = Auth::user();
+
+        $hashedFileName = $validatedData['file']->hashName();
+        // $receiptData = $validatedData['receiptData'];
+        $environment = App::environment();
+
+        $imagePath = 'receipts/images/' . $user->id . '/';
+
+        if ($environment == 'local')
+        {
+            Storage::put($imagePath, $request->file('file'));
+            $imagePath = config('app.url') . '/' . $imagePath;
+        }
+        else
+        {
+            Storage::put($imagePath, $request->file('file'), 'public');
+            $imagePath = config('app.url') . '/' . $imagePath;
+        }
+
+        $redeemable = new RedeemableItems();
+        $redeemable->business_id = 0;
+        $redeemable->uuid = Str::uuid();
+        $redeemable->amount = 250;
+        $redeemable->total_spent = 0;
+        $redeemable->dollar_value = 0;
+        $redeemable->loyalty_point_dollar_percent_value = 1;
+        $redeemable->redeemed = true;
+
+        $insertLp = new LoyaltyPointLedger();
+        $insertLp->user_id = $user->id;
+        $insertLp->uuid = Str::uuid();
+        $insertLp->business_id = 0;
+        $insertLp->loyalty_amount = 250;
+        $insertLp->type = 'points';
+
+        $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
+        $user->loyaltyPointBalanceAggregator->save();
+        $user->loyaltyPointBalanceAggregator->refresh();
+
+        DB::transaction(function () use ($redeemable, $insertLp, $user, $imagePath) {
+            $redeemable->save();
+            $insertLp->save();
+
+            $insertLp->refresh();
+            $redeemable->refresh();
+
+            $redeemable->ledger_record_id = $insertLp->id;
+            $redeemable->save();
+
+            ReceiptData::create([
+                'user_id' => $user->id,
+                'image_path' => $imagePath,
+                'redeemable_id' => $redeemable->id,
+                'status' => 0,
+                'data' => null,
+            ]);
+        }, 3);
+
+        $response = [
+            'success' => $success,
+            'message' => $environment,
+            'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
+            'award_points' => 250
+        ];
+
+        return response($response);
+    }
+
 
     public function redeem(Request $request)
     {

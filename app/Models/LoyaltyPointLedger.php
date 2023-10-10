@@ -27,6 +27,11 @@ class LoyaltyPointLedger extends Model
         return $this->hasOne('App\Models\Business', 'id', 'business_id');
     }
 
+    public function redeemableItems()
+    {
+        return $this->hasOne('App\Models\RedeemableItems', 'ledger_record_id', 'id');
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -40,6 +45,9 @@ class LoyaltyPointLedger extends Model
                 })
                 ->with('business', function ($query) {
                     $query->with('spotbieUser');
+                })
+                ->with('redeemableItems', function ($query) {
+                    $query->with('receiptData');
                 })
                 ->orderBy('loyalty_point_ledger.created_at', 'desc')
                 ->paginate(10);
