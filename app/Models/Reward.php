@@ -95,7 +95,7 @@ class Reward extends Model
         $businessReward->description = $validatedData['description'];
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
-        $businessReward->point_cost = $validatedData['point_cost'];
+        $businessReward->point_cost = round($validatedData['point_cost']);
         // $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
@@ -146,7 +146,7 @@ class Reward extends Model
                     }
                 }*/
 
-                $lpValue = ($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100));
+                $lpValue = round(($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100)));
 
                 // Turn this on if we ever want to enable balance checks for GLOBAL LP points.
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;

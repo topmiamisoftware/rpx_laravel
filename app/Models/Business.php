@@ -284,6 +284,7 @@ class Business extends Model
             'business.name',
             'business.categories',
             'business.description',
+            'business.address',
             'business.photo',
             'business.qr_code_link',
             'business.loc_x',

@@ -33,4 +33,9 @@ class RedeemableItemsController extends Controller
     {
         return $redeemableItems->redeem($request);
     }
+
+    public function scanReceipt(Request $request, RedeemableItems $redeemableItems)
+    {
+        return $redeemableItems->scanReceipt($request);
+    }
 }

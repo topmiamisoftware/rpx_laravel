@@ -92,6 +92,7 @@ class SurroundingsController extends Controller
         $data = Business::select(
             'business.qr_code_link',
             'business.name',
+            'business.address',
             'business.categories',
             'business.description',
             'business.photo',
