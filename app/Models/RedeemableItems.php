@@ -59,14 +59,14 @@ class RedeemableItems extends Model
 
         if ($user)
         {
-            if ($user->business->loyaltyPointBalance->balance < $validatedData['amount'])
+/*            if ($user->business->loyaltyPointBalance->balance < $validatedData['amount'])
             {
                 $response = [
                     'success' => false,
                     'message' => "Business doesn't have enough Loyalty Points.",
                 ];
                 return response($response);
-            }
+            }*/
 
             $redeemable = new RedeemableItems();
             $redeemable->business_id = $user->business->id;
@@ -241,14 +241,14 @@ class RedeemableItems extends Model
             $newBusinessBalance = $businessCurrentBalance + $expense;
 
             // Check if the business has enough LP to let the user Redeem
-            if (($businessCurrentBalance - $expense) < 0)
+/*            if (($businessCurrentBalance - $expense) < 0)
             {
                 $response = [
                     'success' => false,
                     'message' => "Business doesn't have enough Loyalty Points.",
                 ];
                 return response($response);
-            }
+            }*/
 
             DB::transaction(function () use (
                 $insertLp,
