@@ -127,7 +127,7 @@ class RedeemableItems extends Model
         $redeemable = new RedeemableItems();
         $redeemable->business_id = 0;
         $redeemable->uuid = Str::uuid();
-        $redeemable->amount = 250;
+        $redeemable->amount = 25;
         $redeemable->total_spent = 0;
         $redeemable->dollar_value = 0;
         $redeemable->loyalty_point_dollar_percent_value = 1;
@@ -137,7 +137,7 @@ class RedeemableItems extends Model
         $insertLp->user_id = $user->id;
         $insertLp->uuid = Str::uuid();
         $insertLp->business_id = 0;
-        $insertLp->loyalty_amount = 250;
+        $insertLp->loyalty_amount = 25;
         $insertLp->type = 'points';
 
         $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
@@ -167,7 +167,7 @@ class RedeemableItems extends Model
             'success' => $success,
             'message' => $environment,
             'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
-            'award_points' => 250
+            'award_points' => 25
         ];
 
         return response($response);
