@@ -587,7 +587,7 @@ class Ads extends Model
         $businessAd->images = $validatedData['images'];
         $businessAd->images_mobile = $validatedData['images_mobile'];
         $businessAd->type = $validatedData['type'];
-        $businessAd->is_live = false;
+        $businessAd->is_live = true;
 
         switch ($businessAd->type)
         {
