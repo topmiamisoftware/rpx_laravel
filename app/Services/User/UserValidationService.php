@@ -5,7 +5,7 @@ namespace App\Services\User;
 use Mail;
 use Swift_Mailer;
 use Carbon\Carbon;
-use App\Helpers\PhoneConfirmation\PhoneConfirmationTwimlHelper;
+use App\Helpers\Sms\SmsAndCallTwimlHelper;
 use App\Models\PhoneConfirmation;
 use App\Models\EmailConfirmation;
 use App\Mail\User\EmailConfirmation as EmailConfirmationEmail;
@@ -68,7 +68,7 @@ class UserValidationService
         {
             $client = new Client($sid, $token);
 
-            $voice = new PhoneConfirmationTwimlHelper($lang);
+            $voice = new SmsAndCallTwimlHelper($lang);
 
             $call = $client->account->calls->create(
                 $userPhoneNumber,
@@ -125,7 +125,7 @@ class UserValidationService
         {
             $client = new Client($sid, $token);
 
-            $langHelper = new PhoneConfirmationTwimlHelper($lang);
+            $langHelper = new SmsAndCallTwimlHelper($lang);
 
             $smsText = $langHelper->getConfirmPhoneSmsText($confirmationCode);
 

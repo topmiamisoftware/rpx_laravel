@@ -26,12 +26,12 @@
         'my_loc_x' => env('MY_LOC_X', '0.0'),
         'my_loc_y' => env('MY_LOC_Y', '0.0'),
 
-        'my_address'  => env('MY_ADDRESS', '4091 W. 9th Ln. Hialeah FL 33012'),
-        'my_city'     => env('MY_CITY', 'Hialeah'),
+        'my_address'  => env('MY_ADDRESS', '1175 NE. Miami Gardens Dr., Miami, FL 33179'),
+        'my_city'     => env('MY_CITY', 'Miami'),
         'my_state'    => env('MY_STATE', 'Florida'),
         'my_country'  => env('MY_COUNTRY', 'USA'),
-        'my_line_1'   => env('MY_LINE_1', '4091 W. 9th Ln'),
-        'my_zip_code' => env('MY_ZIP_CODE', '33012'),
+        'my_line_1'   => env('MY_LINE_1', '1175 NE. Miami Gardens Dr.'),
+        'my_zip_code' => env('MY_ZIP_CODE', '33179'),
 
         'default_images_path'    => env('DEFAULT_IMAGES_PATH', 'https://api-demo.spotbie.com/defaults/'),
         'background_images_path' => env('BACKGROUND_IMAGES_PATH', 'https://api-demo.spotbie.com/backgrounds/'),

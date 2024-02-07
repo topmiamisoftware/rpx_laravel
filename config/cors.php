@@ -15,10 +15,7 @@ return [
     */
     'paths'           => ['*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['https://demo.spotbie.com',
-        'https://spotbie.com',
-        'capacitor://localhost',
-    ],
+    'allowed_origins' => ['*'],
     'allowed_origins_patterns' => [],
     'allowed_headers'          => ['*'],
     'exposed_headers'          => [],

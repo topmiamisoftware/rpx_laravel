@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
             ->hasSpotbieUser(1, function (array $attributes) {
                 return [
                     'first_name' => 'Franco',
-                    'last_name'  => 'Garcia',
+                    'last_name'  => 'Petitfour',
                     'user_type'  => 4,
                 ];
             })

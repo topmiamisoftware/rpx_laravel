@@ -110,6 +110,7 @@ class BusinessFactory extends Factory
             $loyalty_point_dollar_percent_value = $this->faker->randomFloat(2, 1, 3);
             $business->loyaltyPointBalance()->create([
                 'user_id'                            => $business->id,
+                'business_id'                        => $business->id,
                 'from_business'                      => 0,
                 'balance'                            => $balance,
                 'reset_balance'                      => $balance,

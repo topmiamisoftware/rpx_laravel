@@ -255,6 +255,7 @@ class User extends Authenticatable implements JWTSubject
         {
             $loginResponse = [
                 'message' => 'invalid_cred',
+                'user' => $searchUser
             ];
         }
         else

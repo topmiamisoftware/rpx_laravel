@@ -45,6 +45,11 @@ class Business extends Model
         return $this->hasMany('App\Models\RedeemableItems', 'business_id');
     }
 
+    public function recentGuests()
+    {
+        return $this->hasMany('App\Models\LoyaltyPointBalance', 'from_business', 'id');
+    }
+
     public function ads()
     {
         return $this->hasMany('App\Models\Ads', 'business_id');
@@ -53,11 +58,6 @@ class Business extends Model
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'id');
-    }
-
-    public function spotbieUser()
-    {
-        return $this->belongsTo('App\Models\SpotbieUser', 'id');
     }
 
     public function verify(Request $request)
