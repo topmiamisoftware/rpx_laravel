@@ -34,8 +34,13 @@ class SmsAndCallTwimlHelper
         return $smsText;
     }
 
-    public function getPromotionalSmsText(string $firstName, string $businessName): string
+    public function getPromotionalSmsText(string $firstName, string $businessName, string $body): string
     {
-        return trans('promotional_sms.smsText', ['firstName' => $firstName, 'businessName' => $businessName]);
+        return trans('promotional_sms.promotional_text', ['firstName' => $firstName, 'businessName' => $businessName, 'body' => $body]);
+    }
+
+    public function getSettingsSmsText(string $firstName)
+    {
+        return trans('promotional_sms.smsOptInText', ['firstName' => $firstName]);
     }
 }

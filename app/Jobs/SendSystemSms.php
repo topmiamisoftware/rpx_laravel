@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Models\Sms;
-use App\Models\SmsGroup;
+use App\Models\SystemSms;
 use App\Models\User;
-use App\Services\CustomerManager;
+use App\Services\User\UserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class SendMassSms implements ShouldQueue
+class SendSystemSms implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -23,9 +23,8 @@ class SendMassSms implements ShouldQueue
      */
     public function __construct(
         private User $user,
-        private string $businessName,
-        private Sms $sms,
-        private SmsGroup $smsGroup,
+        private SystemSms $systemSms,
+        private string $phoneNumber,
     ){
     }
 
@@ -37,15 +36,12 @@ class SendMassSms implements ShouldQueue
     public function handle()
     {
         $spotbieUser = $this->user->spotbieUser()->first();
-        $phoneNumber = $spotbieUser->phone_number;
 
-        app(CustomerManager::class)->sendSms(
-            $phoneNumber,
+        app(UserService::class)->sendSettingsSms(
+            $this->phoneNumber,
             $this->user->id,
-            $spotbieUser->first_name,
-            $this->businessName,
-            $this->sms,
-            $this->smsGroup
+            $spotbieUser,
+            $this->systemSms,
         );
     }
 }

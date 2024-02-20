@@ -12,7 +12,7 @@ class Sms extends Model
 
     public $table = 'sms';
 
-
+    protected $fillable = ['sent'];
 
     public function fromUser()
     {
@@ -24,7 +24,14 @@ class Sms extends Model
         return $this->belongsTo('App\Models\User', 'to_id');
     }
 
-    public function createNewSms(string $smsText, User $user, Business $business)
+    /**
+     * Create a new sms for business promotions.
+     * @param User $user
+     * @param Business $business
+     * @param SmsGroup $smsGroup
+     * @return Sms
+     */
+    public function createNewSms(User $user, Business $business, SmsGroup $smsGroup)
     {
         $spotbieUser = $user->spotbieUser()->first();
         $phoneNumber = $spotbieUser->phone_number;
@@ -35,13 +42,13 @@ class Sms extends Model
             return $sms;
         }
 
-        $businessUserId = $business->user()->first()->id;
+        $businessUserId = $business->id;
 
-        $sms->body = $smsText;
         $sms->price = 0.0079;
         $sms->to_id = $user->id;
         $sms->from_id = $businessUserId;
         $sms->to_phone = $phoneNumber;
+        $sms->group_id = $smsGroup->id;
         $sms->save();
         $sms->refresh();
 

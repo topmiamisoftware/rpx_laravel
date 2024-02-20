@@ -4,23 +4,30 @@ namespace App\Services;
 
 use App\Helpers\Sms\SmsAndCallTwimlHelper;
 use App\Models\Sms;
+use App\Models\SmsGroup;
 use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Log;
 
 class CustomerManager
 {
-    public function sendSms(string $userPhoneNumber, string $userID, string $firstName, string $businessName, Sms $sms) {
+    public function sendSms(
+        string $userPhoneNumber,
+        string $userID,
+        string $firstName,
+        string $businessName,
+        Sms $sms,
+        SmsGroup $smsGroup,
+    ) {
         try
         {
             $lang = 'en';
-            $sid = config('services.twilio.sid');
+            $sid = config('services.twilio.account_sid');
             $token = config('services.twilio.token');
 
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
-            $body = $langHelper->getPromotionalSmsText($firstName, $businessName);
-            $body .= $sms->body;
+            $body = $langHelper->getPromotionalSmsText($firstName, $businessName, $smsGroup->body);
 
             $client->messages->create(
                 $userPhoneNumber,
@@ -35,8 +42,14 @@ class CustomerManager
                 'sent' => true,
             ]);
 
+            $smsGroup->update([
+                'total_sent' => $smsGroup->total_sent + 1,
+                'price' => $smsGroup->price + 0.0079
+            ]);
+
             Log::info(
-                '[CustomerManager]-[sendSms]: User ID: '. $userID .
+                '[CustomerManager]-[sendSms]: Message Sent' .
+                ', User ID: '. $userID .
                 ', Phone-Number: ' . $userPhoneNumber .
                 ', Business: ' . $businessName
             );
@@ -60,10 +73,11 @@ class CustomerManager
             }
 
             Log::error(
-                '[CustomerManager]-[sendSms]: Phone-Number: ' .
-                $userPhoneNumber .
+                '[CustomerManager]-[sendSms]: Message Failed' .
+                ', Phone-Number: ' . $userPhoneNumber .
                 ", Business: " . $businessName .
-                ", Error Code: " . $errorCode
+                ", Error Code: " . $errorCode .
+                ", Error Message: " . $e->getMessage()
             );
 
             return $errorCode;

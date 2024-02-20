@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class Sms extends Migration
+class SmsGroup extends Migration
 {
     /**
      * Run the migrations.
@@ -14,15 +14,14 @@ class Sms extends Migration
      */
     public function up()
     {
-        Schema::create('sms', function (Blueprint $table) {
-            $table->id();
+        Schema::create('sms_group', function (Blueprint $table) {
+            $table->id()->references('group_id')->on('sms');
             $table->uuid('uuid')->default(DB::raw('(UUID())'));
-            $table->string('to_phone', 35);
-            $table->boolean('sent')->default(false);
-            $table->unsignedFloat('price',8, 5)->nullable()->default(0);;
-            $table->unsignedBigInteger('to_id')->references('id')->on('users');
+            $table->text('body', 320);
             $table->unsignedBigInteger('from_id')->references('id')->on('business');
-            $table->unsignedBigInteger('group_id')->references('id')->on('sms_group');
+            $table->unsignedFloat('price', 8, 5)->nullable()->default(0);
+            $table->unsignedInteger('total_sent')->nullable()->default(0);
+            $table->unsignedInteger('total')->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,6 +34,6 @@ class Sms extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sms');
+        Schema::dropIfExists('sms_group');
     }
 }
