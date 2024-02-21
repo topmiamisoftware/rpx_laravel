@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Helpers\PhoneConfirmation;
+namespace App\Helpers\Sms;
 
-class PhoneConfirmationTwimlHelper
+class SmsAndCallTwimlHelper
 {
-    private $language;
-
-    private $twimlLocale;
-
-    public function __construct()
+    public function __construct(public string $twimlLocale)
     {
     }
 
@@ -36,5 +32,15 @@ class PhoneConfirmationTwimlHelper
         $smsText = trans('phoneConfirmation.smsText', ['confirmationCode' => $confirmationCode]);
 
         return $smsText;
+    }
+
+    public function getPromotionalSmsText(string $firstName, string $businessName, string $body): string
+    {
+        return trans('promotional_sms.promotional_text', ['firstName' => $firstName, 'businessName' => $businessName, 'body' => $body]);
+    }
+
+    public function getSettingsSmsText(string $firstName)
+    {
+        return trans('promotional_sms.smsOptInText', ['firstName' => $firstName]);
     }
 }

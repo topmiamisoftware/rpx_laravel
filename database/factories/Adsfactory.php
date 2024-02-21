@@ -29,26 +29,13 @@ class AdsFactory extends Factory
 
         $adType = rand(0, 2);
 
-        switch($adType)
-        {
-            case 0:
-                $dollar_cost = 19.99;
-                break;
-            case 1:
-                $dollar_cost = 13.99;
-                break;
-            case 2:
-                $dollar_cost = 16.99;
-                break;
-        }
-
         return [
             'uuid'          => Str::uuid(),
             'type'          => $adType,
             'name'          => $name,
             'images'        => $images,
             'images_mobile' => $images,
-            'dollar_cost'   => $dollar_cost,
+            'dollar_cost'   => 0,
             'clicks'        => rand(0, 500),
             'views'         => rand(0, 1500),
             'is_live'       => 1,
@@ -58,7 +45,7 @@ class AdsFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Ads $ad) {
-            $spotbieUserType = $ad->spotbieUser->user_type;
+            $spotbieUserType = $ad->business->user->spotbieUser->user_type;
 
             $adImage = $this->getAdsPhoto($spotbieUserType);
 

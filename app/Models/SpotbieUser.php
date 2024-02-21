@@ -10,8 +10,12 @@ class SpotbieUser extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['sms_opt_in', 'phone_number'];
+
+    protected $hidden = ['last_known_ip_address', 'confirm_attempts', 'confirmed', 'created_at', 'last_log_in', 'phone_number', 'deleted_at'];
+
     /*
-    * SpotBie User belogns to User.
+    * SpotBie User belongs to User.
     */
     public function user()
     {

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Jobs\SendSystemSms;
 use Auth;
+use Illuminate\Support\Facades\Log;
 use Mail;
 use App\Mail\User\AccountCreated;
 use Illuminate\Http\Request;
@@ -36,6 +38,8 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     protected $fillable = ['trial_ends_at'];
+
+    protected $hidden = ['password', 'stripe_id', 'pm_last_four', 'pm_type', 'created_at', 'delete_at', 'end_of_month'];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -255,6 +259,7 @@ class User extends Authenticatable implements JWTSubject
         {
             $loginResponse = [
                 'message' => 'invalid_cred',
+                'user' => $searchUser
             ];
         }
         else
@@ -535,12 +540,36 @@ class User extends Authenticatable implements JWTSubject
         $user->email = $validatedData['email'];
         $user->spotbieUser->first_name = $validatedData['first_name'];
         $user->spotbieUser->last_name = $validatedData['last_name'];
-        $user->spotbieUser->phone_number = $validatedData['phone_number'];
         $user->spotbieUser->user_type = $validatedData['account_type'];
 
-        DB::transaction(function () use ($user) {
+        DB::transaction(function () use ($user, $validatedData) {
+            if (is_null($validatedData['phone_number'])) {
+                $user->spotbieUser->phone_number = $validatedData['phone_number'];
+            }
+
             $user->save();
             $user->spotbieUser->save();
+
+            if (! is_null($validatedData['phone_number']) && $user->spotbieUser->sms_opt_in === 0) {
+                $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
+                SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
+                    ->onQueue('sms.miami.fl.1');
+            } else {
+                // User already opted-in, no need to send opt-in confirmation message.
+                if(! is_null($validatedData['phone_number'])){
+                    $user->spotbieUser->phone_number = '+1'.$validatedData['phone_number'];
+                } else {
+                    $user->spotbieUser->phone_number = null;
+                }
+                $user->spotbieUser->save();
+
+                Log::info(
+                    '[UserService]-[sendSettingsSms]: Phone Number Updated' .
+                    ', User ID: ' . $user->id .
+                    ', Phone-Number: ' . $user->spotbieUser->phone_number
+                );
+            }
+
         }, 3);
 
         $response = [

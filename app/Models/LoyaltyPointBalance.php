@@ -27,6 +27,11 @@ class LoyaltyPointBalance extends Model
         return $this->belongsTo('App\Models\Business', 'from_business', 'id');
     }
 
+    public function redeemed()
+    {
+        return $this->hasMany('App\Models\RedeemableItems', 'redeemer_id', 'id');
+    }
+
     public function balanceList()
     {
         $user = Auth::user();

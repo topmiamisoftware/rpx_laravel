@@ -45,6 +45,11 @@ class Business extends Model
         return $this->hasMany('App\Models\RedeemableItems', 'business_id');
     }
 
+    public function recentGuests()
+    {
+        return $this->hasMany('App\Models\LoyaltyPointBalance', 'from_business', 'id');
+    }
+
     public function ads()
     {
         return $this->hasMany('App\Models\Ads', 'business_id');
