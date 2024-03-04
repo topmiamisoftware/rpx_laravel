@@ -438,7 +438,8 @@ class User extends Authenticatable implements JWTSubject
                 'loc_x',
                 'loc_y',
                 'created_at',
-                'updated_at'
+                'updated_at',
+                'is_food_truck'
             )->get();
 
         $nextPayment = null;

@@ -83,6 +83,7 @@ class Business extends Model
             'categories'  => 'required|string',
             'passkey'     => 'required|string|max:20|min:4',
             'accountType' => 'required|numeric',
+            'is_food_truck' => 'boolean'
         ]);
 
         $user = Auth::user();
@@ -128,6 +129,7 @@ class Business extends Model
         $business->categories = $validatedData['categories'];
         $business->is_verified = 1;
         $business->qr_code_link = Str::uuid();
+        $business->is_food_truck = $validatedData['is_food_truck'];
 
         if ($existingBusiness)
         {
@@ -171,6 +173,7 @@ class Business extends Model
             'loc_y'       => 'required|max:180|min:-180|numeric',
             'categories'  => 'required|string',
             'accountType' => 'required|numeric',
+            'is_food_truck' => 'boolean',
         ]);
 
         $user = Auth::user();
@@ -273,6 +276,43 @@ class Business extends Model
         $response = [
             'message'    => 'success',
             'g_response' => $output,
+        ];
+
+        return response($response);
+    }
+
+    public function saveLocation(Request $request) {
+        $validatedData = $request->validate([
+            'address'     => 'required|string|max:350|min:1',
+            'city'        => 'required|string',
+            'country'     => 'required|string',
+            'line1'       => 'nullable|string',
+            'line2'       => 'nullable|string',
+            'postal_code' => 'nullable|string',
+            'state'       => 'nullable|string',
+            'photo'       => 'required|string|max:650|min:1',
+            'loc_x'       => 'required|max:90|min:-90|numeric',
+            'loc_y'       => 'required|max:180|min:-180|numeric',
+        ]);
+
+        $user = Auth::user();
+        $business = $user->business();
+
+        $business->update([
+            'loc_x' => $validatedData['loc_x'],
+            'loc_y' => $validatedData['loc_y'],
+            'address' => $validatedData['address'],
+            'city' => $validatedData['city'],
+            'country' => $validatedData['country'],
+            'line1' => $validatedData['line1'],
+            'line2' => $validatedData['line2'],
+            'postal_code' => $validatedData['postal_code'],
+            'state' => $validatedData['state'],
+            'photo' => $validatedData['photo'],
+        ]);
+
+        $response = [
+            'success'  => true,
         ];
 
         return response($response);

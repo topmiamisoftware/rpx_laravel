@@ -27,4 +27,9 @@ class BusinessController extends Controller
     {
         return $business->show($request);
     }
+
+    public function saveLocation(Request $request, Business $business)
+    {
+        return $business->saveLocation($request);
+    }
 }
