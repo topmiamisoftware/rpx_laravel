@@ -12,7 +12,7 @@ class SpotbieUser extends Model
 
     protected $fillable = ['sms_opt_in', 'phone_number'];
 
-    protected $hidden = ['last_known_ip_address', 'confirm_attempts', 'confirmed', 'created_at', 'last_log_in', 'phone_number', 'deleted_at'];
+    protected $hidden = ['last_known_ip_address', 'confirm_attempts', 'confirmed', 'created_at', 'last_log_in', 'deleted_at'];
 
     /*
     * SpotBie User belongs to User.
