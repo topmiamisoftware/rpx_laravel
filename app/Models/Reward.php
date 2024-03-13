@@ -86,6 +86,12 @@ class Reward extends Model
             'images'      => 'nullable|string|max:500|min:1',
             'type'        => 'required|numeric|max:6',
             'point_cost'  => 'required|numeric|min:1',
+            'tier_id'     => [
+                'nullable',
+                Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
+                    $qry->where('business_id', $business->id);
+                }),
+            ]
         ]);
 
         $businessReward = new Reward();
@@ -96,7 +102,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = round($validatedData['point_cost']);
-        // $businessReward->tier_id = $validatedData['tier_id'];
+        $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
@@ -133,23 +139,26 @@ class Reward extends Model
                     ->where('from_business', $reward->business_id)->first();
 
                 // Check if the user has entered this tier.
-/*                if($reward->tier_id){
+                if($reward->tier_id){
                     $tier = LoyaltyTier::select('lp_entrance')->where('id', $reward->tier_id)->first();
 
-                    if($tier->lp_entrance > $balanceInBusiness) {
+                    if($tier->lp_entrance > $balanceInBusiness->balance_aggregate) {
                         // Deny the transaction.
                         $response = response([
                             'success' => false,
-                            'message' => "You need ".$tier->lp_entrance." to enter this loyalty tier.",
+                            'lp_entrance' => $tier->lp_entrance,
+                            'tier_name' => $tier->name,
+                            'message' => "You need ".$tier->lp_entrance." loyalty points to enter this loyalty tier.",
                         ]);
                         return $response;
                     }
-                }*/
+                }
 
+                // Please beware: The point_cost column actually refers to the dollar value.
                 $lpValue = round(($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100)));
 
-                // Turn this on if we ever want to enable balance checks for GLOBAL LP points.
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;
+                $balanceInBusinessAfterRedeeming = $balanceInBusiness->balance - $lpValue;
                 if ($balanceAfterRedeeming < 0)
                 {
                     // Deny the transaction.
@@ -182,10 +191,12 @@ class Reward extends Model
 
                 // Charge the user the LP Cost.
                 $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
+                $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
 
-                DB::transaction(function () use ($user, $redeemed) {
+                DB::transaction(function () use ($user, $redeemed, $balanceInBusiness) {
                     $redeemed->save();
                     $user->loyaltyPointBalanceAggregator->save();
+                    $balanceInBusiness->save();
                 });
             }
             $success = true;
@@ -229,7 +240,7 @@ class Reward extends Model
         $businessReward->images = (!is_null($validatedData['images'])) ? $validatedData['images'] : '0';
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
-        // $businessReward->tier_id = $validatedData['tier_id'];
+        $businessReward->tier_id = $validatedData['tier_id'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();

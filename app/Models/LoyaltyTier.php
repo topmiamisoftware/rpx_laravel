@@ -16,4 +16,9 @@ class LoyaltyTier extends Model
     {
         return 'uuid';
     }
+
+    public function business()
+    {
+        return $this->belongsTo('App\Models\Business', 'id', 'business_id');
+    }
 }

@@ -90,6 +90,7 @@ class SurroundingsController extends Controller
         $loc_y = $validatedData['loc_y'];
 
         $data = Business::select(
+            'business.id',
             'business.qr_code_link',
             'business.name',
             'business.address',
@@ -103,6 +104,7 @@ class SurroundingsController extends Controller
             'loyalty_point_balances.balance',
             'loyalty_point_balances.loyalty_point_dollar_percent_value',
         )
+        ->with('loyaltyTiers')
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', function ($join) {
             $join->on('business.id', '=', 'loyalty_point_balances.business_id')

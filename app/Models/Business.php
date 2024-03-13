@@ -342,18 +342,19 @@ class Business extends Model
         ->where('qr_code_link', $validatedData['qrCodeLink'])
         ->get()[0];
 
-        if ($business)
-        {
+        $businessTierList = LoyaltyTier::where('business_id', $business->id)->get();
+
+        if ($business) {
             $success = true;
         }
-        else
-        {
+        else {
             $success = false;
         }
 
         $response = [
             'success'  => $success,
             'business' => $business,
+            'business_tier_list'  => $businessTierList,
         ];
 
         return response($response);
