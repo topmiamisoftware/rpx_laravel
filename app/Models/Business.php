@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -45,7 +48,7 @@ class Business extends Model
         return $this->hasMany('App\Models\RedeemableItems', 'business_id');
     }
 
-    public function recentGuests()
+    public function recentGuests(): HasMany
     {
         return $this->hasMany('App\Models\LoyaltyPointBalance', 'from_business', 'id');
     }
@@ -55,14 +58,19 @@ class Business extends Model
         return $this->hasMany('App\Models\Ads', 'business_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo('App\Models\User', 'id');
     }
 
-    public function spotbieUser()
+    public function spotbieUser(): BelongsTo
     {
         return $this->belongsTo('App\Models\SpotbieUser', 'id');
+    }
+
+    public function feedback(): HasManyThrough
+    {
+        return $this->hasManyThrough('App\Models\Feedback', 'App\Models\LoyaltyPointLedger', 'business_id', 'ledger_record_id', 'id', 'id');
     }
 
     public function verify(Request $request)
