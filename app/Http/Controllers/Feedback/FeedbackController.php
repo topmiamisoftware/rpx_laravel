@@ -65,7 +65,7 @@ class FeedbackController extends Controller
     public function index(Request $request) {
         $user = Auth::user();
 
-        $feedbackList = $user->business->feedback()->orderBy('id', 'DESC')->paginate(20);
+        $feedbackList = $user->business->feedback()->with('user')->orderBy('id', 'DESC')->paginate(20);
 
         return response($feedbackList, 200);
     }

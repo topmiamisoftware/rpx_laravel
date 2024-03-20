@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\UrlHelper;
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -111,13 +112,13 @@ class RedeemableItems extends Model
 
         if ($environment == 'local')
         {
+            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $request->file('file'));
-            $imagePath = config('app.url') . '/' . $imagePath;
         }
         else
         {
+            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath . $hashedFileName;
             Storage::put($imagePath, $request->file('file'), 'public');
-            $imagePath = config('app.url') . '/' . $imagePath . $hashedFileName;
         }
 
         $redeemable = new RedeemableItems();

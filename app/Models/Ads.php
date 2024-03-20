@@ -517,15 +517,13 @@ class Ads extends Model
 
         if ('local' == $environment)
         {
-            $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
+            $imagePath = UrlHelper::getServerUrl() . 'ad-media/images/' . $user->id . '/' . $hashedFileName;
             Storage::put($imagePath, $newFile);
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
-            $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
+            $imagePath = UrlHelper::getServerUrl() . 'ad-media/images/' . $user->id . '/' . $hashedFileName;
             Storage::put($imagePath, $newFile, 'public');
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
 
         $response = [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\UrlHelper;
 use Auth;
 use Illuminate\Validation\Rule;
 use Image;
@@ -57,13 +58,13 @@ class Reward extends Model
 
         if ($environment == 'local')
         {
+            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $newFile);
-            $imagePath = config('app.url') . '/' . $imagePath;
         }
         else
         {
+            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $newFile, 'public');
-            $imagePath = config('app.url') . '/' . $imagePath;
         }
 
         $response = [
