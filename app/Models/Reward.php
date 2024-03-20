@@ -58,13 +58,13 @@ class Reward extends Model
 
         if ($environment == 'local')
         {
-            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $newFile);
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
-            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $newFile, 'public');
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
 
         $response = [

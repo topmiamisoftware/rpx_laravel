@@ -112,13 +112,13 @@ class RedeemableItems extends Model
 
         if ($environment == 'local')
         {
-            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath;
             Storage::put($imagePath, $request->file('file'));
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
-            $imagePath = UrlHelper::getServerUrl() . '/' . $imagePath . $hashedFileName;
             Storage::put($imagePath, $request->file('file'), 'public');
+            $imagePath = UrlHelper::getServerUrl() . $imagePath . $hashedFileName;
         }
 
         $redeemable = new RedeemableItems();
