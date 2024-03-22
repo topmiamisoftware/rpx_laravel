@@ -159,7 +159,11 @@ class Reward extends Model
                 $lpValue = round(($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100)));
 
                 $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;
-                $balanceInBusinessAfterRedeeming = $balanceInBusiness->balance - $lpValue;
+                if (is_null($balanceInBusiness->balance)) {
+                    $balanceInBusinessAfterRedeeming = $balanceInBusiness->balance - $lpValue;
+                } else {
+                    $balanceInBusinessAfterRedeeming = 0;
+                }
                 if ($balanceAfterRedeeming < 0)
                 {
                     // Deny the transaction.
