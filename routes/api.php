@@ -25,3 +25,4 @@ Route::prefix('loyalty-points')->group(__DIR__ . '/LoyaltyPoints/LoyaltyPoints.r
 Route::prefix('customer-manager')->group(__DIR__ . '/CustomerManager/CustomerManager.routes.php');
 Route::prefix('redeemable')->group(__DIR__ . '/Redeemable/Redeemable.routes.php');
 Route::prefix('lp-tiers')->group(__DIR__ . '/LoyaltyTiers/LoyaltyTiers.routes.php');
+Route::prefix('feedback')->group(__DIR__ . '/Feedback/Feedback.routes.php');

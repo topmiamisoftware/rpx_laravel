@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Feedback;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,12 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+
+        // Bind Feedback UUIDs to their model.
+        Route::bind('feedback', function (string $value) {
+            return Feedback::where('uuid', $value)->firstOrFail();
+        });
+
     }
 
     /**

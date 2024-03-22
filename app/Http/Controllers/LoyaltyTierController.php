@@ -46,17 +46,17 @@ class LoyaltyTierController extends Controller
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            '_name'          => 'required|string|max:50|min:1',
-            '_description'   => 'required|string|max:360|min:15',
-            '_entranceValue' => 'required|numeric|min:0',
+            'name'          => 'required|string|max:50|min:1',
+            'description'   => 'required|string|max:360|min:15',
+            'lp_entrance' => 'required|numeric|min:0',
         ]);
 
         $loyaltyTier = new LoyaltyTier();
         $loyaltyTier->uuid = Str::uuid();
         $loyaltyTier->business_id = $user->business->id;
-        $loyaltyTier->name = $validatedData['_name'];
-        $loyaltyTier->description = $validatedData['_description'];
-        $loyaltyTier->lp_entrance = $validatedData['_entranceValue'];
+        $loyaltyTier->name = $validatedData['name'];
+        $loyaltyTier->description = $validatedData['description'];
+        $loyaltyTier->lp_entrance = $validatedData['lp_entrance'];
 
         $loyaltyTier->save();
 
@@ -98,14 +98,14 @@ class LoyaltyTierController extends Controller
     public function update(Request $request, LoyaltyTier $loyaltyTier)
     {
         $validatedData = $request->validate([
-            '_name'          => 'required|string|max:50|min:1',
-            '_description'   => 'required|string|max:360|min:15',
-            '_entranceValue' => 'required|numeric|min:0',
+            'name'          => 'required|string|max:50|min:1',
+            'description'   => 'required|string|max:360|min:15',
+            'lp_entrance' => 'required|numeric|min:0',
         ]);
 
-        $loyaltyTier->name = $validatedData['_name'];
-        $loyaltyTier->description = $validatedData['_description'];
-        $loyaltyTier->lp_entrance = $validatedData['_entranceValue'];
+        $loyaltyTier->name = $validatedData['name'];
+        $loyaltyTier->description = $validatedData['description'];
+        $loyaltyTier->lp_entrance = $validatedData['lp_entrance'];
 
         $loyaltyTier->save();
 

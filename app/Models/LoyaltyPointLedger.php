@@ -32,6 +32,11 @@ class LoyaltyPointLedger extends Model
         return $this->hasOne('App\Models\RedeemableItems', 'ledger_record_id', 'id');
     }
 
+    public function feedback()
+    {
+        return $this->hasOne('App\Models\Feedback', 'ledger_record_id', 'id');
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();

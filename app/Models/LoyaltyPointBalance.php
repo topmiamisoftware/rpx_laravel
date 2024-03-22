@@ -15,7 +15,7 @@ class LoyaltyPointBalance extends Model
 
     public $table = 'loyalty_point_balances';
 
-    public $fillable = ['balance', 'loyalty_point_dollar_percent_value', 'end_of_month'];
+    public $fillable = ['balance', 'balance_aggregate', 'loyalty_point_dollar_percent_value', 'end_of_month'];
 
     public function user()
     {
@@ -60,45 +60,6 @@ class LoyaltyPointBalance extends Model
         return response($response);
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'businessLoyaltyPoints'  => ['required', 'numeric'],
-            'businessCoinPercentage' => ['required', 'numeric'],
-        ]);
-
-        $success = false;
-        $user = Auth::user();
-        $loyaltyPointBalance = null;
-
-        if ($user)
-        {
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance;
-            $reset_balance = doubleval($validatedData['businessLoyaltyPoints']);
-            $balance = $reset_balance;
-            $end_of_month = Carbon::now();
-
-            $loyalty_point_dollar_percent_value = $validatedData['businessCoinPercentage'];
-
-            $loyaltyPointBalance->balance = $balance;
-            $loyaltyPointBalance->reset_balance = $reset_balance;
-            $loyaltyPointBalance->end_of_month = $end_of_month;
-            $loyaltyPointBalance->loyalty_point_dollar_percent_value = $loyalty_point_dollar_percent_value;
-
-            $loyaltyPointBalance->save();
-
-            $success = true;
-            $loyaltyPointBalance = $loyaltyPointBalance->refresh();
-        }
-
-        $response = [
-            'success'    => $success,
-            'lp_balance' => $loyaltyPointBalance,
-        ];
-
-        return response($response);
-    }
-
     public function show()
     {
         $success = false;
@@ -136,38 +97,6 @@ class LoyaltyPointBalance extends Model
         $response = [
             'success'        => $success,
             'loyalty_points' => $loyaltyPoints,
-        ];
-
-        return response($response);
-    }
-
-    public function reset()
-    {
-        $user = Auth::user();
-
-        if ($user)
-        {
-            $user->business->loyaltyPointBalance->balance = $user->business->loyaltyPointBalance->reset_balance;
-
-            DB::transaction(function () use ($user) {
-                $user->business->loyaltyPointBalance->save();
-            }, 3);
-
-            $loyaltyPointBalance = $user->business->loyaltyPointBalance()
-            ->select('balance', 'reset_balance', 'loyalty_point_dollar_percent_value', 'end_of_month')
-            ->get()[0];
-
-            $success = true;
-        }
-        else
-        {
-            $loyaltyPointBalance = 0;
-            $success = false;
-        }
-
-        $response = [
-            'success'        => $success,
-            'loyalty_points' => $loyaltyPointBalance,
         ];
 
         return response($response);

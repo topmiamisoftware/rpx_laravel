@@ -26,6 +26,8 @@
         "reliese/laravel": "^0.0.16",
         "sentry/sentry-laravel": "^3.1",
         "simplesoftwareio/simple-qrcode": "~4",
+        "symfony/http-client": "^6.2",
+        "symfony/mailgun-mailer": "^6.2",
         "twilio/sdk": "^7.14",
         "tymon/jwt-auth": "^1.0"
     },

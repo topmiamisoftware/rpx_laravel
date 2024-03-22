@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+use App\Mail\BusinessPromotional;
+use App\Models\Email;
+use App\Models\EmailGroup;
 use App\Models\Sms;
 use App\Models\SmsGroup;
-use Auth;
 use App\Jobs\SendMassSms;
 use App\Models\Business;
 use App\Models\LoyaltyPointBalance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerManager extends Controller
 {
@@ -170,5 +174,107 @@ class CustomerManager extends Controller
         $smsList = SmsGroup::where('from_id', $user->business()->first()->id)->orderBy('id', 'DESC')->paginate(20);
 
         return response($smsList);
+    }
+
+    /**
+     * Send recent guests of the business an e-mail message.
+     */
+    public function email(Request $request)
+    {
+        $validated = $this->validate($request, [
+            "email_body" => 'required|string|max:1200|min:200',
+        ]);
+
+        $emailBody = $validated['email_body'];
+
+        $user = Auth::user();
+
+        $emailGroup = new EmailGroup;
+        $emailGroup->email_body = $emailBody;
+        $emailGroup->from_id = $user->spotbieUser()->first()->id;
+        $emailGroup->save();
+
+        try {
+            $user->business()->with('recentGuests')->each(function (Business $business) use ($emailBody, $request, $emailGroup) {
+                $emailGroup->total = $business->recentGuests->count();
+                $emailGroup->save();
+
+                $business->recentGuests->each(function (LoyaltyPointBalance $lpBalance) use ($emailBody, $request, $business, $emailGroup) {
+                    $user = $lpBalance->user()->first();
+                    $userEmail = $user->email;
+                    $businessLink = $this->getBusinessLink($business);
+                    if (! is_null($userEmail)) {
+                        $email = Email::createNewEmail($user, $business, $emailGroup);
+                        $businessPromotional = (
+                            new BusinessPromotional(
+                                $user->email,
+                                $user->id,
+                                $user->spotbieUser->first_name,
+                                $business->name,
+                                $emailGroup->email_body,
+                                $businessLink,
+                                $email,
+                                $emailGroup
+                            ))->onConnection('redis')
+                              ->onQueue('email.miami.fl.1');
+
+                        Mail::to($userEmail)
+                            ->queue($businessPromotional);
+                    } else {
+                        Log::info(
+                            "[CustomerManager]-[SendMassEmail]: Message Failed" .
+                            ", User ID: " . $user->id .
+                            ", Business: " . $business->name .
+                            ", Error: No User Email"
+                        );
+                    }
+                });
+            });
+
+            return response([
+                'success' => true
+            ], 200);
+        } catch (\Exception $e) {
+            Log::info(
+                '[CustomerManager]-[sendEmail]: User ID: '. $user->id .
+                ', Error: ' . $e->getCode() .
+                ', Message: ' . $e->getMessage() .
+                ', Could not send message.'
+            );
+
+            return response([
+                'success' => false,
+                'error' => $e->getCode(),
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Retrieve group of SMS sent to recent guests.
+     */
+    public function emailGroupList(EmailGroup $emailGroup, Request $request) {
+        $user = Auth::user();
+
+        $emailList = EmailGroup::where('from_id', $user->business()->first()->id)->orderBy('id', 'DESC')->paginate(20);
+
+        return response($emailList);
+    }
+
+    public function getBusinessLink(Business $business) {
+        $type = 0;
+        switch ($business->spotbieUser->user_type) {
+            case 1:
+                $type = 'place-to-eat';
+                break;
+            case 2:
+                $type = 'shopping';
+                break;
+            case 3:
+                $type = 'events';
+                break;
+        }
+
+        return 'https://spotbie.com/'.$type.'/'.$business->slug.'/'.$business->id;
     }
 }

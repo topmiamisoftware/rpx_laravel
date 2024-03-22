@@ -267,8 +267,7 @@ class User extends Authenticatable implements JWTSubject
             $user = User::select('id', 'username', 'stripe_id')->where(function ($query) use ($login) {
                 $query->where('username', $login)
                         ->orWhere('email', $login);
-            })
-                ->first();
+            })->first();
 
             $accountTypeCheck = $this->checkAccountType($accountType, $user);
 
@@ -284,7 +283,7 @@ class User extends Authenticatable implements JWTSubject
 
             $spotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
-            //Start the session
+            // Start the session
             Auth::login($user, $remember_me);
             $token = Auth::refresh();
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\UrlHelper;
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,6 +43,11 @@ class RedeemableItems extends Model
         return $this->hasOne('App\Models\ReceiptData', 'redeemable_id', 'id');
     }
 
+    public function feedback()
+    {
+        return $this->hasOne('App\Models\Feedback', 'ledger_record_id', 'ledger_record_id');
+    }
+
     public function business()
     {
         return $this->hasOne('App\Models\Business', 'id', 'business_id');
@@ -59,15 +65,6 @@ class RedeemableItems extends Model
 
         if ($user)
         {
-/*            if ($user->business->loyaltyPointBalance->balance < $validatedData['amount'])
-            {
-                $response = [
-                    'success' => false,
-                    'message' => "Business doesn't have enough Loyalty Points.",
-                ];
-                return response($response);
-            }*/
-
             $redeemable = new RedeemableItems();
             $redeemable->business_id = $user->business->id;
             $redeemable->uuid = Str::uuid();
@@ -116,12 +113,12 @@ class RedeemableItems extends Model
         if ($environment == 'local')
         {
             Storage::put($imagePath, $request->file('file'));
-            $imagePath = config('app.url') . '/' . $imagePath;
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
             Storage::put($imagePath, $request->file('file'), 'public');
-            $imagePath = config('app.url') . '/' . $imagePath . $hashedFileName;
+            $imagePath = UrlHelper::getServerUrl() . $imagePath . $hashedFileName;
         }
 
         $redeemable = new RedeemableItems();
@@ -167,7 +164,7 @@ class RedeemableItems extends Model
             'success' => $success,
             'message' => $environment,
             'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
-            'award_points' => 25
+            'award_points' => 10
         ];
 
         return response($response);
@@ -208,16 +205,6 @@ class RedeemableItems extends Model
             $insertLp->loyalty_amount = abs(floatval($redeemable->amount));
             $insertLp->type = 'points';
 
-            // Insert expense into ledger
-            $insertExpense = new LoyaltyPointLedger();
-            $insertExpense->user_id = $user->id;
-            $insertExpense->uuid = Str::uuid();
-            $insertExpense->business_id = $redeemable->business->id;
-            $insertExpense->loyalty_amount = (-abs(floatval($redeemable->amount)));
-            $insertExpense->type = 'points_expense';
-
-            // save these variables for later use.
-            $expense = $insertExpense->loyalty_amount;
             $reward = $insertLp->loyalty_amount;
 
             // Reflect reward into personal user business balance.
@@ -234,44 +221,30 @@ class RedeemableItems extends Model
                 }, 3);
                 $userCurrentBalance = $user->loyaltyPointBalance()->where('from_business', $redeemable->business->id)->first();
             }
-            $newUserBalance = $userCurrentBalance->balance + $reward;
 
-            // Reflect the expense into the business balance.
-            $businessCurrentBalance = LoyaltyPointBalance::where('business_id', $redeemable->business_id)->first()->balance;
-            $newBusinessBalance = $businessCurrentBalance + $expense;
-
-            // Check if the business has enough LP to let the user Redeem
-/*            if (($businessCurrentBalance - $expense) < 0)
-            {
-                $response = [
-                    'success' => false,
-                    'message' => "Business doesn't have enough Loyalty Points.",
-                ];
-                return response($response);
-            }*/
+            // Reflect the reward into the user's balance in the business.
+            $newUserBalanceInBusiness = $userCurrentBalance->balance + $reward;
+            $newUserBalanceAggregateInBusiness = $userCurrentBalance->balance_aggregate + $reward;
 
             DB::transaction(function () use (
                 $insertLp,
-                $insertExpense,
                 $user,
                 $redeemable,
-                $newUserBalance,
-                $newBusinessBalance
+                $newUserBalanceInBusiness,
+                $newUserBalanceAggregateInBusiness,
             ) {
                 $insertLp->save();
-                $insertExpense->save();
-                $redeemable->save();
+                $insertLp->refresh();
 
-                LoyaltyPointBalance::where('business_id', $redeemable->business_id)
-                ->update([
-                    'balance' => $newBusinessBalance,
-                ]);
+                $redeemable->ledger_record_id = $insertLp->id;
+                $redeemable->save();
 
                 $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
                 $user->loyaltyPointBalanceAggregator->save();
 
                 $user->loyaltyPointBalance()->where('from_business', $redeemable->business_id)->update([
-                    'balance' => $newUserBalance,
+                    'balance' => $newUserBalanceInBusiness,
+                    'balance_aggregate' => $newUserBalanceAggregateInBusiness
                 ]);
             }, 3);
 
@@ -292,13 +265,14 @@ class RedeemableItems extends Model
     {
         $user = Auth::user();
         /*
-         * Personal account or business account.
+         * Personal account.
          */
         if ($user->spotbieUser->user_type === 4)
         {
             $redeemedList = $user
                 ->redeemed()
                 ->with('loyaltyPointLedger')
+                ->with('feedback')
                 ->with('business', function ($query) {
                     $query->with('spotbieUser');
                 })
