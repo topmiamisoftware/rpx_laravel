@@ -196,12 +196,16 @@ class Reward extends Model
 
                 // Charge the user the LP Cost.
                 $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
-                $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
+                if (! is_null($balanceInBusiness)) {
+                    $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
+                }
 
                 DB::transaction(function () use ($user, $redeemed, $balanceInBusiness) {
                     $redeemed->save();
                     $user->loyaltyPointBalanceAggregator->save();
-                    $balanceInBusiness->save();
+                    if (! is_null($balanceInBusiness)) {
+                        $balanceInBusiness->save();
+                    }
                 });
             }
             $success = true;
