@@ -66,11 +66,7 @@ return [
     |
     */
 
-<<<<<<< HEAD
-    'timezone' => env('APP_TIMEZONE'),
-=======
     'timezone' => env('APP_TIMEZONE', 'America/New_York'),
->>>>>>> 7685a35 (Added EST timezone to app.)
 
     /*
     |--------------------------------------------------------------------------
