@@ -619,86 +619,6 @@ class Ads extends Model
         return response($response);
     }
 
-    public function savePayment(Request $request)
-    {
-        $validatedData = $request->validate([
-            'ad' => [
-                'id' => ['required', 'string'],
-            ],
-            'payment_method' => [
-                'id' => ['required', 'string'],
-            ],
-        ]);
-
-        $adId = $validatedData['ad']['id'];
-        $paymentMethodId = $validatedData['payment_method']['id'];
-
-        $adSubscription = Ads::where('id', '=', $adId)
-            ->first()
-        ;
-
-        $price_name = config('spotbie.header_banner_price');
-
-        switch ($adSubscription->type)
-        {
-            case 0:
-                $price_name = ['price' => config('spotbie.header_banner_price')];
-
-                break;
-            case 1:
-                $price_name = ['price' => config('spotbie.featured_related_price')];
-
-                break;
-            case 2:
-                $price_name = ['price' => config('spotbie.footer_banner_price')];
-
-                break;
-        }
-
-        if (null !== $adSubscription)
-        {
-            $userId = $adSubscription->business_id;
-
-            $userStripeId = User::find($userId)->stripe_id;
-
-            $user = Cashier::findBillable($userStripeId);
-
-            $user->updateDefaultPaymentMethod($paymentMethodId);
-
-            // Update the subscription if the user chose a different ad type.
-            $existingSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
-
-            if (null !== $existingSubscription)
-            {
-                $user->subscription($existingSubscription->name)->swapAndInvoice($price_name);
-            }
-            else
-            {
-                // Create the subscription with the payment method provided by the user.
-                $user->newSubscription($adSubscription->id, [$price_name])->create($paymentMethodId);
-            }
-
-            $newSubscription = $user->subscriptions()->where('name', '=', $adId)->first();
-
-            DB::transaction(function () use ($adSubscription, $newSubscription) {
-                $adSubscription->subscription_id = $newSubscription->id;
-                $adSubscription->is_live = 1;
-
-                $adSubscription->save();
-            }, 3);
-        }
-
-        $businessAd = $adSubscription->refresh();
-
-        $response = [
-            'success' => true,
-            'newAd'   => $businessAd,
-            'user'    => $user,
-        ];
-
-        return response($response);
-    }
-
     public function updateModel(Request $request)
     {
         $validatedData = $request->validate([
@@ -710,8 +630,6 @@ class Ads extends Model
         ]);
 
         $user = \Auth::user();
-
-        $userBillable = Cashier::findBillable($user->stripe_id);
 
         if ($user)
         {
@@ -727,8 +645,6 @@ class Ads extends Model
         $businessAd->images_mobile = $validatedData['images_mobile'];
 
         $businessAd->type = $validatedData['type'];
-
-        $price_name = config('spotbie.header_banner_product');
 
         switch ($businessAd->type)
         {
@@ -770,13 +686,6 @@ class Ads extends Model
 
         if ($user)
         {
-            $userBillable = Cashier::findBillable($user->stripe_id);
-
-            if ($userBillable->subscribed($adToDelete))
-            {
-                $userBillable->subscription($adToDelete)->cancelNow();
-            }
-
             DB::transaction(function () use ($adToDelete) {
                 Ads::where('id', $adToDelete)
                     ->update([
