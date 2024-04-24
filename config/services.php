@@ -25,7 +25,7 @@ return [
 
     'twilio' => [
         'account_sid' => env('TWILIO_SID'),
-        'password'    => env('TWILIO_AUTH_TOKEN'),
+        'token'    => env('TWILIO_AUTH_TOKEN'),
         'username'    => env('TWILIO_SID'),
         'from'        => env('TWILIO_NUMBER'),
     ],
