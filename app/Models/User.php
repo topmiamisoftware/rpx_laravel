@@ -546,20 +546,20 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->user_type = $validatedData['account_type'];
 
         DB::transaction(function () use ($user, $validatedData) {
-            if (! array_key_exists('phone_number', $validatedData)) {
-                $user->spotbieUser->phone_number = null;
+            if (is_null($validatedData['phone_number'])) {
+                $user->spotbieUser->phone_number = $validatedData['phone_number'];
             }
 
             $user->save();
             $user->spotbieUser->save();
 
-            if (array_key_exists('phone_number', $validatedData) && $user->spotbieUser->sms_opt_in === 0) {
+            if (! is_null($validatedData['phone_number']) && $user->spotbieUser->sms_opt_in === 0) {
                 $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
                 SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
                     ->onQueue('sms.miami.fl.1');
             } else {
                 // User already opted-in, no need to send opt-in confirmation message.
-                if(array_key_exists('phone_number', $validatedData)){
+                if(! is_null($validatedData['phone_number'])){
                     $user->spotbieUser->phone_number = '+1'.$validatedData['phone_number'];
                 } else {
                     $user->spotbieUser->phone_number = null;
