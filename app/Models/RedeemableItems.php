@@ -239,8 +239,14 @@ class RedeemableItems extends Model
                 $redeemable->ledger_record_id = $insertLp->id;
                 $redeemable->save();
 
-                $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
-                $user->loyaltyPointBalanceAggregator->save();
+                if (is_null($user->loyaltyPointBalanceAggregator)) {
+                    $lpAgg = new LoyaltyPointBalanceAggregator();
+                    $lpAgg->balance = $insertLp->loyalty_amount;
+                    $lpAgg->save();
+                } else {
+                    $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
+                    $user->loyaltyPointBalanceAggregator->save();
+                }
 
                 $user->loyaltyPointBalance()->where('from_business', $redeemable->business_id)->update([
                     'balance' => $newUserBalanceInBusiness,
