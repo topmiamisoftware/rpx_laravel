@@ -69,7 +69,7 @@ class RedeemableItems extends Model
             $redeemable->business_id = $user->business->id;
             $redeemable->uuid = Str::uuid();
             $redeemable->amount = $validatedData['amount'];
-            $redeemable->total_spent = $validatedData['total_spent'];
+            $redeemable->total_spent = $validatedData['amount'];
             $redeemable->dollar_value = $validatedData['dollar_value'];
             $redeemable->loyalty_point_dollar_percent_value = $user->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
             $redeemable->redeemed = false;
