@@ -143,11 +143,10 @@ class Reward extends Model
                 if($reward->tier_id){
                     $tier = LoyaltyTier::select('lp_entrance')->where('id', $reward->tier_id)->first();
 
-                    if($tier->lp_entrance > $balanceInBusiness->balance_aggregate) {
+                    if(is_null($balanceInBusiness) || $tier->lp_entrance > $balanceInBusiness->balance_aggregate) {
                         // Deny the transaction.
                         $response = response([
                             'success' => false,
-                            'lp_entrance' => $tier->lp_entrance,
                             'tier_name' => $tier->name,
                             'message' => "You need ".$tier->lp_entrance." loyalty points to enter this loyalty tier.",
                         ]);
