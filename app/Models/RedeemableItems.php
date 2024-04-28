@@ -241,6 +241,7 @@ class RedeemableItems extends Model
 
                 if (is_null($user->loyaltyPointBalanceAggregator)) {
                     $lpAgg = new LoyaltyPointBalanceAggregator();
+                    $lpAgg->id = $user->id;
                     $lpAgg->balance = $insertLp->loyalty_amount;
                     $lpAgg->save();
                 } else {
