@@ -157,10 +157,10 @@ class Reward extends Model
                 // Please beware: The point_cost column actually refers to the dollar value.
                 $lpValue = round(($reward->point_cost / ($reward->business->loyaltyPointBalance->loyalty_point_dollar_percent_value/100)));
 
-                if (is_null($user->loyaltyPointBalanceAggregator->balance)) {
-                    $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;
-                } else {
+                if (is_null($user->loyaltyPointBalanceAggregator)) {
                     $balanceAfterRedeeming = 0;
+                } else {
+                    $balanceAfterRedeeming = $user->loyaltyPointBalanceAggregator->balance - $lpValue;
                 }
 
                 if (! is_null($balanceInBusiness)) {
