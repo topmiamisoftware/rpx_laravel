@@ -256,7 +256,7 @@ class RedeemableItems extends Model
             }, 3);
 
             $redeemable->refresh();
-            $user->loyaltyPointBalanceAggregator->refresh();
+            $user->refresh();
 
             $response = [
                 'success'        => true,
