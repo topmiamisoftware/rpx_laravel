@@ -256,12 +256,18 @@ class RedeemableItems extends Model
             }, 3);
 
             $redeemable->refresh();
-            $user->refresh();
+
+            if(is_null($user->loyaltyPointBalanceAggregator)) {
+                $agg = $insertLp->loyalty_amount;
+            } else {
+                $user->loyaltyPointBalanceAggregator->refresh();
+                $agg = $user->loyaltyPointBalanceAggregator->balance;
+            }
 
             $response = [
                 'success'        => true,
                 'redeemable'     => $redeemable,
-                'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
+                'loyalty_points' => $agg,
             ];
 
             return response($response);
