@@ -199,14 +199,21 @@ class Reward extends Model
                 $redeemed->ledger_record_id = $rewardLedgerRecord->id;
 
                 // Charge the user the LP Cost.
-                $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
+                if (! is_null($user->loyaltyPointBalanceAggregator)) {
+                    $user->loyaltyPointBalanceAggregator->balance = $balanceAfterRedeeming;
+                }
+
+                //  Reflect the expense in the users balance in the business.
                 if (! is_null($balanceInBusiness)) {
                     $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
                 }
 
                 DB::transaction(function () use ($user, $redeemed, $balanceInBusiness) {
                     $redeemed->save();
-                    $user->loyaltyPointBalanceAggregator->save();
+                    if (! is_null($user->loyaltyPointBalanceAggregator)) {
+                        $user->loyaltyPointBalanceAggregator->save();
+                    }
+
                     if (! is_null($balanceInBusiness)) {
                         $balanceInBusiness->save();
                     }
@@ -215,11 +222,17 @@ class Reward extends Model
             $success = true;
         }
 
+        if (! is_null($user->loyaltyPointBalanceAggregator)) {
+            $lp_balance = $user->loyaltyPointBalanceAggregator->balance;
+        } else {
+            $lp_balance = 0;
+        }
+
         $reward->point_cost = $lpValue;
         $response = response([
             'success'        => $success,
             'reward'         => $reward,
-            'loyalty_points' => $user->loyaltyPointBalanceAggregator->balance,
+            'loyalty_points' => $lp_balance,
         ]);
 
         return $response;
