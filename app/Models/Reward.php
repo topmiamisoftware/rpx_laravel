@@ -92,7 +92,8 @@ class Reward extends Model
                 Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
                     $qry->where('business_id', $business->id);
                 }),
-            ]
+            ],
+            'is_global' => 'required|boolean'
         ]);
 
         $businessReward = new Reward();
@@ -104,6 +105,7 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = round($validatedData['point_cost']);
         $businessReward->tier_id = $validatedData['tier_id'];
+        $businessReward->is_global = $validatedData['is_global'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
@@ -255,7 +257,8 @@ class Reward extends Model
                 Rule::exists('loyalty_tiers', 'id')->where(function($qry) use ($business){
                     $qry->where('business_id', $business->id);
                 }),
-            ]
+            ],
+            'is_global' => 'required|boolean'
         ]);
 
         $businessReward = $business->rewards()->find($validatedData['id']);
@@ -267,6 +270,7 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
         $businessReward->tier_id = $validatedData['tier_id'];
+        $businessReward->is_global = $validatedData['is_global'];
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
