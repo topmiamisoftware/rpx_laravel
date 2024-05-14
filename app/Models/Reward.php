@@ -123,9 +123,14 @@ class Reward extends Model
     {
         $validatedData = $request->validate([
             'redeemableHash' => 'required|string|max:36',
+            'user_id' => 'nullable|numeric',
         ]);
 
-        $user = Auth::user();
+        if (! is_null($validatedData['user_id'])) {
+            $user = User::where('id', $validatedData['user_id'])->with('loyaltyPointBalance')->first();
+        } else {
+            $user = Auth::user();
+        }
 
         $success = false;
         $reward = null;
