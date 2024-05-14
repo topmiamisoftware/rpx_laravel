@@ -606,17 +606,32 @@ class User extends Authenticatable implements JWTSubject
 
     public function getUser(Request $request)
     {
-        $user = $this->only('id', 'username');
+        $business = Auth::user();
 
-        $spotbieUser = $this->spotbieUser()->select('first_name', 'last_name', 'description', 'default_picture')->first();
+        $validatedData = $request->validate([
+            'phone_number' => 'string|max:35|required',
+        ]);
 
-        $defaultImages = $this->defaultImages()->select('default_image_url')->get();
+        $spotbieUser = SpotbieUser::
+            select('id', 'first_name', 'last_name', 'phone_number')
+            ->where('phone_number', '+1'.$validatedData['phone_number'])
+            ->first();
+
+        $user = $this->find($spotbieUser->id)->only('email', 'username');
+
+        $lpBalanceInBusiness = LoyaltyPointBalance::select('balance', 'balance_aggregate')
+            ->where('from_business', $business->id)
+            ->where('user_id', $spotbieUser->id)
+            ->first();
+
+        $lpBalance = LoyaltyPointBalanceAggregator::where('id', $spotbieUser->id)->first();
 
         $response = [
-            'message'        => 'success',
-            'user'           => $user,
-            'spotbie_user'   => $spotbieUser,
-            'default_images' => $defaultImages,
+            'message' => 'success',
+            'user' => $user,
+            'spotbie_user' => $spotbieUser,
+            'lp_balance' => $lpBalance,
+            'lp_in_business' => $lpBalanceInBusiness,
         ];
 
         return response($response);
