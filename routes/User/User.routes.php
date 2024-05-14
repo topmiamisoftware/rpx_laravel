@@ -11,7 +11,7 @@ Route::post('close-browser', [UserController::class, 'closeBrowser'])->middlewar
 Route::post('settings', [UserController::class, 'settings'])->middleware('auth');
 Route::delete('deactivate', [UserController::class, 'deactivate'])->middleware('auth');
 Route::put('update', [UserController::class, 'update'])->middleware('auth');
-Route::get('{user:username}', [UserController::class, 'getUser']);
+Route::get('get-user', [UserController::class, 'getUser'])->middleware('auth');
 Route::put('complete-pass-reset', [UserController::class, 'completePassReset']);
 Route::put('change-password', [UserController::class, 'changePassword'])->middleware('auth');
 
