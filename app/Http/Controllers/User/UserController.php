@@ -122,4 +122,9 @@ class UserController extends Controller
     {
         return $user->cancelMembership();
     }
+
+    public function createUser(User $user, Request $request)
+    {
+        return $user->createUser($request);
+    }
 }
