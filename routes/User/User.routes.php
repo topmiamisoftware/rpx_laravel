@@ -19,6 +19,7 @@ Route::post('unique-email', [UserController::class, 'uniqueEmail']);
 Route::post('send-code', [UserController::class, 'sendCode']);
 Route::post('send-pass-email', [UserController::class, 'sendPassEmail']);
 Route::post('check-confirm', [UserController::class, 'checkConfirm']);
+Route::post('create-user', [UserController::class, 'createUser'])->middleware('auth');;
 
 Route::post('business-membership', [UserController::class, 'businessMembership']);
 Route::post('membership-status', [UserController::class, 'membershipStatus']);
