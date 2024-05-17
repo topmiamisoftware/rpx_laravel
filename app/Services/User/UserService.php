@@ -18,7 +18,6 @@ class UserService
         SystemSms $sms,
     )
     {
-        $userPhoneNumber = '+1' . $userPhoneNumber;
         try {
             $lang = 'en';
             $sid = config('services.twilio.account_sid');

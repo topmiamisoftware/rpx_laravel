@@ -91,17 +91,26 @@
 
             <p>
 
-                <?php  echo "Hey ". $user->username . "!"; ?>
+                <?php
+
+                    if ($spotbieUser->first_name !== '') {
+                        $userWelcome = 'there';
+                    } else {
+                        $userWelcome = $user->username;
+                    }
+
+                    echo "Hey ". $userWelcome . "!";
+
+                ?>
 
                 <br/><br/>
 
                 <?php
-
-                    if($spotbieUser->first_name !== '')
-                        echo $spotbieUser->first_name . " " . $spotbieUser->last_name;
-                    else
+                    if ($spotbieUser->first_name !== '') {
+                        echo $spotbieUser->first_name;
+                    } else {
                         echo $user->username;
-
+                    }
                 ?>, you have signed up to SpotBie.
 
                 <br/><br/>

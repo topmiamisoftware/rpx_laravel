@@ -393,13 +393,22 @@ class User extends Authenticatable implements JWTSubject
         return response($response);
     }
 
-    private function sendConfirmationEmail()
+    private function sendConfirmationEmail($user = null, $spotbieUser = null)
     {
-        $user = Auth::user();
-        $spotbieUser = $user->spotbieUser()->first();
+        if (is_null($user)) {
+            $user = Auth::user();
+            $spotbieUser = $user->spotbieUser()->first();
+        }
 
         Mail::to($user->email, $user->username)
         ->send(new AccountCreated($user, $spotbieUser));
+    }
+
+    private function sendConfirmationSms($user = null, $spotbieUser = null) {
+        $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
+
+        SendSystemSms::dispatch($user, $sms, $spotbieUser->phone_number)
+            ->onQueue('sms.miami.fl.1');
     }
 
     public function getSettings()
@@ -554,8 +563,8 @@ class User extends Authenticatable implements JWTSubject
             $user->spotbieUser->save();
 
             if (array_key_exists('phone_number', $validatedData) && $user->spotbieUser->sms_opt_in === 0) {
-                $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
-                SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
+                $sms = app(SystemSms::class)->createSettingsSms($user, '+1'.$validatedData['phone_number']);
+                SendSystemSms::dispatch($user, $sms, '+1'.$validatedData['phone_number'])
                     ->onQueue('sms.miami.fl.1');
             } else {
                 // User already opted-in, no need to send opt-in confirmation message.
@@ -617,17 +626,25 @@ class User extends Authenticatable implements JWTSubject
             ->where('phone_number', '+1'.$validatedData['phone_number'])
             ->first();
 
-        $user = $this->find($spotbieUser->id)->only('email', 'username');
+        if (! is_null($spotbieUser)) {
+            $user = $this->find($spotbieUser->id)->only('email', 'username');
 
-        $lpBalanceInBusiness = LoyaltyPointBalance::select('balance', 'balance_aggregate')
-            ->where('from_business', $business->id)
-            ->where('user_id', $spotbieUser->id)
-            ->first();
+            $lpBalanceInBusiness = LoyaltyPointBalance::select('balance', 'balance_aggregate')
+                ->where('from_business', $business->id)
+                ->where('user_id', $spotbieUser->id)
+                ->first();
 
-        $lpBalance = LoyaltyPointBalanceAggregator::where('id', $spotbieUser->id)->first();
+            $lpBalance = LoyaltyPointBalanceAggregator::where('id', $spotbieUser->id)->first();
+            $message = "success";
+        } else {
+            $user = null;
+            $lpBalanceInBusiness = null;
+            $lpBalance = null;
+            $message = "User not found.";
+        }
 
         $response = [
-            'message' => 'success',
+            'message' => $message,
             'user' => $user,
             'spotbie_user' => $spotbieUser,
             'lp_balance' => $lpBalance,
@@ -1058,5 +1075,61 @@ class User extends Authenticatable implements JWTSubject
         ];
 
         return response($response);
+    }
+
+    public function createUser(Request $request) {
+        $validatedData = $request->validate([
+            'email' => ['required', 'unique:users', 'email'],
+            'phone_number' => 'string|max:35|nullable',
+            'firstName' => ['required', new FirstName],
+        ]);
+
+        $user = new User();
+        $user->username = Str::uuid();
+        $user->email = $validatedData['email'];
+        $user->password = Hash::make('');
+        $user->uuid = Str::uuid();
+
+        $newSpotbieUser = new SpotbieUser();
+        $newSpotbieUser->first_name = $validatedData['firstName'];
+        $newSpotbieUser->last_name = '';
+        $newSpotbieUser->user_type = 4;
+        $newSpotbieUser->phone_number = '+1'.$validatedData['phone_number'];
+
+        $message = "success";
+        $e = null;
+
+        try {
+            $user->save();
+
+            $user = User::where('email', $user->email)->first();
+
+            $newSpotbieUser->id = $user->id;
+            $newSpotbieUser->save();
+
+            $newSpotbieUser = SpotbieUser::where('id', $user->id)->first();
+
+            DB::transaction(function() use ($user, $newSpotbieUser) {
+                $lpAggregator = new LoyaltyPointBalanceAggregator();
+                $lpAggregator->id = $user->id;
+                $lpAggregator->balance = 0;
+                $lpAggregator->save();
+
+                $this->sendConfirmationEmail($user, $newSpotbieUser);
+                $this->sendConfirmationSms($user, $newSpotbieUser);
+            });
+
+        } catch (\Exception $e) {
+            $message = 'Could not create user account.';
+        }
+
+        $signUpResponse = [
+            'message'      => $message,
+            'user'         => $user,
+            'spotbie_user' => $newSpotbieUser,
+            'error' => $e
+        ];
+
+        return response($signUpResponse);
     }
 }

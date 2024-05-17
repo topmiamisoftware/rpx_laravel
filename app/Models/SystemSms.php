@@ -34,7 +34,7 @@ class SystemSms extends Model
 
         $sms->price = 0.0079;
         $sms->to_id = $user->id;
-        $sms->to_phone = '+1'.$phoneNumber;
+        $sms->to_phone = $phoneNumber;
         $sms->save();
         $sms->refresh();
 
