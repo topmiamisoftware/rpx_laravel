@@ -43,4 +43,27 @@ class SmsAndCallTwimlHelper
     {
         return trans('promotional_sms.smsOptInText', ['firstName' => $firstName]);
     }
+
+    public function getAccountCreatedSmsOptInText(string $firstName, string $businessName, string $userEmail)
+    {
+        return trans('promotional_sms.accountCreatedSmsOptInText', ['firstName' => $firstName, 'businessName' => $businessName, 'userEmail' => $userEmail]);
+    }
+
+    public function getRewardRedeemedSmsTxt(string $rewardName, string $businessName, bool $withLoginInstructions)
+    {
+        if ($withLoginInstructions === true) {
+            return trans('promotional_sms.rewardRedeemedTextWithEmail', ['rewardName' => $rewardName, 'businessName' => $businessName]);
+        } else {
+            return trans('promotional_sms.rewardRedeemedText', ['rewardName' => $rewardName, 'businessName' => $businessName]);
+        }
+    }
+
+    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions)
+    {
+        if ($withLoginInstructions === true) {
+            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName]);
+        } else {
+            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName]);
+        }
+    }
 }
