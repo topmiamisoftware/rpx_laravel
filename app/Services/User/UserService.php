@@ -85,4 +85,81 @@ class UserService
             return $errorCode;
         }
     }
+
+    public function sendAccountCreatedSms(
+        string $userPhoneNumber,
+        string $userID,
+        SpotbieUser $spotbieUser,
+        SystemSms $sms,
+        string $businessName,
+        string $userEmail
+    )
+    {
+        try {
+            $lang = 'en';
+            $sid = config('services.twilio.account_sid');
+            $token = config('services.twilio.token');
+
+            $client = new Client($sid, $token);
+            $langHelper = new SmsAndCallTwimlHelper($lang);
+            $body = $langHelper->getAccountCreatedSmsOptInText($spotbieUser->first_name, $businessName, $userEmail);
+            $body .= $sms->body;
+
+            if ($spotbieUser->sms_opt_in === 0) {
+                $client->messages->create(
+                    $userPhoneNumber,
+                    [
+                        'from' => config('services.twilio.from'),
+                        'body' => $body,
+                    ]
+                );
+
+                Log::info(
+                    '[UserService]-[sendAccountCreatedSms]: Message Sent' .
+                    ', User ID: ' . $userID .
+                    ', Phone-Number: ' . $userPhoneNumber
+                );
+            }
+
+            // Update SMS message in DB;
+            $sms->update([
+                'sent' => true,
+            ]);
+
+            $spotbieUser->update([
+                'sms_opt_in' => true,
+                'phone_number' => $userPhoneNumber
+            ]);
+
+            Log::info(
+                '[UserService]-[sendAccountCreatedSms]: Phone Number Updated ' .
+                ', User ID: ' . $userID .
+                ', Phone-Number: ' . $userPhoneNumber
+            );
+        } catch (TwilioException $e) {
+            $errorCode = '';
+            switch ($e->getCode()) {
+                case '21211':
+                    $errorCode = 'phoneNumber.invalid';
+                    break;
+                case '21612':
+                case '21408':
+                case '21610':
+                case '21614':
+                    $errorCode = 'phoneNumber.unavailable';
+                    break;
+                default:
+                    $errorCode = $e->getCode();
+            }
+
+            Log::error(
+                '[UserService]-[sendAccountCreatedSms]: Message Failed' .
+                ', Phone-Number: ' . $userPhoneNumber .
+                ", Error Code: " . $errorCode .
+                ", Error Message: " . $e->getMessage()
+            );
+
+            return $errorCode;
+        }
+    }
 }
