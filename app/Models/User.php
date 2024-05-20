@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\SendSystemSms;
+use App\Jobs\SendAccountCreatedThroughBusinessSms;
 use Auth;
 use Illuminate\Support\Facades\Log;
 use Mail;
@@ -404,10 +405,10 @@ class User extends Authenticatable implements JWTSubject
         ->send(new AccountCreated($user, $spotbieUser));
     }
 
-    private function sendConfirmationSms($user = null, $spotbieUser = null) {
+    private function sendConfirmationSms($user = null, $spotbieUser = null, $businessName = null) {
         $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
-        SendSystemSms::dispatch($user, $sms, $spotbieUser->phone_number)
+        SendAccountCreatedThroughBusinessSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName)
             ->onQueue('sms.miami.fl.1');
     }
 
@@ -1109,14 +1110,17 @@ class User extends Authenticatable implements JWTSubject
 
             $newSpotbieUser = SpotbieUser::where('id', $user->id)->first();
 
-            DB::transaction(function() use ($user, $newSpotbieUser) {
+            $loggedInUser = Auth::user();
+            $businessName = $loggedInUser->business->name;
+
+            DB::transaction(function() use ($user, $newSpotbieUser, $businessName) {
                 $lpAggregator = new LoyaltyPointBalanceAggregator();
                 $lpAggregator->id = $user->id;
                 $lpAggregator->balance = 0;
                 $lpAggregator->save();
 
                 $this->sendConfirmationEmail($user, $newSpotbieUser);
-                $this->sendConfirmationSms($user, $newSpotbieUser);
+                $this->sendConfirmationSms($user, $newSpotbieUser, $businessName);
             });
 
         } catch (\Exception $e) {
