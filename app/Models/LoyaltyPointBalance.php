@@ -3,11 +3,8 @@
 namespace App\Models;
 
 use Auth;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class LoyaltyPointBalance extends Model
 {

@@ -3,8 +3,9 @@
 namespace App\Services;
 
 use App\Helpers\Sms\SmsAndCallTwimlHelper;
-use App\Models\Sms;
-use App\Models\SmsGroup;
+use App\Models\SpotbieUser;
+use App\Models\SystemSms;
+use App\Models\User;
 use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Log;
@@ -12,12 +13,11 @@ use Illuminate\Support\Facades\Log;
 class Points
 {
     public function redeemedPoints(
-        string $userPhoneNumber,
-        string $userID,
-        string $rewardName,
+        SpotbieUser $spotbieUser,
+        User $user,
+        SystemSms $sms,
+        string $totalPoints,
         string $businessName,
-        Sms $sms,
-        SmsGroup $smsGroup,
         bool $withLoginInstructions
     ) {
         try
@@ -28,10 +28,10 @@ class Points
 
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
-            $body = $langHelper->getPointsRedeemedSmsTxt($rewardName, $businessName, $withLoginInstructions);
+            $body = $langHelper->getPointsRedeemedSmsTxt($totalPoints, $businessName, $withLoginInstructions, $user->email, $spotbieUser->first_name);
 
             $client->messages->create(
-                $userPhoneNumber,
+                $spotbieUser->phone_number,
                 [
                     'from' => config('services.twilio.from'),
                     'body' => $body,
@@ -43,17 +43,12 @@ class Points
                 'sent' => true,
             ]);
 
-            $smsGroup->update([
-                'total_sent' => $smsGroup->total_sent + 1,
-                'price' => $smsGroup->price + 0.0079
-            ]);
-
             Log::info(
-                '[CustomerManager]-[sendSms]: Message Sent' .
-                ', User ID: '. $userID .
-                ', Phone-Number: ' . $userPhoneNumber .
+                '[Points]-[redeemedPoints]: Message Sent' .
+                ', User ID: '. $user->id .
+                ', Phone-Number: ' . $spotbieUser->phone_number .
                 ', Business: ' . $businessName .
-                ', Reward Name: ' . $rewardName
+                ', Total Points: ' . $totalPoints
             );
         }
         catch(TwilioException $e)
@@ -75,8 +70,8 @@ class Points
             }
 
             Log::error(
-                '[CustomerManager]-[sendSms]: Message Failed' .
-                ', Phone-Number: ' . $userPhoneNumber .
+                '[Points]-[redeemedPoints]: Message Failed' .
+                ', Phone-Number: ' . $spotbieUser->phone_number .
                 ", Business: " . $businessName .
                 ", Error Code: " . $errorCode .
                 ", Error Message: " . $e->getMessage()

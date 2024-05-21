@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\UrlHelper;
+use App\Jobs\SendRewardRedeemedSms;
 use Auth;
 use Illuminate\Validation\Rule;
 use Image;
@@ -126,8 +127,11 @@ class Reward extends Model
             'user_id' => 'nullable|numeric',
         ]);
 
+
+        $sendSmsWithLoginInstructions = false;
         if (! is_null($validatedData['user_id'])) {
             $user = User::where('id', $validatedData['user_id'])->with('loyaltyPointBalance')->first();
+            $sendSmsWithLoginInstructions = true;
         } else {
             $user = Auth::user();
         }
@@ -215,7 +219,14 @@ class Reward extends Model
                     $balanceInBusiness->balance = $balanceInBusinessAfterRedeeming;
                 }
 
-                DB::transaction(function () use ($user, $redeemed, $balanceInBusiness) {
+                $businessName = Business::select('name')->find($reward->business_id)->name;
+                $spotbieUser = $user->spotbieUser;
+
+                DB::transaction(function () use (
+                    $user,
+                    $redeemed,
+                    $balanceInBusiness,
+                ) {
                     $redeemed->save();
                     if (! is_null($user->loyaltyPointBalanceAggregator)) {
                         $user->loyaltyPointBalanceAggregator->save();
@@ -225,6 +236,9 @@ class Reward extends Model
                         $balanceInBusiness->save();
                     }
                 });
+
+                // Try to send the user a text message saying that they've redeemed the reward.
+                $this->sendRewardRedeemedSms($user, $spotbieUser, $businessName, $reward->name, $sendSmsWithLoginInstructions);
             }
             $success = true;
         }
@@ -243,6 +257,13 @@ class Reward extends Model
         ]);
 
         return $response;
+    }
+
+    private function sendRewardRedeemedSms(User $user, SpotbieUser $spotbieUser, string $businessName, string $rewardName, bool $sendSmsWithLoginInstructions) {
+        $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
+
+        SendRewardRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $rewardName, $sendSmsWithLoginInstructions)
+            ->onQueue('sms.miami.fl.1');
     }
 
     public function updateReward(Request $request)

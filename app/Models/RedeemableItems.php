@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\UrlHelper;
+use App\Jobs\SendPointsRedeemedSms;
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -174,13 +175,31 @@ class RedeemableItems extends Model
     public function redeem(Request $request)
     {
         $validatedData = $request->validate([
-            'redeemableHash' => ['required', 'string'],
+            'user_id' => 'nullable|numeric',
+            'dollars_spent' => 'required_with:user_id',
+            'redeemableHash' => ['required_without:user_id', 'string'],
         ]);
 
-        $user = Auth::user();
+        $sendSmsWithLoginInstructions = false;
+        if (! is_null($validatedData['user_id'])) {
+            $user = User::where('id', $validatedData['user_id'])->first();
+            $loggedInUser = Auth::user();
+            $business = $loggedInUser->business;
+            $sendSmsWithLoginInstructions = true;
 
-        $redeemable = RedeemableItems::where('uuid', $validatedData['redeemableHash'])
-        ->first();
+            $redeemable = new RedeemableItems();
+            $redeemable->business_id = $business->id;
+            $redeemable->uuid = Str::uuid();
+            $redeemable->amount = $validatedData['dollars_spent'];
+            $redeemable->total_spent = $validatedData['dollars_spent'];
+            $redeemable->dollar_value = $validatedData['dollars_spent'];
+            $redeemable->loyalty_point_dollar_percent_value = $business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
+            $redeemable->redeemed = false;
+        } else {
+            $user = Auth::user();
+            $redeemable = RedeemableItems::where('uuid', $validatedData['redeemableHash'])
+                ->first();
+        }
 
         if ($redeemable)
         {
@@ -257,6 +276,11 @@ class RedeemableItems extends Model
 
             $redeemable->refresh();
 
+            $spotbieUser = $user->spotbieUser;
+            $businessName = Business::select('name')->find($redeemable->business->id)->name;
+
+            $this->sendPointsRedeemedSms($user, $spotbieUser, $businessName, $insertLp->loyalty_amount, $sendSmsWithLoginInstructions);
+
             if(is_null($user->loyaltyPointBalanceAggregator)) {
                 $agg = $insertLp->loyalty_amount;
             } else {
@@ -273,6 +297,14 @@ class RedeemableItems extends Model
             return response($response);
         }
     }
+
+    private function sendPointsRedeemedSms(User $user, SpotbieUser $spotbieUser, string $businessName, string $totalPoints, bool $sendSmsWithLoginInstructions) {
+        $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
+
+        SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions)
+            ->onQueue('sms.miami.fl.1');
+    }
+
 
     public function lpRedeemed(Request $request)
     {
