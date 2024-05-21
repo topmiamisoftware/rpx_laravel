@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\SpotbieUser;
 use App\Models\SystemSms;
 use App\Models\User;
 use App\Services\Rewards;
@@ -23,8 +24,9 @@ class SendRewardRedeemedSms implements ShouldQueue
     public function __construct(
         private User $user,
         private SystemSms $systemSms,
-        private string $phoneNumber,
+        private SpotbieUser $spotbieUser,
         private string $businessName,
+        private string $rewardName,
         private bool $withLoginInstructions = false
     ){
     }
@@ -36,13 +38,11 @@ class SendRewardRedeemedSms implements ShouldQueue
      */
     public function handle()
     {
-        $spotbieUser = $this->user->spotbieUser()->first();
-
         app(Rewards::class)->redeemedSms(
-            $this->phoneNumber,
-            $this->user->id,
-            $spotbieUser,
+            $this->spotbieUser,
+            $this->user,
             $this->systemSms,
+            $this->rewardName,
             $this->businessName,
             $this->withLoginInstructions
         );
