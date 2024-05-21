@@ -49,21 +49,21 @@ class SmsAndCallTwimlHelper
         return trans('promotional_sms.accountCreatedSmsOptInText', ['firstName' => $firstName, 'businessName' => $businessName, 'userEmail' => $userEmail]);
     }
 
-    public function getRewardRedeemedSmsTxt(string $rewardName, string $businessName, bool $withLoginInstructions)
+    public function getRewardRedeemedSmsTxt(string $rewardName, string $businessName, bool $withLoginInstructions, string $userEmail, string $firstName)
     {
         if ($withLoginInstructions === true) {
-            return trans('promotional_sms.rewardRedeemedTextWithEmail', ['rewardName' => $rewardName, 'businessName' => $businessName]);
+            return trans('promotional_sms.rewardRedeemedTextWithEmail', ['rewardName' => $rewardName, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName]);
         } else {
-            return trans('promotional_sms.rewardRedeemedText', ['rewardName' => $rewardName, 'businessName' => $businessName]);
+            return trans('promotional_sms.rewardRedeemedText', ['rewardName' => $rewardName, 'businessName' => $businessName, 'firstName' => $firstName]);
         }
     }
 
-    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions)
+    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions, string $userEmail, string $firstName)
     {
         if ($withLoginInstructions === true) {
-            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName]);
+            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName]);
         } else {
-            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName]);
+            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'firstName' => $firstName]);
         }
     }
 }
