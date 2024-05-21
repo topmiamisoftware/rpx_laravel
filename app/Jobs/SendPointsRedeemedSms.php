@@ -2,9 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\SpotbieUser;
 use App\Models\SystemSms;
 use App\Models\User;
-use App\Services\Rewards;
+use App\Services\Points;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,8 +24,9 @@ class SendPointsRedeemedSms implements ShouldQueue
     public function __construct(
         private User $user,
         private SystemSms $systemSms,
-        private string $phoneNumber,
+        private SpotbieUser $spotbieUser,
         private string $businessName,
+        private string $totalPoints,
         private bool $withLoginInstructions = false
     ){
     }
@@ -36,14 +38,13 @@ class SendPointsRedeemedSms implements ShouldQueue
      */
     public function handle()
     {
-        $spotbieUser = $this->user->spotbieUser()->first();
-
         app(Points::class)->redeemedPoints(
-            $this->phoneNumber,
-            $this->user->id,
-            $spotbieUser,
+            $this->spotbieUser,
+            $this->user,
             $this->systemSms,
-            $this->businessName
+            $this->totalPoints,
+            $this->businessName,
+            $this->withLoginInstructions
         );
     }
 }
