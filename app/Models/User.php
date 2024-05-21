@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\SendSystemSms;
 use App\Jobs\SendAccountCreatedThroughBusinessSms;
 use Auth;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Log;
 use Mail;
 use App\Mail\User\AccountCreated;
@@ -394,15 +395,25 @@ class User extends Authenticatable implements JWTSubject
         return response($response);
     }
 
-    private function sendConfirmationEmail($user = null, $spotbieUser = null)
+    private function sendConfirmationEmail(User $user = null, SpotbieUser $spotbieUser = null, bool $withLink = false)
     {
         if (is_null($user)) {
             $user = Auth::user();
             $spotbieUser = $user->spotbieUser()->first();
         }
 
+        Log::info('HI' . $user->email);
+
+        $credentials = array(
+            "email" => $user->email
+        );
+
+        if ($withLink) {
+           IlluminatePassword::sendResetLink($credentials);
+        }
+
         Mail::to($user->email, $user->username)
-        ->send(new AccountCreated($user, $spotbieUser));
+            ->send(new AccountCreated($user, $spotbieUser, $withLink));
     }
 
     private function sendConfirmationSms($user = null, $spotbieUser = null, $businessName = null) {
@@ -1119,7 +1130,7 @@ class User extends Authenticatable implements JWTSubject
                 $lpAggregator->balance = 0;
                 $lpAggregator->save();
 
-                $this->sendConfirmationEmail($user, $newSpotbieUser);
+                $this->sendConfirmationEmail($user, $newSpotbieUser, true);
                 $this->sendConfirmationSms($user, $newSpotbieUser, $businessName);
             });
 

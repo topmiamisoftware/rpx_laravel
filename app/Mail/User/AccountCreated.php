@@ -13,18 +13,19 @@ class AccountCreated extends Mailable
     use Queueable, SerializesModels;
 
     protected $user;
-
     protected $spotbieUser;
+    protected $withLink;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, SpotbieUser $spotbieUser)
+    public function __construct(User $user, SpotbieUser $spotbieUser, bool $withLink)
     {
         $this->user = $user;
         $this->spotbieUser = $spotbieUser;
+        $this->withLink = $withLink;
     }
 
     /**
@@ -39,6 +40,7 @@ class AccountCreated extends Mailable
                     ->markdown('emails.account_created', [
                         'user'        => $this->user,
                         'spotbieUser' => $this->spotbieUser,
+                        'withLink' => $this->withLink
                     ]);
     }
 }

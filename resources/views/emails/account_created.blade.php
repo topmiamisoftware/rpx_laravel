@@ -116,7 +116,6 @@
                 <br/><br/>
 
                 <?php
-
                     //Let's use this page to redirect the user to log in from their sign up welcome e-mail.
                     $userPage = 'home';
 
@@ -125,11 +124,21 @@
                         $userPage = 'business';
                     else
                         $userPage = 'home';
-
-
                 ?>
 
-                Just <a href='https://spotbie.com/<?php echo $userPage; ?>?c=123456'>click on this link</a> to log-in.
+                <?php
+                    if ($spotbieUser->first_name !== '') {
+                        echo $spotbieUser->first_name;
+                    } else {
+                        echo $user->username;
+                    }
+
+                    if ($withLink === true) {
+                        echo "We have sent you an additional e-mail so that you can set your password!";
+                    }
+                ?>
+
+                Just <a href='https://spotbie.com/<?php echo $userPage; ?>'>click on this link</a> to log-in.
 
             </p>
 
