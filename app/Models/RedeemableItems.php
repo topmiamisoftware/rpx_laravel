@@ -181,7 +181,7 @@ class RedeemableItems extends Model
         ]);
 
         $sendSmsWithLoginInstructions = false;
-        if (! $request->exists('user_id')) {
+        if ($request->exists('user_id')) {
             $user = User::where('id', $validatedData['user_id'])->first();
             $loggedInUser = Auth::user();
             $business = $loggedInUser->business;
