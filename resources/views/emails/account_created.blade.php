@@ -127,14 +127,8 @@
                 ?>
 
                 <?php
-                    if ($spotbieUser->first_name !== '') {
-                        echo $spotbieUser->first_name;
-                    } else {
-                        echo $user->username;
-                    }
-
                     if ($withLink === true) {
-                        echo "We have sent you an additional e-mail so that you can set your password!";
+                        echo "We have sent you an additional e-mail so that you can set your password!<br/>";
                     }
                 ?>
 
