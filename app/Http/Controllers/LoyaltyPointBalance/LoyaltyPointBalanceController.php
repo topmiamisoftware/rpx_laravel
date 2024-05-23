@@ -86,4 +86,8 @@ class LoyaltyPointBalanceController extends Controller
     {
         return $loyaltyPointBalance->reset();
     }
+
+    public function setLpRate(Request $request, LoyaltyPointBalance $loyaltyPointBalance) {
+        return $loyaltyPointBalance->setLpRate($request);
+    }
 }

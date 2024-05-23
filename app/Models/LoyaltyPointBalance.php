@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Auth;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class LoyaltyPointBalance extends Model
 {
@@ -55,6 +57,26 @@ class LoyaltyPointBalance extends Model
         ];
 
         return response($response);
+    }
+
+    public function setLpRate(Request $request) {
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'percent' => 'required|numeric'
+        ]);
+
+         $lp = LoyaltyPointBalance::where('user_id', $user->id)->first();
+         $lp->loyalty_point_dollar_percent_value = $validatedData['percent'];
+
+        DB::transaction(function () use ($lp) {
+            $lp->save();
+        });
+
+        return response([
+            'success' => true,
+            'message' => "Reward rate updated successfully.",
+        ]);
     }
 
     public function show()

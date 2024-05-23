@@ -6,3 +6,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('show', [LoyaltyPointBalanceAggregatorController::class, 'show'])->middleware('auth');
 Route::get('ledger', [LoyaltyPointBalanceController::class, 'index'])->middleware('auth');
+Route::post('set-lp-rate', [LoyaltyPointBalanceController::class, 'setLpRate'])->middleware('auth');
