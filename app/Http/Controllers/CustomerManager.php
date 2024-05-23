@@ -182,7 +182,7 @@ class CustomerManager extends Controller
     public function email(Request $request)
     {
         $validated = $this->validate($request, [
-            "email_body" => 'required|string|max:1200|min:200',
+            "email_body" => 'required|string|max:1200|min:100',
         ]);
 
         $emailBody = $validated['email_body'];
