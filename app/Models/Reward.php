@@ -129,7 +129,7 @@ class Reward extends Model
 
 
         $sendSmsWithLoginInstructions = false;
-        if (! is_null($validatedData['user_id'])) {
+        if (! $request->exists('user_id')) {
             $user = User::where('id', $validatedData['user_id'])->with('loyaltyPointBalance')->first();
             $sendSmsWithLoginInstructions = true;
         } else {
