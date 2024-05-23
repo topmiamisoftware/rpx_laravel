@@ -1135,6 +1135,7 @@ class User extends Authenticatable implements JWTSubject
             });
 
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             $message = 'Could not create user account.';
         }
 
