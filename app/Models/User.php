@@ -591,7 +591,7 @@ class User extends Authenticatable implements JWTSubject
                     ->onQueue('sms.miami.fl.1');
             } else {
                 // User already opted-in, no need to send opt-in confirmation message.
-                if(array_key_exists('phone_number', $validatedData)){
+                if(array_key_exists('phone_number', $validatedData) && $validatedData['phone_number'] !== '+1'){
                     $user->spotbieUser->phone_number = $validatedData['phone_number'];
                 } else {
                     $user->spotbieUser->phone_number = null;
