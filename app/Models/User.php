@@ -567,7 +567,7 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->user_type = $validatedData['account_type'];
 
         $s = SpotbieUser::where('phone_number', '+1'.$validatedData['phone_number'])
-            ->where('phone_number', $validatedData['phone_number'])
+            ->orWhere('phone_number', $validatedData['phone_number'])
             ->count();
 
         if ($s > 0) {
