@@ -571,7 +571,9 @@ class User extends Authenticatable implements JWTSubject
             ->count();
 
         if ($s > 0) {
-            return new Exception('The phone number is already in use.', 422);
+            return new HttpResponseException(response([
+                'error' => 'The phone number is already in use.'
+            ], 422));
         }
 
         DB::transaction(function () use ($user, $validatedData) {
