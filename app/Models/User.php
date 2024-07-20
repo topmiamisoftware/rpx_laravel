@@ -575,13 +575,13 @@ class User extends Authenticatable implements JWTSubject
             $user->spotbieUser->save();
 
             if (array_key_exists('phone_number', $validatedData) && $user->spotbieUser->sms_opt_in === 0) {
-                $sms = app(SystemSms::class)->createSettingsSms($user, '+1'.$validatedData['phone_number']);
-                SendSystemSms::dispatch($user, $sms, '+1'.$validatedData['phone_number'])
+                $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
+                SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
                     ->onQueue('sms.miami.fl.1');
             } else {
                 // User already opted-in, no need to send opt-in confirmation message.
                 if(array_key_exists('phone_number', $validatedData)){
-                    $user->spotbieUser->phone_number = '+1'.$validatedData['phone_number'];
+                    $user->spotbieUser->phone_number = $validatedData['phone_number'];
                 } else {
                     $user->spotbieUser->phone_number = null;
                 }
@@ -635,7 +635,7 @@ class User extends Authenticatable implements JWTSubject
 
         $spotbieUser = SpotbieUser::
             select('id', 'first_name', 'last_name', 'phone_number')
-            ->where('phone_number', '+1'.$validatedData['phone_number'])
+            ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
         if (! is_null($spotbieUser)) {
@@ -1092,7 +1092,7 @@ class User extends Authenticatable implements JWTSubject
     public function createUser(Request $request) {
         $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'email'],
-            'phone_number' => 'string|max:35|nullable',
+            'phone_number' => 'string|unique:spotbie_users|max:35|nullable',
             'firstName' => ['required', new FirstName],
         ]);
 
@@ -1106,7 +1106,7 @@ class User extends Authenticatable implements JWTSubject
         $newSpotbieUser->first_name = $validatedData['firstName'];
         $newSpotbieUser->last_name = '';
         $newSpotbieUser->user_type = 4;
-        $newSpotbieUser->phone_number = '+1'.$validatedData['phone_number'];
+        $newSpotbieUser->phone_number = $validatedData['phone_number'];
 
         $message = "success";
         $e = null;
