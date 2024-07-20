@@ -566,6 +566,14 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->last_name = $validatedData['last_name'];
         $user->spotbieUser->user_type = $validatedData['account_type'];
 
+        $s = SpotbieUser::where('phone_number', '+1'.$validatedData['phone_number'])
+            ->where('phone_number', $validatedData['phone_number'])
+            ->count();
+
+        if ($s > 0) {
+            return new Exception('The phone number is already in use.', 422);
+        }
+
         DB::transaction(function () use ($user, $validatedData) {
             if (! array_key_exists('phone_number', $validatedData)) {
                 $user->spotbieUser->phone_number = null;
