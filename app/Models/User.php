@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Rules\FirstName;
 use App\Rules\LastName;
