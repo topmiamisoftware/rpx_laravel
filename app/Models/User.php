@@ -558,7 +558,7 @@ class User extends Authenticatable implements JWTSubject
             'first_name'   => ['required', new FirstName],
             'last_name'    => ['required', new LastName],
             'account_type' => 'required|numeric',
-            'phone_number' => 'string|unique:spotbie_users|max:35|nullable',
+            'phone_number' => 'sometimes|string|unique:spotbie_users|max:35|nullable',
         ]);
 
         $user->username = $validatedData['username'];
@@ -1103,7 +1103,7 @@ class User extends Authenticatable implements JWTSubject
     public function createUser(Request $request) {
         $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'email'],
-            'phone_number' => 'string|unique:spotbie_users|max:35|nullable',
+            'phone_number' => 'sometimes|string|unique:spotbie_users|max:35|nullable',
             'firstName' => ['required', new FirstName],
         ]);
 
