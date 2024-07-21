@@ -15,7 +15,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        if (array_key_exists('phone_number', $request) && !str_contains($request->phone_number, '+1')) {
+        if (isset($request->phone_number) && ! str_contains($request->phone_number, '+1')) {
             $request->phone_number = '+1'.$request->phone_number;
         }
 
