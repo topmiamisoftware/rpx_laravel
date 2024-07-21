@@ -16,7 +16,9 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         if (isset($request->phone_number) && ! str_contains($request->phone_number, '+1')) {
-            $request->phone_number = '+1'.$request->phone_number;
+            $request->merge([
+                'phone_number' => '+1'.$request->phone_number,
+            ]);
         }
 
         return $user->saveSettings($request);
