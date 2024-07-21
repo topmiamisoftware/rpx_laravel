@@ -499,9 +499,18 @@ class User extends Authenticatable implements JWTSubject
 
             if ($isSubscribed)
             {
-                $nextPayment = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
-                if($user->subscription($user->id)->asStripeSubscription()->cancel_at) {
-                    $endsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->cancel_at);
+                try {
+                    $nextPayment = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
+                    if($user->subscription($user->id)->asStripeSubscription()->cancel_at) {
+                        $endsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->cancel_at);
+                    }
+                } catch (Exception $e) {
+                    $user->subscription($user->id)->cancel();
+
+                    $nextPayment = null;
+                    $endsAt = null;
+                    $isSubscribed = false;
+                    $userSubscriptionPlan = null;
                 }
             }
 
