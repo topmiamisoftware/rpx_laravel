@@ -43,11 +43,6 @@ class AppVersionController extends Controller
 
         $currentVersion = '';
         if ( count($v) > 0 && $validatedData['installedVersion'] !== $v[0]->version) {
-
-            Log::info('installed version' . $validatedData['installedVersion']);
-            Log::info('current version' . $v[0]->version);
-
-
             $v[0]->version = $validatedData['installedVersion'];
             $v[0]->save();
             $v[0]->refresh();
