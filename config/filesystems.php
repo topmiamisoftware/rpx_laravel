@@ -84,5 +84,6 @@ return [
         public_path('rewards-media') => storage_path('app/rewards-media/'),
         public_path('ad-media')      => storage_path('app/ad-media/'),
         public_path('receipts')      => storage_path('app/receipts/'),
+        public_path('business-app')      => storage_path('app/business-app/'),
     ],
 ];
