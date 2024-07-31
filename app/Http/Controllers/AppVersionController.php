@@ -24,7 +24,8 @@ class AppVersionController extends Controller
                 env('BUSINESS_APP_DOWNLOAD_URL'),
                 'SB-Business',
                 [
-                    'Content-Type' => 'application/vnd.android.package-archive'
+                    'Content-Type' => 'application/vnd.android.package-archive',
+                    'Content-Disposition' => 'inline; filename="SB-Business.apk"'
                 ]
             );
         }
