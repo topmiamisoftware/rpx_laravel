@@ -22,7 +22,7 @@ class AppVersionController extends Controller
         if ($userCanDownload) {
             return Storage::download(
                 env('BUSINESS_APP_DOWNLOAD_URL'),
-                'SB-Business',
+                'SB-Business.apk',
                 [
                     'Content-Type' => 'application/vnd.android.package-archive',
                     'Content-Disposition' => 'inline; filename="SB-Business.apk"'
