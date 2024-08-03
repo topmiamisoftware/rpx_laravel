@@ -25,7 +25,12 @@ class AppVersionController extends Controller
                 'SB-Business',
                 [
                     'Content-Type' => 'application/vnd.android.package-archive',
-                    'Content-Disposition' => 'inline; filename="SB-Business.apk"'
+                    'Content-Disposition' => 'attachment; filename="SB-Business.apk"',
+                    'Content-Transfer-Encoding' => 'binary',
+                    'Accept-Ranges' => 'bytes',
+                    'Cache-Control' => 'private',
+                    'Pragma' => 'private',
+                    'Expires' => 'Mon, 26 Jul 1997 05:00:00 GMT',
                 ]
             );
         }
