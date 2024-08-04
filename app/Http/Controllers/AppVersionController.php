@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AppVersion;
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AppVersionController extends Controller
@@ -67,7 +66,8 @@ class AppVersionController extends Controller
         }
 
         $needsUpdate = false;
-        if ($currentVersion !== env('BUSINESS_FRONT_END_VERSION') ) {
+
+        if ($currentVersion !== config('app.front_end_business_version') ) {
             $needsUpdate = true;
         }
 

@@ -122,6 +122,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'front_end_business_version' => env('BUSINESS_FRONT_END_VERSION'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
