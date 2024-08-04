@@ -12,13 +12,8 @@ class AppVersionController extends Controller
     // Allow the user to download the app if they have a business account.
     public function download()
     {
-        $user = Auth::user();
-
-        if (! is_null($user->business)) {
-            $userCanDownload = true;
-        }
-
-        if ($userCanDownload) {
+        return redirect(config('app.current_version_download_url'));
+/*        if ($userCanDownload) {
             return Storage::response(
                 env('BUSINESS_APP_DOWNLOAD_URL'),
                 'SB-Business',
@@ -30,7 +25,7 @@ class AppVersionController extends Controller
             );
         }
 
-        return response()->noContent();
+        return response()->noContent();*/
     }
 
     /**

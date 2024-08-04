@@ -123,7 +123,7 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'front_end_business_version' => env('BUSINESS_FRONT_END_VERSION'),
-
+    'current_version_download_url' => env('BUSINESS_APP_DOWNLOAD_URL'),
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
