@@ -20,18 +20,14 @@ class AppVersionController extends Controller
         }
 
         if ($userCanDownload) {
-            return Storage::download(
+            return Storage::response(
                 env('BUSINESS_APP_DOWNLOAD_URL'),
                 'SB-Business',
                 [
                     'Content-Type' => 'application/vnd.android.package-archive',
                     'Content-Disposition' => 'attachment; filename="SB-Business.apk"',
-                    'Content-Transfer-Encoding' => 'binary',
-                    'Accept-Ranges' => 'bytes',
-                    'Cache-Control' => 'private',
-                    'Pragma' => 'private',
-                    'Expires' => 'Mon, 26 Jul 1997 05:00:00 GMT',
-                ]
+                ],
+                'attachment'
             );
         }
 
