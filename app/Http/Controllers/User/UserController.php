@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -134,5 +135,20 @@ class UserController extends Controller
     public function createUser(User $user, Request $request)
     {
         return $user->createUser($request);
+    }
+
+    public function updateSmsOptIn(User $user, Request $request)
+    {
+        $validatedDate = $request->validate([
+            'sms_opt_in' => 'required:boolean'
+        ]);
+
+        $user = Auth::user();
+        $sbUser = $user->spotbieUser()->get()[0];
+        $sbUser->sms_opt_in = $validatedDate['sms_opt_in'];
+
+        $sbUser->save();
+
+        return response(null, 204);
     }
 }

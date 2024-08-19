@@ -108,7 +108,6 @@ class SurroundingsController extends Controller
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->join('loyalty_point_balances', function ($join) {
             $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-            ->where('loyalty_point_balances.balance', '>', 0)
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
         ->where('business.is_verified', 1)

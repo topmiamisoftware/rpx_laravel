@@ -299,10 +299,12 @@ class RedeemableItems extends Model
     }
 
     private function sendPointsRedeemedSms(User $user, SpotbieUser $spotbieUser, string $businessName, string $totalPoints, bool $sendSmsWithLoginInstructions) {
-        $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
+        if (! is_null($spotbieUser->phone_number) && $spotbieUser->sms_opt_in === 1) {
+            $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
-        SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions)
-            ->onQueue('sms.miami.fl.1');
+            SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions)
+                ->onQueue('sms.miami.fl.1');
+        }
     }
 
 

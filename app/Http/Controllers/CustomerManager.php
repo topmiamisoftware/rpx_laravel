@@ -131,7 +131,7 @@ class CustomerManager extends Controller
                     $user = $lpBalance->user()->first();
                     $spotbieUser = $user->spotbieUser()->first();
                     $phoneNumber = $spotbieUser->phone_number;
-                    if (! is_null($phoneNumber)) {
+                    if (! is_null($phoneNumber) && $spotbieUser->sms_opt_in === 1) {
                         $sms = $sms->createNewSms($user, $business, $smsGroup);
                         SendMassSms::dispatch($user, $business->name, $sms, $smsGroup)
                             ->onQueue('sms.miami.fl.1');
@@ -140,6 +140,7 @@ class CustomerManager extends Controller
                             "[CustomerManager]-[SendMassSms]: Message Failed" .
                             ", User ID: " . $user->id .
                             ", Business: " . $business->name .
+                            ", Opted-in: " . $spotbieUser->sms_opt_in .
                             ", Error: No User Phone Number"
                         );
                     }

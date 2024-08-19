@@ -26,3 +26,4 @@ Route::post('membership-status', [UserController::class, 'membershipStatus']);
 Route::post('cancel-membership', [UserController::class, 'cancelMembership'])->middleware('auth');
 
 Route::put('update_place', [UserController::class, 'updatePlace'])->middleware('auth');
+Route::put('update-sms-opt-in', [UserController::class, 'updateSmsOptIn'])->middleware('auth');

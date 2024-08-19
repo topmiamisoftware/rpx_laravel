@@ -436,7 +436,7 @@ class User extends Authenticatable implements JWTSubject
 
         $spotbieUserSettings = $user
             ->spotbieUser()
-            ->select('user_type', 'first_name', 'last_name', 'phone_number')
+            ->select('user_type', 'first_name', 'last_name', 'phone_number', 'sms_opt_in')
             ->get()[0];
 
         $business = $user
@@ -549,7 +549,7 @@ class User extends Authenticatable implements JWTSubject
         }
         else
         {
-            $usernameValidators = 'required|string|unique:users|max:35|min:1';
+            $usernameValidators = 'required|string|max:35|min:1';
         }
 
         if ($user->email === $request->email)
@@ -558,7 +558,7 @@ class User extends Authenticatable implements JWTSubject
         }
         else
         {
-            $emailValidators = 'required|email|unique:users';
+            $emailValidators = 'required|email';
         }
 
         $validatedData = $request->validate([
@@ -567,7 +567,8 @@ class User extends Authenticatable implements JWTSubject
             'first_name'   => ['required', new FirstName],
             'last_name'    => ['required', new LastName],
             'account_type' => 'required|numeric',
-            'phone_number' => 'sometimes|string|unique:spotbie_users|max:35|nullable',
+            'phone_number' => 'sometimes|string|max:35|nullable',
+            'sms_opt_in' => 'required|boolean',
         ]);
 
         $user->username = $validatedData['username'];
@@ -575,10 +576,12 @@ class User extends Authenticatable implements JWTSubject
         $user->spotbieUser->first_name = $validatedData['first_name'];
         $user->spotbieUser->last_name = $validatedData['last_name'];
         $user->spotbieUser->user_type = $validatedData['account_type'];
+        $user->spotbieUser->sms_opt_in = $validatedData['sms_opt_in'];
 
         if (array_key_exists('phone_number', $validatedData)) {
             $s = SpotbieUser::where('phone_number', '+1'.$validatedData['phone_number'])
                 ->orWhere('phone_number', $validatedData['phone_number'])
+                ->where('id', '!=', $user->id)
                 ->count();
 
             if ($s > 0) {
