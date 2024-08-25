@@ -267,7 +267,7 @@ class Ads extends Model
         DB::transaction(function () use ($ad) {
             $ad->views = $ad->views + 1;
             $ad->save();
-            Log::info("[Ads][addViewToAd] Added - ID: ".$ad->id);
+            Log::info("[Ads][addViewToAd] Added - ID: ".$ad->id. " - Views: ". $ad->views);
         }, 3);
     }
 
