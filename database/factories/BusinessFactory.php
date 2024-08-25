@@ -43,6 +43,45 @@ class BusinessFactory extends Factory
         'Munchtastic',
     ];
 
+    private $restaurantNameListSec = [
+        'Bistro',
+        'Captain',
+        'Palace',
+        'Cuisine',
+        'Wave',
+        'Divine',
+        'Feast',
+        'Eatery',
+        'Hotspot',
+        'Lounge',
+        'Castle',
+        'Chef',
+        'Grub',
+        'Sensation',
+        'Takeout',
+        'Menu',
+        'Gusto',
+        'Munchies',
+        'Munch',
+        'Munchtastic',
+    ];
+
+
+    private function getName() {
+        $name = $this->restaurantNameList[rand(0, count($this->restaurantNameList) - 1)];
+
+        var_dump("Adding Business Name Exists: ", Business::where('name', $name)->exists());
+
+        while (
+            Business::where('name', $name)->exists()
+        ) {
+            $nameSec = $this->restaurantNameList[rand(0, count($this->restaurantNameList) - 1)];
+            $name = $name .' '. $nameSec;
+        }
+
+        return $name;
+    }
+
     /**
      * Define the model's default state.
      *
@@ -50,7 +89,9 @@ class BusinessFactory extends Factory
      */
     public function definition()
     {
-        $name = $this->restaurantNameList[rand(0, count($this->restaurantNameList) - 1)];
+        // We must add a random number to the business name so that we can bypass the unique constraint for slug and name
+        // columns
+        $name = $this->getName();
         $description = $this->faker->unique()->realText(150);
 
         // Remember that my_loc_y && my_loc_x can be negative... You might have to change this. I didn't have time to implement this correctly. Fuck StartUps :')
@@ -148,8 +189,6 @@ class BusinessFactory extends Factory
             $userList = User::where('username', '=', 'agent000')
                 ->orWhere('username', '=', 'agent001')
                 ->get();
-
-            var_dump($business->id);
 
             foreach ($userList as $user)
             {
