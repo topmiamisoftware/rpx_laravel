@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Laravel\Cashier\Cashier;
+use Illuminate\Support\Facades\Log;
 
 /** @property int $business_id */
 /** @property int $clicks */
@@ -110,9 +110,12 @@ class Ads extends Model
             'business.loc_y',
             'spotbie_users.user_type',
             'loyalty_point_balances.balance',
-            'loyalty_point_balances.loyalty_point_dollar_percent_value'
+            'loyalty_point_balances.loyalty_point_dollar_percent_value',
+            'ads.views',
+            'ads.clicks'
         )
             ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+            ->join('ads', 'business.id', '=', 'ads.business_id')
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
                     ->where('loyalty_point_balances.balance', '>', 0)
@@ -134,7 +137,7 @@ class Ads extends Model
                     )
             )")
             ->has('rewards')
-            ->inRandomOrder()
+            ->orderBy('ads.views', 'desc')
             ->limit(1)
             ->get();
     }
@@ -197,12 +200,12 @@ class Ads extends Model
             $totalRewards = 0;
         } else {
             $ad = $this->nearbyAd($nearbyBusiness[0]->id, 0);
+
             $k = 0;
             while (0 === count($ad)) {
                 if (10 === $k) {
                     $ad = $this->getSpotbieAd(0);
                     $nearbyBusiness = null;
-
                     break;
                 }
                 $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
@@ -251,7 +254,6 @@ class Ads extends Model
     {
         // Add click to ad.
         DB::transaction(function () use ($ad) {
-            ++$ad->views;
             ++$ad->clicks;
             $ad->save();
         }, 3);
@@ -259,11 +261,13 @@ class Ads extends Model
 
     public function addViewToAd(Ads $ad)
     {
+        Log::info("[Ads][addViewToAd] Adding - ID: ".$ad->id);
+        $ad = Ads::find($ad->id);
         // Add click to ad.
         DB::transaction(function () use ($ad) {
-            ++$ad->views;
-
+            $ad->views = $ad->views + 1;
             $ad->save();
+            Log::info("[Ads][addViewToAd] Added - ID: ".$ad->id);
         }, 3);
     }
 
@@ -387,11 +391,11 @@ class Ads extends Model
 
     public function nearbyAd($businessId, $type)
     {
-        return Ads::select('uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
+        return Ads::select('id', 'uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
             ->where('type', $type)
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
-            ->inRandomOrder()
+            ->orderBy('views', 'desc')
             ->limit(1)->get();
     }
 

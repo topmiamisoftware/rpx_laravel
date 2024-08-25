@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="testing something">
-      <change afterPath="$PROJECT_DIR$/routes/CustomerManager/CustomerManager.routes.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/LoyaltyTiers/LoyaltyTiers.routes.php" afterDir="false" />
+    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:">
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Ads.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Ads.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Business.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Business.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Reward.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Reward.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/cors.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/cors.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/User/User.routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/User/User.routes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/factories/BusinessFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/factories/BusinessFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/ad-media" beforeDir="false" afterPath="$PROJECT_DIR$/public/ad-media" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/defaults" beforeDir="false" afterPath="$PROJECT_DIR$/public/defaults" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/receipts" beforeDir="false" afterPath="$PROJECT_DIR$/public/receipts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/rewards-media" beforeDir="false" afterPath="$PROJECT_DIR$/public/rewards-media" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,10 +32,27 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;0456franco&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/0456franco/spotbie_laravel.git&quot;,
+    &quot;accountId&quot;: &quot;ecc85d99-8dfb-46f5-8e78-2a352c429239&quot;
+  }
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="PhpWorkspaceProjectConfiguration">
+  <component name="PhpServers">
+    <servers>
+      <server host="localhost" id="a37690f6-8526-40bd-b0ef-97212424e30c" name="spotbiedebug" port="8002" />
+    </servers>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/usr/local/Cellar/php/8.3.1/bin/php">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/facade/flare-client-php" />
       <path value="$PROJECT_DIR$/vendor/facade/ignition-contracts" />
@@ -203,11 +217,20 @@
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/vendor/stella-maris/clock" />
       <path value="$PROJECT_DIR$/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/vendor/carbonphp/carbon-doctrine-types" />
+      <path value="$PROJECT_DIR$/vendor/laravel/horizon" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mailgun-mailer" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mailer" />
     </include_path>
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2BKS3jl9fcBpzwBGY0QwCuL1ixX" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
@@ -216,12 +239,14 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
     "last_opened_file_path": "/home/spotbie/spotbie_laravel/routes/CustomerManager",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -231,14 +256,35 @@
       <recent name="$PROJECT_DIR$/app/Models" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/routes/AppDownload" />
       <recent name="$PROJECT_DIR$/routes" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="PHP Built-in Web Server.Docker">
     <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-      <TestRunner scope="XML" />
+      <CommandLine>
+        <PhpTestInterpreterSettings>
+          <option name="interpreterName" value="/usr/local/Cellar/php/8.3.1/bin/php" />
+        </PhpTestInterpreterSettings>
+      </CommandLine>
+      <TestRunner configuration_file="$PROJECT_DIR$/phpunit.xml" scope="XML" />
       <method v="2" />
     </configuration>
+    <configuration name="Docker" type="PhpBuiltInWebServerConfigurationType" factoryName="PHP Built-in Web Server" document_root="$PROJECT_DIR$" port="8002">
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="PHP Built-in Web Server.Docker" />
+      <item itemvalue="PHPUnit.phpunit.xml" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PS-241.18968.24" />
+        <option value="bundled-php-predefined-ba97393d7c68-48a1a656d44e-com.jetbrains.php.sharedIndexes-PS-241.18968.24" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -304,6 +350,15 @@
       <workItem from="1684717118462" duration="13847000" />
       <workItem from="1684992765056" duration="650000" />
       <workItem from="1685679143571" duration="30877000" />
+      <workItem from="1721509797719" duration="12360000" />
+      <workItem from="1721706649609" duration="23208000" />
+      <workItem from="1722178902182" duration="8923000" />
+      <workItem from="1722692910598" duration="6568000" />
+      <workItem from="1722732685843" duration="3724000" />
+      <workItem from="1722806614854" duration="6804000" />
+      <workItem from="1723068114453" duration="11065000" />
+      <workItem from="1724190945878" duration="3188000" />
+      <workItem from="1724535907346" duration="10134000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the subscription with regular key issue.">
       <created>1657433063930</created>
@@ -445,7 +500,231 @@
       <option name="project" value="LOCAL" />
       <updated>1684737588687</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="CHANGED: make users phone number unique">
+      <option name="closed" value="true" />
+      <created>1721510252033</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1721510252033</updated>
+    </task>
+    <task id="LOCAL-00022" summary="REMOVED: +1 from phone number store/save functions">
+      <option name="closed" value="true" />
+      <created>1721511362915</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1721511362915</updated>
+    </task>
+    <task id="LOCAL-00023" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721514293962</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1721514293962</updated>
+    </task>
+    <task id="LOCAL-00024" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721514694448</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1721514694448</updated>
+    </task>
+    <task id="LOCAL-00025" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721515000844</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1721515000845</updated>
+    </task>
+    <task id="LOCAL-00026" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721515082043</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1721515082043</updated>
+    </task>
+    <task id="LOCAL-00027" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721515955414</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1721515955414</updated>
+    </task>
+    <task id="LOCAL-00028" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721529114614</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1721529114614</updated>
+    </task>
+    <task id="LOCAL-00029" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721529748019</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1721529748019</updated>
+    </task>
+    <task id="LOCAL-00030" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721529920002</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1721529920002</updated>
+    </task>
+    <task id="LOCAL-00031" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721530368394</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1721530368394</updated>
+    </task>
+    <task id="LOCAL-00032" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721530781655</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1721530781655</updated>
+    </task>
+    <task id="LOCAL-00033" summary="ADDED: temp. validator for phone numbers saved through the user app">
+      <option name="closed" value="true" />
+      <created>1721531250985</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1721531250985</updated>
+    </task>
+    <task id="LOCAL-00034" summary="FIXED: weird issue where if user subscription is not found the user would get a blank screen when loading their membership page">
+      <option name="closed" value="true" />
+      <created>1721531742339</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1721531742339</updated>
+    </task>
+    <task id="LOCAL-00035" summary="ADDED: business-app routes &amp; storage link&#10;ADDED: AppVersionController to allow users to download their new business app&#10;ADDED: testing blade">
+      <option name="closed" value="true" />
+      <created>1722117963628</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1722117963628</updated>
+    </task>
+    <task id="LOCAL-00036" summary="REMOVED: console logs">
+      <option name="closed" value="true" />
+      <created>1722118277805</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1722118277805</updated>
+    </task>
+    <task id="LOCAL-00037" summary="ADDED: Content-type header">
+      <option name="closed" value="true" />
+      <created>1722398734869</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1722398734869</updated>
+    </task>
+    <task id="LOCAL-00038" summary="ADDED: Content-Disposition header">
+      <option name="closed" value="true" />
+      <created>1722399408773</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1722399408773</updated>
+    </task>
+    <task id="LOCAL-00039" summary="CHANGED: change name for download">
+      <option name="closed" value="true" />
+      <created>1722483078621</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1722483078621</updated>
+    </task>
+    <task id="LOCAL-00040" summary="CHANGED: change name for download">
+      <option name="closed" value="true" />
+      <created>1722489387042</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1722489387042</updated>
+    </task>
+    <task id="LOCAL-00041" summary="CHANGED: added filename*= per spec and changed from inline to attachment.">
+      <option name="closed" value="true" />
+      <created>1722722622243</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1722722622243</updated>
+    </task>
+    <task id="LOCAL-00042" summary="CHANGED: back to inline">
+      <option name="closed" value="true" />
+      <created>1722723240652</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1722723240652</updated>
+    </task>
+    <task id="LOCAL-00043" summary="testing">
+      <option name="closed" value="true" />
+      <created>1722727068062</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1722727068063</updated>
+    </task>
+    <task id="LOCAL-00044" summary="testing">
+      <option name="closed" value="true" />
+      <created>1722728131430</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1722728131430</updated>
+    </task>
+    <task id="LOCAL-00045" summary="testing">
+      <option name="closed" value="true" />
+      <created>1722729660962</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1722729660962</updated>
+    </task>
+    <task id="LOCAL-00046" summary="ADDED: config front_end_business_version value">
+      <option name="closed" value="true" />
+      <created>1722738891126</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1722738891126</updated>
+    </task>
+    <task id="LOCAL-00047" summary="ADDED: config current_version_download_url">
+      <option name="closed" value="true" />
+      <created>1722740303604</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1722740303604</updated>
+    </task>
+    <task id="LOCAL-00048" summary="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:">
+      <option name="closed" value="true" />
+      <created>1724041497725</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1724041497725</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -492,6 +771,25 @@
     <MESSAGE value="Cors was messed up. &#10;For some reason, the bottom half of the file had been deleted. I'm not sure how this happened but it was probably somewhere during the installation of cs-fixer." />
     <MESSAGE value="re-enabled Separate LP balances per business" />
     <MESSAGE value="testing something" />
-    <option name="LAST_COMMIT_MESSAGE" value="testing something" />
+    <MESSAGE value="CHANGED: make users phone number unique" />
+    <MESSAGE value="REMOVED: +1 from phone number store/save functions" />
+    <MESSAGE value="ADDED: temp. validator for phone numbers saved through the user app" />
+    <MESSAGE value="FIXED: weird issue where if user subscription is not found the user would get a blank screen when loading their membership page" />
+    <MESSAGE value="ADDED: business-app routes &amp; storage link&#10;ADDED: AppVersionController to allow users to download their new business app&#10;ADDED: testing blade" />
+    <MESSAGE value="REMOVED: console logs" />
+    <MESSAGE value="ADDED: Content-type header" />
+    <MESSAGE value="ADDED: Content-Disposition header" />
+    <MESSAGE value="CHANGED: change name for download" />
+    <MESSAGE value="CHANGED: added filename*= per spec and changed from inline to attachment." />
+    <MESSAGE value="CHANGED: back to inline" />
+    <MESSAGE value="testing" />
+    <MESSAGE value="ADDED: config front_end_business_version value" />
+    <MESSAGE value="ADDED: config current_version_download_url" />
+    <MESSAGE value="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:" />
+    <option name="LAST_COMMIT_MESSAGE" value="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
