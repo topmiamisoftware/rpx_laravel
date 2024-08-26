@@ -358,6 +358,7 @@ class Ads extends Model
                 $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
                 if(count($ad) === 0) {
                     $ad = $this->getSpotbieAd($adType);
+                    $nearbyBusiness = null;
                 }
 
                 break;
