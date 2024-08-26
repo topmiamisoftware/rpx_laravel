@@ -348,7 +348,7 @@ class Ads extends Model
     ) {
         //  If there is a nearby business, then try getting one of its ads.
         $ad = $this->nearbyAd($nearbyBusiness, $adType);
-
+370
         // If there is no Ad, then return either one from a nearbyBusiness with an unrelated category, or
         // if there is no nearby business with an unrelated category, then return an ad from the SopotBie as list
         while (count($ad) === 0) {
@@ -366,8 +366,9 @@ class Ads extends Model
             }
         }
 
-        if (!is_null($nearbyBusiness)) {
+        if (! is_null($nearbyBusiness) && ! is_null($ad[0])) {
             $ad = $ad[0];
+
             if ($nearbyBusiness[0]) {
                 $nearbyBusiness = $nearbyBusiness[0];
             }
