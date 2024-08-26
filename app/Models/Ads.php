@@ -369,7 +369,7 @@ class Ads extends Model
             }
         }
 
-        if (! is_null($nearbyBusiness) && count($ad) > 0) {
+        if (! is_null($nearbyBusiness) && ! is_null($ad)) {
             $ad = $ad[0];
 
             if ($nearbyBusiness[0]) {
