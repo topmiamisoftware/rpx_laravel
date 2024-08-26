@@ -347,7 +347,7 @@ class Ads extends Model
         string $categories
     ) {
         //  If there is a nearby business, then try getting one of its ads.
-        $ad = $this->nearbyAd($nearbyBusiness, $adType)[0];
+        $ad = $this->nearbyAd($nearbyBusiness, $adType);
         // If there is no Ad, then return either one from a nearbyBusiness with an unrelated category, or
         // if there is no nearby business with an unrelated category, then return an ad from the SopotBie as list
         while(count($ad) === 0) {
