@@ -357,10 +357,12 @@ class Ads extends Model
             if (!is_null($nearbyBusiness)) {
                 // If there is a nearby Business with an unrelated category, try getting an AD from it.
                 $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
+                break;
             } else {
                 // else, let's return a Spotbie Ad.
                 $nearbyBusiness = null;
                 $ad = $this->getSpotbieAd($adType);
+                break;
             }
         }
 
