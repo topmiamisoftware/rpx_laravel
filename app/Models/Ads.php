@@ -377,7 +377,9 @@ class Ads extends Model
             $totalRewards = count(Reward::select('business_id')
                 ->where('business_id', '=', $nearbyBusiness->id)
                 ->get());
-            $this->addViewToAd($ad);
+            if($ad instanceof Ads) {
+                $this->addViewToAd($ad);
+            }
         } else {
             $ad = $this->getSpotbieAd($adType);
             $totalRewards = 0;
