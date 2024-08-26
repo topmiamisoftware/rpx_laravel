@@ -84,7 +84,7 @@ class SurroundingsController extends Controller
             'categories' => 'required|string|numeric',
         ]);
 
-        $categories = json_decode($validatedData['categories']);
+        $categories = $validatedData['categories'];
 
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
@@ -111,7 +111,7 @@ class SurroundingsController extends Controller
             ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
         })
         ->where('business.is_verified', 1)
-        ->whereJsonContains('business.categories', $categories)
+        ->where('business.categories', $categories)
         ->whereRaw("(
             (business.loc_x = $loc_x AND business.loc_y = $loc_y)
             OR (

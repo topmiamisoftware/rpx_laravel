@@ -92,7 +92,8 @@ class UserSeeder extends Seeder
 
         $placeToEatCategories = config('spotbie.my_business_categories_food');
         $indexOfBurgers = array_search('Burgers', $placeToEatCategories);
-        $placeToEatCategory = json_encode([$indexOfBurgers]);
+        var_dump($indexOfBurgers);
+        $placeToEatCategory = $indexOfBurgers;
 
         // Let's create 20 Burger shops so that this category may always return full paged results.
         User::factory()

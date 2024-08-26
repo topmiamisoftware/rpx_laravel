@@ -134,13 +134,13 @@ class BusinessFactory extends Factory
                 switch($userType)
                 {
                     case '1':
-                        $categories = array_rand(config('spotbie.my_business_categories_food'), 3);
+                        $categories = array_rand(config('spotbie.my_business_categories_food'));
                         break;
                     case '2':
-                        $categories = array_rand(config('spotbie.my_business_categories_shopping'), 3);
+                        $categories = array_rand(config('spotbie.my_business_categories_shopping'));
                         break;
                     case '3':
-                        $categories = array_rand(config('spotbie.my_business_categories_events'), 3);
+                        $categories = array_rand(config('spotbie.my_business_categories_events'));
                 }
                 $business->categories = json_encode($categories);
             }
