@@ -376,6 +376,7 @@ class Ads extends Model
                 ->get());
             $this->addViewToAd($ad);
         } else {
+            $ad = $this->getSpotbieAd($adType);
             $totalRewards = 0;
         }
 
