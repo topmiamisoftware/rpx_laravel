@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:">
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers">
       <change beforePath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Ads.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Ads.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/factories/BusinessFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/factories/BusinessFactory.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/ad-media" beforeDir="false" afterPath="$PROJECT_DIR$/public/ad-media" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/defaults" beforeDir="false" afterPath="$PROJECT_DIR$/public/defaults" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/receipts" beforeDir="false" afterPath="$PROJECT_DIR$/public/receipts" afterDir="false" />
@@ -358,7 +356,7 @@
       <workItem from="1722806614854" duration="6804000" />
       <workItem from="1723068114453" duration="11065000" />
       <workItem from="1724190945878" duration="3188000" />
-      <workItem from="1724535907346" duration="10134000" />
+      <workItem from="1724535907346" duration="21665000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the subscription with regular key issue.">
       <created>1657433063930</created>
@@ -499,30 +497,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1684737588687</updated>
-    </task>
-    <task id="LOCAL-00021" summary="CHANGED: make users phone number unique">
-      <option name="closed" value="true" />
-      <created>1721510252033</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1721510252033</updated>
-    </task>
-    <task id="LOCAL-00022" summary="REMOVED: +1 from phone number store/save functions">
-      <option name="closed" value="true" />
-      <created>1721511362915</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1721511362915</updated>
-    </task>
-    <task id="LOCAL-00023" summary="ADDED: temp. validator for phone numbers saved through the user app">
-      <option name="closed" value="true" />
-      <created>1721514293962</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1721514293962</updated>
     </task>
     <task id="LOCAL-00024" summary="ADDED: temp. validator for phone numbers saved through the user app">
       <option name="closed" value="true" />
@@ -724,7 +698,39 @@
       <option name="project" value="LOCAL" />
       <updated>1724041497725</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="ADDED: Ads Views">
+      <option name="closed" value="true" />
+      <created>1724626888965</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1724626888965</updated>
+    </task>
+    <task id="LOCAL-00050" summary="CHANGED: BusinessFactory now checks for BusinessName to avoid duplicates">
+      <option name="closed" value="true" />
+      <created>1724628624089</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1724628624090</updated>
+    </task>
+    <task id="LOCAL-00051" summary="ADDED: Add logging to views">
+      <option name="closed" value="true" />
+      <created>1724629637215</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1724629637215</updated>
+    </task>
+    <task id="LOCAL-00052" summary="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers">
+      <option name="closed" value="true" />
+      <created>1724638654184</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1724638654184</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -761,10 +767,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed the subscription with regular key issue." />
-    <MESSAGE value="Some cors stuff for cordova." />
-    <MESSAGE value="Some cors stuff localhost" />
-    <MESSAGE value="Fixed user type save on business verify" />
     <MESSAGE value="Lp &amp; business ad fix" />
     <MESSAGE value="cors fix" />
     <MESSAGE value="Lp Aggregator fix" />
@@ -786,7 +788,11 @@
     <MESSAGE value="ADDED: config front_end_business_version value" />
     <MESSAGE value="ADDED: config current_version_download_url" />
     <MESSAGE value="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:" />
-    <option name="LAST_COMMIT_MESSAGE" value="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:" />
+    <MESSAGE value="ADDED: Ads Views" />
+    <MESSAGE value="CHANGED: BusinessFactory now checks for BusinessName to avoid duplicates" />
+    <MESSAGE value="ADDED: Add logging to views" />
+    <MESSAGE value="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers" />
+    <option name="LAST_COMMIT_MESSAGE" value="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

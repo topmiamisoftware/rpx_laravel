@@ -48,7 +48,12 @@ class Ads extends Model
      * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
      * a random nearby business is pulled up based on the user's location and user type.
      */
-    public function nearbyBusinessNoCategory(string $loc_x, string $loc_y, int $businessType): \Illuminate\Database\Eloquent\Collection
+    public function nearbyBusinessNoCategory(
+        string $loc_x,
+        string $loc_y,
+        int $businessType,
+        string $categories
+    ): \Illuminate\Database\Eloquent\Collection
     {
         return Business::select(
             'business.id',
@@ -68,11 +73,11 @@ class Ads extends Model
             ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-                    ->where('loyalty_point_balances.balance', '>', 0)
                     ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
             })
             ->where('business.is_verified', 1)
             ->where('spotbie_users.user_type', '=', $businessType)
+            ->where('business.categories', '=', $categories)
             ->whereRaw("(
                 (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
                 OR (
@@ -189,7 +194,7 @@ class Ads extends Model
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
         if (0 === count($nearbyBusiness)) {
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories);
         }
 
         if (0 === count($nearbyBusiness)) {
@@ -198,7 +203,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0);
+            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -308,7 +313,7 @@ class Ads extends Model
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
         if (count($nearbyBusiness) === 0) {
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType);
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories);
         }
 
         if (count($nearbyBusiness) === 0) {
@@ -317,7 +322,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType,2);
+            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType,2, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -338,7 +343,8 @@ class Ads extends Model
         string $loc_x,
         string $loc_y,
         string $accountType,
-        int $adType
+        int $adType,
+        string $categories
     ) {
         //  If there is a nearby business, then try getting one of its ads.
         $ad = $this->nearbyAd($nearbyBusiness, $adType);
@@ -346,7 +352,7 @@ class Ads extends Model
         // If there is no Ad, then return either one from a nearbyBusiness with an unrelated category, or
         // if there is no nearby business with an unrelated category, then return an ad from the SopotBie as list
         while (count($ad) === 0) {
-            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType)[0];
+            $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories)[0];
 
             if (!is_null($nearbyBusiness)) {
                 // If there is a nearby Business with an unrelated category, try getting an AD from it.
@@ -440,7 +446,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0);
+            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
