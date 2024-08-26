@@ -386,6 +386,13 @@ class Ads extends Model
             $totalRewards = 0;
         }
 
+
+        if ($ad instanceof Ads) {
+            $ad;
+        } else {
+            $ad = $ad[0];
+        }
+
         return [
             "totalRewards" => $totalRewards,
             "nearbyBusiness" => $nearbyBusiness,
