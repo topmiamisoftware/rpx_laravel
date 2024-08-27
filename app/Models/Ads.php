@@ -203,7 +203,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
+            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -322,7 +322,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType,2, $categories);
+            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType,2, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -338,7 +338,7 @@ class Ads extends Model
         return response($response);
     }
 
-    public function nonRelatedCategoryAd(
+    public function getAd(
         string $nearbyBusiness,
         string $loc_x,
         string $loc_y,
@@ -385,7 +385,6 @@ class Ads extends Model
             $ad = $this->getSpotbieAd($adType);
             $totalRewards = 0;
         }
-
 
         if ($ad instanceof Ads) {
             $ad;
@@ -462,7 +461,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->nonRelatedCategoryAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
+            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
