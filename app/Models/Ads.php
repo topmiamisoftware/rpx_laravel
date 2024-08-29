@@ -102,7 +102,6 @@ class Ads extends Model
      */
     public function nearbyBusiness($loc_x, $loc_y, $category, $businessType): \Illuminate\Database\Eloquent\Collection
     {
-        Log::info('NearbyBusiness Business Type: '. $category);
         return Business::select(
             'business.id',
             'business.qr_code_link',
