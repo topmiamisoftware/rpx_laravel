@@ -297,7 +297,7 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
         $businessReward->tier_id = $validatedData['tier_id'];
-        if ( !is_null($validatedData['is_global']) ) {
+        if ( $request->exists('is_global') ) {
             $businessReward->is_global = $validatedData['is_global'];
         }
 
