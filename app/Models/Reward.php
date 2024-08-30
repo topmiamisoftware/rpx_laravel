@@ -285,7 +285,7 @@ class Reward extends Model
                     $qry->where('business_id', $business->id);
                 }),
             ],
-            'is_global' => 'required|boolean'
+            'is_global' => 'nullable|boolean' // Leave this to nullable until we replace the business site
         ]);
 
         $businessReward = $business->rewards()->find($validatedData['id']);
@@ -297,7 +297,9 @@ class Reward extends Model
         $businessReward->type = $validatedData['type'];
         $businessReward->point_cost = $validatedData['point_cost'];
         $businessReward->tier_id = $validatedData['tier_id'];
-        $businessReward->is_global = $validatedData['is_global'];
+        if ( !is_null($validatedData['is_global']) ) {
+            $businessReward->is_global = $validatedData['is_global'];
+        }
 
         DB::transaction(function () use ($businessReward) {
             $businessReward->save();
