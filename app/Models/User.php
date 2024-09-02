@@ -420,6 +420,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     private function sendConfirmationSms($user = null, $spotbieUser = null, $businessName = null) {
+        if (env('APP_ENV') === 'staging') {
+            return;
+        }
+
         $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
         SendAccountCreatedThroughBusinessSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName)
