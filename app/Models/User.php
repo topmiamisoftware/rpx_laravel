@@ -1042,9 +1042,9 @@ class User extends Authenticatable implements JWTSubject
                 $user->save();
                 $loyaltyPointBalance->save();
             }, 3);
-        }
 
-        $user = $user->refresh();
+            $user = $user->refresh();
+        }
 
         $response = [
             'success' => true,
