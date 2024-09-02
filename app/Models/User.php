@@ -398,6 +398,10 @@ class User extends Authenticatable implements JWTSubject
 
     private function sendConfirmationEmail(User $user = null, SpotbieUser $spotbieUser = null, bool $withLink = false)
     {
+        if (env('APP_ENV') === 'staging') {
+            return;
+        }
+
         if (is_null($user)) {
             $user = Auth::user();
             $spotbieUser = $user->spotbieUser()->first();
