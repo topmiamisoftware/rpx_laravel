@@ -407,8 +407,6 @@ class User extends Authenticatable implements JWTSubject
             $spotbieUser = $user->spotbieUser()->first();
         }
 
-        Log::info('HI' . $user->email);
-
         $credentials = array(
             "email" => $user->email
         );
