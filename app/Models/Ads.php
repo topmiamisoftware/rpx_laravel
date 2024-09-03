@@ -401,22 +401,12 @@ class Ads extends Model
     public function nearbyAd($businessId, $type)
     {
 
-        $ad = Ads::select('id', 'uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
+        return Ads::select('id', 'uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
             ->where('type', $type)
             ->where('business_id', '=', $businessId)
             ->where('is_live', '=', 1)
             ->orderBy('views', 'desc')
             ->limit(1)->get();
-
-        if (count($ad) > 0) {
-            $ad[0]->views = $ad[0]->views + 1;
-            $ad[0]->save();
-            return $ad[0];
-        }
-
-
-
-        return $ad;
     }
 
     public function featuredAdList(Request $request)
