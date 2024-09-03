@@ -69,7 +69,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh()
+    public function refreshWToken()
     {
         return $this->respondWithToken(Auth::refresh());
     }
@@ -188,7 +188,7 @@ class User extends Authenticatable implements JWTSubject
 
         $newSpotbieUser = $user->spotbieUser()->select('default_picture', 'user_type')->first();
 
-        //Start the session
+        // Start the session
         Auth::login($user);
 
         if (config('env') === 'production') {
@@ -1045,7 +1045,7 @@ class User extends Authenticatable implements JWTSubject
                 $loyaltyPointBalance->save();
             }, 3);
 
-            $user = $user->refresh();
+            $user = Cashier::findBillable($userStripeId);
         }
 
         $response = [
