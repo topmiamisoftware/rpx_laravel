@@ -191,7 +191,9 @@ class User extends Authenticatable implements JWTSubject
         //Start the session
         Auth::login($user);
 
-        $this->sendConfirmationEmail();
+        if (config('env') === 'production') {
+            $this->sendConfirmationEmail();
+        }
 
         $user = Auth::user();
         $user = $user
