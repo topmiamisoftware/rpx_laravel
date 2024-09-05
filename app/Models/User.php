@@ -473,6 +473,7 @@ class User extends Authenticatable implements JWTSubject
 
         $nextPayment = null;
         $endsAt = null;
+        $trialEndsAt = null;
 
         if (count($business) > 0)
         {
@@ -511,12 +512,14 @@ class User extends Authenticatable implements JWTSubject
                     $nextPayment = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->current_period_end);
                     if($user->subscription($user->id)->asStripeSubscription()->cancel_at) {
                         $endsAt = Carbon::createFromTimestamp($user->subscription($user->id)->asStripeSubscription()->cancel_at);
+                        $trialEndsAt =  Carbon::createFromTimestamp($user->trial_ends_at);
                     }
                 } catch (Exception $e) {
                     $user->subscription($user->id)->cancel();
 
                     $nextPayment = null;
                     $endsAt = null;
+                    $trialEndsAt = null;
                     $isSubscribed = false;
                     $userSubscriptionPlan = null;
                 }
@@ -542,6 +545,7 @@ class User extends Authenticatable implements JWTSubject
             'loyalty_point_balance' => $loyaltyPointBalance,
             'next_payment'          => $nextPayment,
             'ends_at' => $endsAt,
+            'trial_ends_at' => $trialEndsAt,
         ];
 
         return response($settingsResponse);
