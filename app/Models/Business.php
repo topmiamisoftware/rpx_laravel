@@ -219,8 +219,6 @@ class Business extends Model
         $business->loc_y = $validatedData['loc_y'];
         $business->categories = $validatedData['categories'];
 
-        $business->is_verified = 0;
-
         $business->qr_code_link = Str::uuid();
 
         DB::transaction(function () use ($business, $user) {
