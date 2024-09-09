@@ -358,6 +358,9 @@ class Ads extends Model
                 if(count($ad) === 0) {
                     $ad = $this->getSpotbieAd($adType);
                     $nearbyBusiness = null;
+                } else {
+                    $ad = $ad[0];
+                    $this->addViewToAd($ad);
                 }
 
                 break;
@@ -370,25 +373,17 @@ class Ads extends Model
         }
 
         if (! is_null($nearbyBusiness)) {
-
             if ($nearbyBusiness[0]) {
                 $nearbyBusiness = $nearbyBusiness[0];
             }
+
             $totalRewards = count(Reward::select('business_id')
                 ->where('business_id', '=', $nearbyBusiness->id)
                 ->get());
-            if($ad instanceof Ads) {
-                $this->addViewToAd($ad);
-            }
+
         } else {
             $ad = $this->getSpotbieAd($adType);
             $totalRewards = 0;
-        }
-
-        if ($ad instanceof Ads) {
-            $ad;
-        } else {
-            $ad = $ad[0];
         }
 
         return [
