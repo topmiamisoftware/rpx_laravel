@@ -456,7 +456,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
+            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 1, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
