@@ -36,8 +36,9 @@ class AdsFactory extends Factory
             'images'        => $images,
             'images_mobile' => $images,
             'dollar_cost'   => 0,
-            'clicks'        => rand(0, 500),
-            'views'         => rand(0, 1500),
+            'clicks'        => 0,
+            'views_from_start' => 0,
+            'views'         => 0,
             'is_live'       => 1,
         ];
     }
