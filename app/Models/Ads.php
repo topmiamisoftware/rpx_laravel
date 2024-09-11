@@ -146,7 +146,6 @@ class Ads extends Model
                         <= 0.1
                     )
             )")
-            ->has('rewards')
             ->orderBy('exposure_level', 'asc')
             ->limit(1)
             ->get();
