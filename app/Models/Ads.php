@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Log;
 /** @property string $updated_at */
 /** @property string $uuid */
 /** @property int $views */
+/** @property int $views_from_start */
 class Ads extends Model
 {
     use HasFactory, SoftDeletes;
@@ -68,12 +69,16 @@ class Ads extends Model
             'business.loc_y',
             'spotbie_users.user_type',
             'loyalty_point_balances.balance',
-            'loyalty_point_balances.loyalty_point_dollar_percent_value'
+            'loyalty_point_balances.loyalty_point_dollar_percent_value',
+            'ads.views',
+            'ads.views_from_start',
+            'ads.clicks',
+            DB::raw('(0.4 * ads.views_from_start) + (0.2 * ads.views) + (0.4 * ads.clicks) as exposure_level')
         )
             ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+            ->join('ads', 'business.id', '=', 'ads.business_id')
             ->join('loyalty_point_balances', function ($join) {
-                $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+                $join->on('business.id', '=', 'loyalty_point_balances.business_id');
             })
             ->where('business.is_verified', 1)
             ->where('spotbie_users.user_type', '=', $businessType)
@@ -91,7 +96,7 @@ class Ads extends Model
                     )
             )")
             ->has('rewards')
-            ->inRandomOrder()
+            ->orderBy('exposure_level', 'asc')
             ->limit(1)
             ->get();
     }
@@ -117,13 +122,14 @@ class Ads extends Model
             'loyalty_point_balances.balance',
             'loyalty_point_balances.loyalty_point_dollar_percent_value',
             'ads.views',
-            'ads.clicks'
+            'ads.views_from_start',
+            'ads.clicks',
+            DB::raw('(0.4 * ads.views_from_start) + (0.2 * ads.views) + (0.4 * ads.clicks) as exposure_level')
         )
             ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
             ->join('ads', 'business.id', '=', 'ads.business_id')
             ->join('loyalty_point_balances', function ($join) {
-                $join->on('business.id', '=', 'loyalty_point_balances.business_id')
-                    ->where('loyalty_point_balances.loyalty_point_dollar_percent_value', '>', 0);
+                $join->on('business.id', '=', 'loyalty_point_balances.business_id');
             })
             ->where('business.is_verified', 1)
             ->where('spotbie_users.user_type', '=', $businessType)
@@ -140,7 +146,7 @@ class Ads extends Model
                         <= 0.1
                     )
             )")
-            ->has('rewards')
+            ->orderBy('exposure_level', 'asc')
             ->limit(1)
             ->get();
     }
@@ -242,6 +248,7 @@ class Ads extends Model
         // Add click to ad.
         DB::transaction(function () use ($ad) {
             $ad->views = $ad->views + 1;
+            $ad->views_from_start = $ad->views_from_start + 1;
             $ad->save();
             Log::info("[Ads][addViewToAd] Added - ID: ".$ad->id. " - Views: ". $ad->views);
         }, 3);
@@ -456,7 +463,7 @@ class Ads extends Model
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
-            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
+            $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 1, $categories);
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -561,6 +568,12 @@ class Ads extends Model
 
         $businessAd->uuid = Str::uuid();
 
+        $greatestAdViews = Ads::select('is_live', 'type', 'views')
+            ->where('is_live', true)
+            ->where('type', $validatedData['type'])
+            ->orderByDesc('views')
+            ->get()->pluck('views')[0];
+
         $businessAd->business_id = $business->id;
 
         $businessAd->name = $validatedData['name'];
@@ -568,6 +581,8 @@ class Ads extends Model
         $businessAd->images_mobile = $validatedData['images_mobile'];
         $businessAd->type = $validatedData['type'];
         $businessAd->is_live = true;
+        $businessAd->views = $greatestAdViews;
+        $businessAd->views_from_start = 0;
 
         switch ($businessAd->type)
         {
