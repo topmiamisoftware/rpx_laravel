@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
+use Reliese\Coders\Model\Relations\HasOne;
 
 class Business extends Model
 {
@@ -51,6 +52,11 @@ class Business extends Model
     public function recentGuests(): HasMany
     {
         return $this->hasMany('App\Models\LoyaltyPointBalance', 'from_business', 'id');
+    }
+
+    public function businessExposure()
+    {
+        return $this->hasOne('App\Models\BusinessExposure', 'business_id')->latestOfMany();
     }
 
     public function ads()
@@ -227,7 +233,7 @@ class Business extends Model
 
             $business->refresh();
 
-            if($business->loyaltyPointBalance === null) {
+            if ($business->loyaltyPointBalance === null) {
                 $lpBalance = new LoyaltyPointBalance();
                 $lpBalance->user_id = $user->id;
                 $lpBalance->from_business = 0;
@@ -239,6 +245,12 @@ class Business extends Model
                 $lpBalance->save();
             }
 
+            if($business->businessExposure() === null) {
+                $businessExposure = new BusinessExposure();
+                $businessExposure->total_exposure = 0;
+                $businessExposure->business_id = $business->id;
+                $businessExposure->save();
+            }
         }, 3);
 
         $response = [

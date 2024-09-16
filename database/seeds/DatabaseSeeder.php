@@ -15,5 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
         $this->call(SpotbieAdsSeeder::class);
+        $this->call(ChangeBusinessNamesSeeder::class);
+        $this->call(AddBusinessExposureSeeder::class);
     }
 }

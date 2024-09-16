@@ -54,33 +54,30 @@ class Ads extends Model
         string $loc_y,
         int $businessType,
         string $categories
-    ): \Illuminate\Database\Eloquent\Collection
+    ): Business | null
     {
-        return Business::select(
-            'business.id',
-            'business.qr_code_link',
-            'business.name',
-            'business.address',
-            'business.categories',
-            'business.description',
-            'business.photo',
-            'business.qr_code_link',
-            'business.loc_x',
-            'business.loc_y',
-            'spotbie_users.user_type',
-            'loyalty_point_balances.balance',
-            'loyalty_point_balances.loyalty_point_dollar_percent_value',
-            'ads.views',
-            'ads.views_from_start',
-            'ads.clicks',
-            DB::raw('(0.4 * ads.views_from_start) + (0.2 * ads.views) + (0.4 * ads.clicks) as exposure_level')
-        )
+        $a = Business::select(
+                'business.id',
+                'business.qr_code_link',
+                'business.name',
+                'business.address',
+                'business.categories',
+                'business.description',
+                'business.photo',
+                'business.qr_code_link',
+                'business.loc_x',
+                'business.loc_y',
+                'spotbie_users.user_type',
+                'loyalty_point_balances.balance',
+                'loyalty_point_balances.loyalty_point_dollar_percent_value',
+                'business_exposure.total_exposure'
+            )
+            ->where('business.is_verified', 1)
+            ->join('business_exposure', 'business_exposure.business_id', '=', 'business.id')
             ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-            ->join('ads', 'business.id', '=', 'ads.business_id')
             ->join('loyalty_point_balances', function ($join) {
                 $join->on('business.id', '=', 'loyalty_point_balances.business_id');
             })
-            ->where('business.is_verified', 1)
             ->where('spotbie_users.user_type', '=', $businessType)
             ->where('business.categories', '=', $categories)
             ->whereRaw("(
@@ -95,19 +92,20 @@ class Ads extends Model
                         <= 0.1
                     )
             )")
-            ->has('rewards')
-            ->orderBy('exposure_level', 'asc')
-            ->limit(1)
-            ->get();
+            ->orderBy('business_exposure.total_exposure', 'asc')->get()[0] ?? null;
+
+        Log::info('Nearby Business No Category: '.$a);
+
+        return $a;
     }
 
     /**
      * Before users pull up an ad we first need to make sure we pull up a business. The way this works is that
      * a nearby business in the chosen $category is pulled up based on the user's location and businessType.
      */
-    public function nearbyBusiness($loc_x, $loc_y, $category, $businessType): \Illuminate\Database\Eloquent\Collection
+    public function nearbyBusiness($loc_x, $loc_y, $category, $businessType): Business | null
     {
-        return Business::select(
+        $a = Business::select(
             'business.id',
             'business.qr_code_link',
             'business.name',
@@ -121,34 +119,33 @@ class Ads extends Model
             'spotbie_users.user_type',
             'loyalty_point_balances.balance',
             'loyalty_point_balances.loyalty_point_dollar_percent_value',
-            'ads.views',
-            'ads.views_from_start',
-            'ads.clicks',
-            DB::raw('(0.4 * ads.views_from_start) + (0.2 * ads.views) + (0.4 * ads.clicks) as exposure_level')
+            'business_exposure.total_exposure'
         )
-            ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
-            ->join('ads', 'business.id', '=', 'ads.business_id')
-            ->join('loyalty_point_balances', function ($join) {
-                $join->on('business.id', '=', 'loyalty_point_balances.business_id');
-            })
-            ->where('business.is_verified', 1)
-            ->where('spotbie_users.user_type', '=', $businessType)
-            ->where('business.categories', $category)
-            ->whereRaw("(
-                (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
-                OR (
-                        ABS (
-                                SQRT    (
-                                            (POWER ( (business.loc_x - {$loc_x}), 2) ) +
-                                            (POWER ( (business.loc_y - {$loc_y}), 2) )
-                                        )
-                            )
-                        <= 0.1
-                    )
-            )")
-            ->orderBy('exposure_level', 'asc')
-            ->limit(1)
-            ->get();
+        ->where('business.is_verified', 1)
+        ->join('business_exposure', 'business_exposure.business_id', '=', 'business.id')
+        ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
+        ->join('loyalty_point_balances', function ($join) {
+            $join->on('business.id', '=', 'loyalty_point_balances.business_id');
+        })
+        ->where('spotbie_users.user_type', '=', $businessType)
+        ->where('business.categories', $category)
+        ->whereRaw("(
+            (business.loc_x = {$loc_x} AND business.loc_y = {$loc_y})
+            OR (
+                    ABS (
+                            SQRT    (
+                                        (POWER ( (business.loc_x - {$loc_x}), 2) ) +
+                                        (POWER ( (business.loc_y - {$loc_y}), 2) )
+                                    )
+                        )
+                    <= 0.1
+                )
+        )")
+        ->orderBy('business_exposure.total_exposure', 'asc')->get()[0] ?? null;
+
+        Log::info('Nearby Business: '.$a);
+
+        return $a ?? null;
     }
 
     /**
@@ -198,17 +195,18 @@ class Ads extends Model
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (0 === count($nearbyBusiness)) {
+        if (is_null($nearbyBusiness)) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories);
         }
 
-        if (0 === count($nearbyBusiness)) {
+        if (is_null($nearbyBusiness)) {
             $ad = $this->getSpotbieAd(0);
 
             $nearbyBusiness = null;
             $totalRewards = 0;
         } else {
             $adInfo = $this->getAd($nearbyBusiness, $loc_x, $loc_y, $accountType, 0, $categories);
+
             $ad = $adInfo["ad"];
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
@@ -245,6 +243,9 @@ class Ads extends Model
     {
         Log::info("[Ads][addViewToAd] Adding - ID: ".$ad->id);
         $ad = Ads::find($ad->id);
+
+        $this->updateTotalExposure($ad->business_id);
+
         // Add click to ad.
         DB::transaction(function () use ($ad) {
             $ad->views = $ad->views + 1;
@@ -252,6 +253,36 @@ class Ads extends Model
             $ad->save();
             Log::info("[Ads][addViewToAd] Added - ID: ".$ad->id. " - Views: ". $ad->views);
         }, 3);
+    }
+
+    public function updateTotalExposure($businessId) {
+        /**
+         * Move this into a service
+         */
+        $business = Business::find($businessId);
+        $businessExposure = BusinessExposure::where('business_id', $businessId)->first();
+
+        if ( is_null($businessExposure) ) {
+            $businessExposure = new BusinessExposure();
+            $businessExposure->business_id = $business->id;
+            $viewCalculation = 0;
+            $businessExposure->total_exposure = $viewCalculation;
+            Log::info('[BusinessExposure][createTotalExposure] Business ID: '.$businessId.' Record Id: '.$businessExposure->id . ' Business Exposure: ' . $viewCalculation);
+            $businessExposure->save();
+        } else {
+            $viewCalculationList = Ads::select('id', 'views', 'clicks', 'views_from_start', DB::raw('(views * .2) + (clicks * .4) + (views_from_start * .4) as business_exposure'))
+                ->where('business_id', $business->id)->get();
+            $vcSum = 0;
+            foreach ($viewCalculationList as $vc)
+            {
+                $vcSum = $vcSum + $vc->business_exposure / count($viewCalculationList);
+            }
+
+            Log::info('[BusinessExposure][updateTotalExposure] Business ID: '.$businessId.' Record Id: '.$businessExposure->id . ' Business Exposure: ' . $vcSum);
+            $businessExposure->business_id = $business->id;
+            $businessExposure->total_exposure = $vcSum;
+            $businessExposure->save();
+        }
     }
 
     public function getByUuid(Request $request)
@@ -318,11 +349,11 @@ class Ads extends Model
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (count($nearbyBusiness) === 0) {
+        if (is_null($nearbyBusiness)) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories);
         }
 
-        if (count($nearbyBusiness) === 0) {
+        if (is_null($nearbyBusiness)) {
             $ad = $this->getSpotbieAd(2);
 
             $nearbyBusiness = null;
@@ -345,7 +376,7 @@ class Ads extends Model
     }
 
     public function getAd(
-        string $nearbyBusiness,
+        $nearbyBusiness,
         string $loc_x,
         string $loc_y,
         string $accountType,
@@ -353,16 +384,23 @@ class Ads extends Model
         string $categories
     ) {
         //  If there is a nearby business, then try getting one of its ads.
-        $ad = $this->nearbyAd($nearbyBusiness, $adType);
+        Log::info("For business ID " . $nearbyBusiness);
+        $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
+
+        if (! is_null($ad)) {
+            $this->addViewToAd($ad);
+        }
+
         // If there is no Ad, then return either one from a nearbyBusiness with an unrelated category, or
         // if there is no nearby business with an unrelated category, then return an ad from the SopotBie as list
-        while(count($ad) === 0) {
+        while( is_null($ad) ) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories)[0];
 
-            if (!is_null($nearbyBusiness)) {
+            if (! is_null($nearbyBusiness)) {
                 // If there is a nearby Business with an unrelated category, try getting an AD from it.
+                Log::info("For business ID" . $nearbyBusiness);
                 $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
-                if(count($ad) === 0) {
+                if(is_null($ad)) {
                     $ad = $this->getSpotbieAd($adType);
                     $nearbyBusiness = null;
                 } else {
@@ -380,10 +418,6 @@ class Ads extends Model
         }
 
         if (! is_null($nearbyBusiness)) {
-            if ($nearbyBusiness[0]) {
-                $nearbyBusiness = $nearbyBusiness[0];
-            }
-
             $totalRewards = count(Reward::select('business_id')
                 ->where('business_id', '=', $nearbyBusiness->id)
                 ->get());
@@ -402,13 +436,19 @@ class Ads extends Model
 
     public function nearbyAd($businessId, $type)
     {
+        $a = Ads::select(
+            'id', 'uuid', 'business_id', 'type', 'name', 'images', 'images_mobile', 'views_from_start',
+            'views', 'clicks', DB::raw('(views_from_start * .4) + (views * .2) + (clicks * .4) as total_exposure')
+        )
+        ->where('type', $type)
+        ->where('business_id', '=', $businessId)
+        ->where('is_live', '=', 1)
+        ->orderBy('total_exposure', 'desc')
+        ->get()[0] ?? null;
 
-        return Ads::select('id', 'uuid', 'business_id', 'type', 'name', 'images', 'images_mobile')
-            ->where('type', $type)
-            ->where('business_id', '=', $businessId)
-            ->where('is_live', '=', 1)
-            ->orderBy('views', 'desc')
-            ->limit(1)->get();
+        Log::info("NearbyAD: " . $a . " Business ID: " . $businessId);
+
+        return $a;
     }
 
     public function featuredAdList(Request $request)
@@ -453,11 +493,11 @@ class Ads extends Model
         // Get a nearby business.
         $nearbyBusiness = $this->nearbyBusiness($loc_x, $loc_y, $categories, $accountType);
 
-        if (0 === count($nearbyBusiness)) {
+        if (is_null($nearbyBusiness)) {
             $nearbyBusiness = $this->nearbyBusinessNoCategory($loc_x, $loc_y, $accountType, $categories);
         }
 
-        if (0 === count($nearbyBusiness)) {
+        if (is_null($nearbyBusiness)) {
             $ad = $this->getSpotbieAdList();
 
             $nearbyBusiness = null;
@@ -468,6 +508,8 @@ class Ads extends Model
             $nearbyBusiness = $adInfo["nearbyBusiness"];
             $totalRewards = $adInfo["totalRewards"];
         }
+
+        Log::info("FeaturedAdList business: " . $nearbyBusiness);
 
         $response = [
             'success'      => true,

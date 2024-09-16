@@ -42,7 +42,7 @@ class ChangeBusinessNamesSeeder extends Seeder
 
         foreach ($businessList as $business)
         {
-            $randomName = $randomBusinessList[rand(0, count($randomBusinessList) - 1)];
+            $randomName = $randomBusinessList[rand(0, count($randomBusinessList) - 1)] . random_int(0, 359);
 
             DB::table('business')
             ->where('id', $business->id)
