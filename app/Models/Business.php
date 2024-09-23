@@ -245,7 +245,7 @@ class Business extends Model
                 $lpBalance->save();
             }
 
-            if($business->businessExposure() === null) {
+            if(is_null( $business->businessExposure()->get()[0] ?? null)) {
                 $businessExposure = new BusinessExposure();
                 $businessExposure->total_exposure = 0;
                 $businessExposure->business_id = $business->id;
