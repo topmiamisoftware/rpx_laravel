@@ -13,6 +13,11 @@ class BusinessController extends Controller
         return $business->verify($request);
     }
 
+    public function uploadPhoto(Request $request, Business $business)
+    {
+        return $business->uploadPhoto($request);
+    }
+
     public function saveBusiness(Request $request, Business $business)
     {
         return $business->saveBusiness($request);

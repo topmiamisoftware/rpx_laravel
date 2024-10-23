@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\UrlHelper;
 use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,10 +12,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Laravel\Cashier\Cashier;
-use Reliese\Coders\Model\Relations\HasOne;
+use Image;
 
 class Business extends Model
 {
@@ -377,4 +379,50 @@ class Business extends Model
 
         return response($response);
     }
+
+    public function uploadPhoto(Request $request)
+    {
+        $success = true;
+        $message = null;
+
+        $validatedData = $request->validate([
+            'image' => 'required|image|max:25000',
+        ]);
+
+        $user = Auth::user();
+
+        $hashedFileName = $validatedData['image']->hashName();
+
+        $newFile = Image::make($request->file('image'))->resize(1200, null, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+
+        $newFile = $newFile->encode('jpg', 60);
+        $newFile = (string) $newFile;
+
+        $environment = App::environment();
+
+        $imagePath = 'defaults/images/' . $user->id . '/' . $hashedFileName;
+
+        if ($environment == 'local')
+        {
+            Storage::put($imagePath, $newFile);
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
+        }
+        else
+        {
+            Storage::put($imagePath, $newFile, 'public');
+            $imagePath = UrlHelper::getServerUrl() . $imagePath;
+        }
+
+        $response = [
+            'success' => $success,
+            'message' => $environment,
+            'image'   => $imagePath,
+        ];
+
+        return response($response);
+    }
+
 }
