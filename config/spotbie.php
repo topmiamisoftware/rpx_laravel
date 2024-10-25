@@ -18,7 +18,7 @@
         'Pop-up Shops', 'Props', 'Public Markets', 'Religious Items', 'Safe Stores', 'Safety Equipment', 'Shopping Centers',
         'Souvenir Shops', 'Spiritual Shops', 'Sporting Goods', 'Tabletop Games', 'Teacher Supplies', 'Thrift Stores', 'Tobacco Shops',
         'Toy Stores', 'Trophy Shops', 'Uniforms', 'Used Bookstore', 'Vape Shops', 'Vitamins & Supplements', 'Watches',
-        'Wholesale Stores', 'Wigs'];
+        'Wholesale Stores', 'Wigs', 'Smoke Shop'];
 
     $eventCategories = ['Film', 'Arts & Theatre', 'Music', 'Sports', 'Miscellaneous', 'Nonticket'];
 
