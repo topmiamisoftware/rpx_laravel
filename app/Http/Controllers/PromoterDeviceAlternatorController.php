@@ -25,9 +25,10 @@ class PromoterDeviceAlternatorController extends Controller
         $businessIdList = explode(",", $businessList);
 
         $finalBusinessList = Business::whereIn('id', $businessIdList)
+            ->has('rewards')
             ->with('loyaltyTiers')
             ->with('spotbieUser')
-            ->has('rewards')
+            ->with('rewards')
             ->inRandomOrder()
             ->get();
 
