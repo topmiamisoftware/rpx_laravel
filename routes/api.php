@@ -27,3 +27,4 @@ Route::prefix('redeemable')->group(__DIR__ . '/Redeemable/Redeemable.routes.php'
 Route::prefix('lp-tiers')->group(__DIR__ . '/LoyaltyTiers/LoyaltyTiers.routes.php');
 Route::prefix('feedback')->group(__DIR__ . '/Feedback/Feedback.routes.php');
 Route::prefix('business-app')->group(__DIR__ . '/AppDownload/BusinessApp.routes.php');
+Route::prefix('promoter')->group(__DIR__ . '/Promoter/Promoter.routes.php');
