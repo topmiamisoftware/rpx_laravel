@@ -49,6 +49,10 @@
         'header_banner_product' => env('SPOTBIE_HEADER_AD_STRIPE_PRODUCT'),
         'header_banner_price'   => env('SPOTBIE_HEADER_AD_PRICE'),
 
+        'sms' => [
+            'queue' => env('SPOTBIE_QUEUE'),
+        ],
+
         'featured_related_product' => env('SPOTBIE_FEATURED_AD_STRIPE_PRODUCT'),
         'featured_related_price'   => env('SPOTBIE_FEATURED_AD_PRICE'),
 

@@ -429,7 +429,7 @@ class User extends Authenticatable implements JWTSubject
         $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
         SendAccountCreatedThroughBusinessSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName)
-            ->onQueue('sms.miami.fl.1');
+            ->onQueue(config('spotbie.sms.queue'));
     }
 
     public function getSettings()
@@ -614,7 +614,7 @@ class User extends Authenticatable implements JWTSubject
             if (array_key_exists('phone_number', $validatedData) && $user->spotbieUser->sms_opt_in === 0) {
                 $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
                 SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
-                    ->onQueue('sms.miami.fl.1');
+                    ->onQueue(config('spotbie.sms.queue'));
             } else {
                 // User already opted-in, no need to send opt-in confirmation message.
                 if(array_key_exists('phone_number', $validatedData) && $validatedData['phone_number'] !== '+1'){

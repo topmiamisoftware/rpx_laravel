@@ -303,7 +303,7 @@ class RedeemableItems extends Model
             $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
             SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions)
-                ->onQueue('sms.miami.fl.1');
+                ->onQueue(config('spotbie.sms.queue'));
         }
     }
 

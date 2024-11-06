@@ -263,7 +263,7 @@ class Reward extends Model
         if (! is_null($spotbieUser->phone_number) && $spotbieUser->sms_opt_in === 1) {
             $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
             SendRewardRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $rewardName, $sendSmsWithLoginInstructions)
-                ->onQueue('sms.miami.fl.1');
+                ->onQueue(config('spotbie.sms.queue'));
         }
     }
 
