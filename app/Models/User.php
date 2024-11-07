@@ -1161,9 +1161,9 @@ class User extends Authenticatable implements JWTSubject
             DB::transaction(function () use ($deviceAlternatorRecord, $validatedData) {
                 $pB = new PromoterBonus();
 
-                $pB->time_range_1 = $validatedData["promotion"]["time_rangeOne"];
-                $pB->time_range_2 = $validatedData["promotion"]["time_rangeTwo"];
-                $pB->time_range_3 = $validatedData["promotion"]["time_rangeThree"];
+                $pB->time_range_1 = $validatedData["promotion"]["timeRangeOne"];
+                $pB->time_range_2 = $validatedData["promotion"]["timeRangeTwo"];
+                $pB->time_range_3 = $validatedData["promotion"]["timeRangeThree"];
                 $pB->day = $validatedData["promotion"]["day"];
                 $pB->business_id = $validatedData["promotion"]["businessId"];
                 $pB->lp_amount = $deviceAlternatorRecord->lp_amount;
