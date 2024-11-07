@@ -1133,11 +1133,11 @@ class User extends Authenticatable implements JWTSubject
             'email' => ['required', 'unique:users', 'email'],
             'phone_number' => 'sometimes|string|unique:spotbie_users|max:35|nullable',
             'firstName' => ['required', new FirstName],
-            'promotion.timeRangeOne' => ['nullable|string'],
-            'promotion.timeRangeTwo' => ['nullable|string'],
-            'promotion.timeRangeThree' => ['nullable|string'],
-            'promotion.day' => ['nullable|string'],
-            'promotion.businessId' => ['nullable|string']
+            'promotion.timeRangeOne' => 'nullable|string',
+            'promotion.timeRangeTwo' => 'nullable|string',
+            'promotion.timeRangeThree' => 'nullable|string',
+            'promotion.day' => 'nullable|string',
+            'promotion.businessId' => 'nullable|string'
         ]);
 
         $user = new User();
