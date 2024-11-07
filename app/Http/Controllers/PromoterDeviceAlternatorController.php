@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Business;
 use App\Models\PromoterDeviceAlternator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Bus;
 
 class PromoterDeviceAlternatorController extends Controller
 {
@@ -32,7 +31,7 @@ class PromoterDeviceAlternatorController extends Controller
             ->inRandomOrder()
             ->get();
 
-        return response()->json([
+        return response([
             'business_list' => $finalBusinessList
         ]);
     }

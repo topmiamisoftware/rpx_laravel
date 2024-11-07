@@ -19,6 +19,9 @@ class CreatePromoterDeviceAlternatorsTable extends Migration
             $table->float('loc_y', 8, 6)->nullable();
             $table->string('business_list', 2500)->nullable();
             $table->string('device_id', 65)->unique()->nullable();
+            $table->string('device_ip', 65)->unique()->nullable();
+            $table->unsignedBigInteger('user_id')->references('id')->on('users');
+            $table->float('lp_amount')->nullable(false)->default(0);
             $table->timestamps();
         });
     }
