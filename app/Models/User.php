@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Jobs\SendSystemSms;
 use App\Jobs\SendAccountCreatedThroughBusinessSms;
 use Auth;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Log;
 use Mail;
 use App\Mail\User\AccountCreated;
@@ -1127,10 +1126,19 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function createUser(Request $request) {
+
+        $loggedInUser = Auth::user();
+
         $validatedData = $request->validate([
             'email' => ['required', 'unique:users', 'email'],
             'phone_number' => 'sometimes|string|unique:spotbie_users|max:35|nullable',
             'firstName' => ['required', new FirstName],
+            'promotion' => ['optional'],
+            'promotion.timeRangeOne' => ['required|string'],
+            'promotion.timeRangeTwo' => ['required|string'],
+            'promotion.timeRangeThree' => ['required|string'],
+            'promotion.day' => ['required|string'],
+            'promotion.businessId' => ['required|string']
         ]);
 
         $user = new User();
@@ -1147,6 +1155,23 @@ class User extends Authenticatable implements JWTSubject
 
         $message = "success";
         $e = null;
+
+        if (array_key_exists('promotion', $validatedData)) {
+            $deviceAlternatorRecord =  PromoterDeviceAlternator::where('user_id', $loggedInUser->id)->first();
+
+            DB::transaction(function () use ($deviceAlternatorRecord, $validatedData) {
+                $pB = new PromoterBonus();
+
+                $pB->time_range_1 = $validatedData["promotion"]["time_rangeOne"];
+                $pB->time_range_2 = $validatedData["promotion"]["time_rangeTwo"];
+                $pB->time_range_3 = $validatedData["promotion"]["time_rangeThree"];
+                $pB->day = $validatedData["promotion"]["day"];
+                $pB->business_id = $validatedData["promotion"]["businessId"];
+                $pB->lp_amount = $deviceAlternatorRecord->lp_amount;
+                $pB->redeemed = false;
+                $pB->save();
+            });
+        }
 
         try {
             $user->save();
