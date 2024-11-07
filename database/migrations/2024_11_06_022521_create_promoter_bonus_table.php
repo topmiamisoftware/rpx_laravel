@@ -26,6 +26,7 @@ class CreatePromoterBonusTable extends Migration
             $table->string('day');
             $table->string('time_range_1');
             $table->string('time_range_2');
+            $table->string('time_range_3');
         });
     }
 
