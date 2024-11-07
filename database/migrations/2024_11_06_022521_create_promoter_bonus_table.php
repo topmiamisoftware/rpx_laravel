@@ -20,6 +20,7 @@ class CreatePromoterBonusTable extends Migration
             $table->timestamps();
             $table->boolean('redeemed')->default(false);
             $table->unsignedBigInteger('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('promoter_id')->references('id')->on('users');
             $table->string('device_id')->references('device_id')->on('promoter_device_alternators');
             $table->string('device_ip')->references('device_ip')->on('promoter_device_alternators');
             $table->timestamp('expires_at');
