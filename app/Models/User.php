@@ -1141,7 +1141,10 @@ class User extends Authenticatable implements JWTSubject
         ]);
 
         $user = new User();
-        $user->username = Str::uuid();
+        $user->username =  $validatedData['firstName'].mt_rand(0, 1000);
+        while(User::where('username',  $user->username)->count() > 0) {
+            $user->username = $validatedData['firstName'].mt_rand(0, 1000);
+        }
         $user->email = $validatedData['email'];
         $user->password = Hash::make('');
         $user->uuid = Str::uuid();
@@ -1154,24 +1157,6 @@ class User extends Authenticatable implements JWTSubject
 
         $message = "success";
         $e = null;
-
-        if (array_key_exists('promotion', $validatedData)) {
-            $deviceAlternatorRecord =  PromoterDeviceAlternator::where('user_id', $loggedInUser->id)->first();
-
-            DB::transaction(function () use ($deviceAlternatorRecord, $validatedData, $user) {
-                $pB = new PromoterBonus();
-                $pB->time_range_1 = $validatedData["promotion"]["timeRangeOne"];
-                $pB->time_range_2 = $validatedData["promotion"]["timeRangeTwo"];
-                $pB->time_range_3 = $validatedData["promotion"]["timeRangeThree"];
-                $pB->day = $validatedData["promotion"]["day"];
-                $pB->business_id = $validatedData["promotion"]["businessId"];
-                $pB->promoter_id = $deviceAlternatorRecord->user_id;
-                $pB->lp_amount = $deviceAlternatorRecord->lp_amount;
-                $pB->redeemed = false;
-                $pB->user_id = $user->id;
-                $pB->save();
-            });
-        }
 
         try {
             $user->save();
@@ -1196,6 +1181,26 @@ class User extends Authenticatable implements JWTSubject
                 $this->sendConfirmationSms($user, $newSpotbieUser, $businessName);
             });
 
+            if (array_key_exists('promotion', $validatedData)) {
+                $deviceAlternatorRecord =  PromoterDeviceAlternator::where('user_id', $loggedInUser->id)->first();
+
+                DB::transaction(function () use ($deviceAlternatorRecord, $validatedData, $user, $request) {
+                    $pB = new PromoterBonus();
+                    $pB->time_range_1 = $validatedData["promotion"]["timeRangeOne"];
+                    $pB->time_range_2 = $validatedData["promotion"]["timeRangeTwo"];
+                    $pB->time_range_3 = $validatedData["promotion"]["timeRangeThree"];
+                    $pB->day = $validatedData["promotion"]["day"];
+                    $pB->business_id = $validatedData["promotion"]["businessId"];
+                    $pB->promoter_id = $deviceAlternatorRecord->user_id;
+                    $pB->lp_amount = $deviceAlternatorRecord->lp_amount;
+                    $pB->redeemed = false;
+                    $pB->device_ip = $request->ip();
+                    $pB->device_id = $deviceAlternatorRecord->device_id;
+                    $pB->user_id = $user->id;
+                    $pB->expires_at = Carbon::now()->addDays(30);
+                    $pB->save();
+                });
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             $message = 'Could not create user account.';

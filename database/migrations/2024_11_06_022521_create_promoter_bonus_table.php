@@ -15,7 +15,7 @@ class CreatePromoterBonusTable extends Migration
     {
         Schema::create('promoter_bonus', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('business_id')->unique()->references('id')->on('business');
+            $table->unsignedBigInteger('business_id')->references('id')->on('business');
             $table->float('lp_amount')->references('lp_amount')->on('promoter_device_alternators');
             $table->timestamps();
             $table->boolean('redeemed')->default(false);
@@ -38,6 +38,6 @@ class CreatePromoterBonusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('promoter_bonuses');
+        Schema::dropIfExists('promoter_bonus');
     }
 }
