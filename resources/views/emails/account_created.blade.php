@@ -128,7 +128,12 @@
 
                 <?php
                     if ($withLink === true) {
-                        echo "We have sent you an additional e-mail so that you can set your password!<br/>";
+                        echo "Welcome to the SpotBie app, where you will be able to acquire points for your community purchases.<br/><br/>";
+                        echo "We are very interested in your opinion, please don't hesitate to text +1 (786) 600-5946 for any feedback or concerns.<br/><br/>";
+                        echo "Every business in the SpotBie platform is different. Each of them has their unique aspects, and we pride ourselves in bringing you, the user, the best experience from them.<br/><br>";
+                        echo "In order to finish creating your account, you have two options:<br/>";
+                        echo "1. Reset your password at any time from the link below.<br/>";
+                        echo "2. Along with this e-mail, we also sent you an e-mail that is valid for 1-hour to reset your password.<br/><br/>";
                     }
                 ?>
 
