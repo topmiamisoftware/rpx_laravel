@@ -28,7 +28,8 @@ class SendBonusLpSms implements ShouldQueue
         private string $totalPoints,
         private string $range1,
         private string $range2,
-        private string $range3
+        private string $range3,
+        private string $dayOfWeek,
     ){
     }
 
@@ -50,6 +51,7 @@ class SendBonusLpSms implements ShouldQueue
             $this->range1,
             $this->range2,
             $this->range3,
+            $this->dayOfWeek
         );
     }
 }

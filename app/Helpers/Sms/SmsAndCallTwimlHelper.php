@@ -67,7 +67,7 @@ class SmsAndCallTwimlHelper
         }
     }
 
-    public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3)
+    public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, string $dayOfWeek)
     {
         return trans(
             'promotional_sms.pointsBonusText',
@@ -77,7 +77,8 @@ class SmsAndCallTwimlHelper
                 'firstName' => $firstName,
                 'range1' => $range1,
                 'range2' => $range2,
-                'range3' => $range3
+                'range3' => $range3,
+                'dayOfWeek' => $dayOfWeek
             ]
         );
     }

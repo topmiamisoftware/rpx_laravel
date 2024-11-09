@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\SendBonusLpSms;
 use App\Jobs\SendSystemSms;
 use App\Jobs\SendAccountCreatedThroughBusinessSms;
 use Auth;
@@ -428,6 +429,36 @@ class User extends Authenticatable implements JWTSubject
         $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
         SendAccountCreatedThroughBusinessSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName)
+            ->onQueue(config('spotbie.sms.queue'));
+    }
+
+    private function sendBonusLpSms(
+        $user = null,
+        $spotbieUser = null,
+        $businessName = null,
+        $lpAmount = null,
+        $range1 = null,
+        $range2 = null,
+        $range3 = null,
+        $day = null
+    ) {
+        if (env('APP_ENV') === 'staging') {
+            return;
+        }
+
+        $sms = app(SystemSms::class)->createBonusLpSms($user, $spotbieUser->phone_number);
+
+        SendBonusLpSms::dispatch(
+            $user,
+            $sms,
+            $spotbieUser->phone_number,
+            $businessName,
+            $lpAmount,
+            $range1,
+            $range2,
+            $range3,
+            $day
+        )
             ->onQueue(config('spotbie.sms.queue'));
     }
 
@@ -922,6 +953,9 @@ class User extends Authenticatable implements JWTSubject
     {
         $request->validated();
 
+        $propertyInfo = '';
+        $lang = 'en_US';
+
         $user = ['email' => $request->email, 'first_name' => $request->first_name];
 
         $pin = mt_rand(100000, 999999);
@@ -1184,7 +1218,14 @@ class User extends Authenticatable implements JWTSubject
             if (array_key_exists('promotion', $validatedData)) {
                 $deviceAlternatorRecord =  PromoterDeviceAlternator::where('user_id', $loggedInUser->id)->first();
 
-                DB::transaction(function () use ($deviceAlternatorRecord, $validatedData, $user, $request) {
+                DB::transaction(function () use (
+                    $deviceAlternatorRecord,
+                    $validatedData,
+                    $user,
+                    $newSpotbieUser,
+                    $request,
+                    $businessName
+                ) {
                     $pB = new PromoterBonus();
                     $pB->time_range_1 = $validatedData["promotion"]["timeRangeOne"];
                     $pB->time_range_2 = $validatedData["promotion"]["timeRangeTwo"];
@@ -1199,6 +1240,17 @@ class User extends Authenticatable implements JWTSubject
                     $pB->user_id = $user->id;
                     $pB->expires_at = Carbon::now()->addDays(30);
                     $pB->save();
+
+                    $this->sendBonusLpSms(
+                        $user,
+                        $newSpotbieUser,
+                        $businessName,
+                        $pB->lp_amount,
+                        $pB->time_range_1,
+                        $pB->time_range_2,
+                        $pB->time_range_3,
+                        $pB->day
+                    );
                 });
             }
         } catch (\Exception $e) {

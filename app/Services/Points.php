@@ -89,7 +89,8 @@ class Points
         string $businessName,
         string $range1,
         string $range2,
-        string $range3
+        string $range3,
+        string $dayOfWeek
     ) {
         try
         {
@@ -105,7 +106,8 @@ class Points
                 $spotbieUser->first_name,
                 $range1,
                 $range2,
-                $range3
+                $range3,
+                $dayOfWeek
             );
 
             $client->messages->create(
