@@ -18,7 +18,8 @@ class Points
         SystemSms $sms,
         string $totalPoints,
         string $businessName,
-        bool $withLoginInstructions
+        bool $withLoginInstructions,
+        string $bonusPoints
     ) {
         try
         {
@@ -28,7 +29,14 @@ class Points
 
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
-            $body = $langHelper->getPointsRedeemedSmsTxt($totalPoints, $businessName, $withLoginInstructions, $user->email, $spotbieUser->first_name);
+            $body = $langHelper->getPointsRedeemedSmsTxt(
+                $totalPoints,
+                $businessName,
+                $withLoginInstructions,
+                $user->email,
+                $spotbieUser->first_name,
+                $bonusPoints
+            );
 
             $client->messages->create(
                 $spotbieUser->phone_number,
@@ -48,7 +56,8 @@ class Points
                 ', User ID: '. $user->id .
                 ', Phone-Number: ' . $spotbieUser->phone_number .
                 ', Business: ' . $businessName .
-                ', Total Points: ' . $totalPoints
+                ', Total Points: ' . $totalPoints .
+                ', Bonus Points: ' . $bonusPoints
             );
         }
         catch(TwilioException $e)
@@ -124,7 +133,7 @@ class Points
             ]);
 
             Log::info(
-                '[Points]-[redeemedPoints]: Message Sent' .
+                '[Points]-[Bonus Points Awarded]: Message Sent' .
                 ', User ID: '. $user->id .
                 ', Phone-Number: ' . $spotbieUser->phone_number .
                 ', Business: ' . $businessName .

@@ -2,6 +2,8 @@
 
 namespace App\Helpers\Sms;
 
+use Carbon\Carbon;
+
 class SmsAndCallTwimlHelper
 {
     public function __construct(public string $twimlLocale)
@@ -58,17 +60,21 @@ class SmsAndCallTwimlHelper
         }
     }
 
-    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions, string $userEmail, string $firstName)
+    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions, string $userEmail, string $firstName, string $bonusPoints)
     {
         if ($withLoginInstructions === true) {
-            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName]);
+            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
         } else {
-            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'firstName' => $firstName]);
+            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
         }
     }
 
     public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, string $dayOfWeek)
     {
+        $friendlyDayName = Carbon::now();
+        $friendlyDayName->setDay($dayOfWeek);
+        $friendlyDayName = $friendlyDayName->format('l');
+
         return trans(
             'promotional_sms.pointsBonusText',
             [
@@ -78,7 +84,7 @@ class SmsAndCallTwimlHelper
                 'range1' => $range1,
                 'range2' => $range2,
                 'range3' => $range3,
-                'dayOfWeek' => $dayOfWeek
+                'dayOfWeek' => $friendlyDayName
             ]
         );
     }

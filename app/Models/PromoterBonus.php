@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class PromoterBonus extends Model
 {
@@ -12,4 +14,31 @@ class PromoterBonus extends Model
     protected $table = 'promoter_bonus';
 
     protected $fillable = ['business_id', 'lp_amount', 'redeemed', 'user_id', 'promoter_id', 'device_ip', 'device_id', 'expires_at', 'day', 'time_range_1', 'time_range_2'];
+
+    /**
+     * Scope a query to only include popular users.
+     */
+    public function scopeIsNotExpired(Builder $query)
+    {
+        // Scope function to check if expiration_date has not transpired
+        return $query->where('expiration_date', '>', Carbon::now());
+    }
+
+    public function scopeIsNotRedeemed(Builder $query)
+    {
+        return $query->where('redeemed', '=', 0);
+    }
+
+    public function scopeWithInTimeRange(Builder $query): void
+    {
+        $now = Carbon::now();
+        $nowHour = $now->get('hour');
+        $nowDay = $now->get('day');
+        $amOrPm = $now->format('A');
+        $query->where('day', '=', $nowDay)
+            ->where('time_range_1', '>=', $nowHour)
+            ->where('time_range_2', '<=', $nowHour)
+            ->where('time_range_3', '=', $amOrPm);
+    }
+
 }

@@ -27,7 +27,8 @@ class SendPointsRedeemedSms implements ShouldQueue
         private SpotbieUser $spotbieUser,
         private string $businessName,
         private string $totalPoints,
-        private bool $withLoginInstructions = false
+        private bool $withLoginInstructions = false,
+        private string $bonusPoints = '0'
     ){
     }
 
@@ -44,7 +45,8 @@ class SendPointsRedeemedSms implements ShouldQueue
             $this->systemSms,
             $this->totalPoints,
             $this->businessName,
-            $this->withLoginInstructions
+            $this->withLoginInstructions,
+            $this->bonusPoints
         );
     }
 }

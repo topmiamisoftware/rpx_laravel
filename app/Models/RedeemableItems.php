@@ -181,6 +181,10 @@ class RedeemableItems extends Model
         ]);
 
         $sendSmsWithLoginInstructions = false;
+        /**
+         * We are creating the redeemable items and skipping the business creation part of it
+         * What this means is that the user didn't have to scan the reward.
+         */
         if ($request->exists('user_id')) {
             $user = User::where('id', $validatedData['user_id'])->first();
             $loggedInUser = Auth::user();
@@ -241,9 +245,34 @@ class RedeemableItems extends Model
                 $userCurrentBalance = $user->loyaltyPointBalance()->where('from_business', $redeemable->business->id)->first();
             }
 
+            // Check if there are any VALID LP Promoter Bonus records available for this user and business.
+            $lpPromoterBonusList = PromoterBonus::where('business_id', $redeemable->business->id)
+                ->where('user_id', $user->id)
+                ->isNotRedeemed()
+                ->withInTimeRange()
+                ->isNotExpired()->get();
+
+            if (count($lpPromoterBonusList) > 0) {
+                DB::transaction(function () use ($lpPromoterBonusList) {
+                    $lpPromoterBonusList->each(function ($lpPromoterBonus) {
+                        // Add to ledger and to LP Balance
+                        // Insert reward into ledger
+                        $insertBonusLp = new LoyaltyPointLedger();
+                        $insertBonusLp->user_id = $lpPromoterBonus->user_id;
+                        $insertBonusLp->uuid = Str::uuid();
+                        $insertBonusLp->business_id = $lpPromoterBonus->business_id;
+                        $insertBonusLp->loyalty_amount = abs(floatval($lpPromoterBonus->lp_amount));
+                        $insertBonusLp->type = 'points_bonus';
+                        $insertBonusLp->save();
+                    });
+                });
+
+                $totalBonusPoints = $lpPromoterBonusList->sum('lp_amount');
+            }
+
             // Reflect the reward into the user's balance in the business.
-            $newUserBalanceInBusiness = $userCurrentBalance->balance + $reward;
-            $newUserBalanceAggregateInBusiness = $userCurrentBalance->balance_aggregate + $reward;
+            $newUserBalanceInBusiness = $userCurrentBalance->balance + $reward + $totalBonusPoints;
+            $newUserBalanceAggregateInBusiness = $userCurrentBalance->balance_aggregate + $reward + $totalBonusPoints;
 
             DB::transaction(function () use (
                 $insertLp,
@@ -251,6 +280,7 @@ class RedeemableItems extends Model
                 $redeemable,
                 $newUserBalanceInBusiness,
                 $newUserBalanceAggregateInBusiness,
+                $lpPromoterBonusList
             ) {
                 $insertLp->save();
                 $insertLp->refresh();
@@ -279,7 +309,7 @@ class RedeemableItems extends Model
             $spotbieUser = $user->spotbieUser;
             $businessName = Business::select('name')->find($redeemable->business->id)->name;
 
-            $this->sendPointsRedeemedSms($user, $spotbieUser, $businessName, $insertLp->loyalty_amount, $sendSmsWithLoginInstructions);
+            $this->sendPointsRedeemedSms($user, $spotbieUser, $businessName, $insertLp->loyalty_amount, $sendSmsWithLoginInstructions, $totalBonusPoints);
 
             if(is_null($user->loyaltyPointBalanceAggregator)) {
                 $agg = $insertLp->loyalty_amount;
@@ -298,11 +328,18 @@ class RedeemableItems extends Model
         }
     }
 
-    private function sendPointsRedeemedSms(User $user, SpotbieUser $spotbieUser, string $businessName, string $totalPoints, bool $sendSmsWithLoginInstructions) {
+    private function sendPointsRedeemedSms(
+        User $user,
+        SpotbieUser $spotbieUser,
+        string $businessName,
+        string $totalPoints,
+        bool $sendSmsWithLoginInstructions,
+        string $bonusPoints = '0'
+    ) {
         if (! is_null($spotbieUser->phone_number) && $spotbieUser->sms_opt_in === 1) {
             $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
-            SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions)
+            SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions, $bonusPoints)
                 ->onQueue(config('spotbie.sms.queue'));
         }
     }
