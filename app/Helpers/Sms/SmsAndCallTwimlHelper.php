@@ -71,9 +71,7 @@ class SmsAndCallTwimlHelper
 
     public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, int $dayOfWeek)
     {
-        $friendlyDayName = Carbon::now();
-        $friendlyDayName->setDay($dayOfWeek);
-        $friendlyDayName = $friendlyDayName->format('l');
+        $friendlyDayName = $this->getDayNameFromNumber($dayOfWeek);
 
         return trans(
             'promotional_sms.pointsBonusText',
@@ -87,5 +85,11 @@ class SmsAndCallTwimlHelper
                 'dayOfWeek' => $friendlyDayName
             ]
         );
+    }
+
+    function getDayNameFromNumber($dayNumber)
+    {
+        // Adjust Carbon's default start of week to ISO format (1 = Monday, 7 = Sunday)
+        return Carbon::create()->startOfWeek(Carbon::MONDAY)->addDays($dayNumber - 1)->dayName;
     }
 }
