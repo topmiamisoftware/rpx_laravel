@@ -69,7 +69,7 @@ class SmsAndCallTwimlHelper
         }
     }
 
-    public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, string $dayOfWeek)
+    public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, int $dayOfWeek)
     {
         $friendlyDayName = Carbon::now();
         $friendlyDayName->setDay($dayOfWeek);
