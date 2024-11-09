@@ -66,4 +66,19 @@ class SmsAndCallTwimlHelper
             return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'firstName' => $firstName]);
         }
     }
+
+    public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3)
+    {
+        return trans(
+            'promotional_sms.pointsBonusText',
+            [
+                'totalPoints' => $totalPoints,
+                'businessName' => $businessName,
+                'firstName' => $firstName,
+                'range1' => $range1,
+                'range2' => $range2,
+                'range3' => $range3
+            ]
+        );
+    }
 }

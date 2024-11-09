@@ -80,4 +80,82 @@ class Points
             return $errorCode;
         }
     }
+
+    public function sendBonusLp(
+        SpotbieUser $spotbieUser,
+        User $user,
+        SystemSms $sms,
+        string $totalPoints,
+        string $businessName,
+        string $range1,
+        string $range2,
+        string $range3
+    ) {
+        try
+        {
+            $lang = 'en';
+            $sid = config('services.twilio.account_sid');
+            $token = config('services.twilio.token');
+
+            $client = new Client($sid, $token);
+            $langHelper = new SmsAndCallTwimlHelper($lang);
+            $body = $langHelper->getBonusLpSmsTxt(
+                $totalPoints,
+                $businessName,
+                $spotbieUser->first_name,
+                $range1,
+                $range2,
+                $range3
+            );
+
+            $client->messages->create(
+                $spotbieUser->phone_number,
+                [
+                    'from' => config('services.twilio.from'),
+                    'body' => $body,
+                ]
+            );
+
+            // Update SMS message in DB;
+            $sms->update([
+                'sent' => true,
+            ]);
+
+            Log::info(
+                '[Points]-[redeemedPoints]: Message Sent' .
+                ', User ID: '. $user->id .
+                ', Phone-Number: ' . $spotbieUser->phone_number .
+                ', Business: ' . $businessName .
+                ', Total Points: ' . $totalPoints
+            );
+        }
+        catch(TwilioException $e)
+        {
+            $errorCode = '';
+            switch($e->getCode())
+            {
+                case '21211':
+                    $errorCode = 'phoneNumber.invalid';
+                    break;
+                case '21612':
+                case '21408':
+                case '21610':
+                case '21614':
+                    $errorCode = 'phoneNumber.unavailable';
+                    break;
+                default:
+                    $errorCode = $e->getCode();
+            }
+
+            Log::error(
+                '[Points]-[redeemedPoints]: Message Failed' .
+                ', Phone-Number: ' . $spotbieUser->phone_number .
+                ", Business: " . $businessName .
+                ", Error Code: " . $errorCode .
+                ", Error Message: " . $e->getMessage()
+            );
+
+            return $errorCode;
+        }
+    }
 }

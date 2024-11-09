@@ -8,4 +8,5 @@ return [
     'rewardRedeemedText' => "Hey :firstName, this is SpotBie! You've redeemed :rewardName from :businessName. Reply with \"STOP\" to opt-out of SMS, \"HELP\" for more info.",
     'pointsRedeemedTextWithEmail' => "Hey :firstName, this is SpotBie! You've redeemed :totalPoints loyalty points from :businessName. Log-in at https://spotbie.com/ to see more. Reply with \"STOP\" to opt-out of SMS, \"HELP\" for more info.",
     'pointsRedeemedText' => "Hey :firstName, this is SpotBie! You've redeemed :totalPoints loyalty points from :businessName. Reply with \"STOP\" to opt-out of SMS, \"HELP\" for more info.",
+    'pointsBonusText' =>  "Hey :firstName, this is SpotBie! You have signed-up to go visit :businessName on a :dayOfWeek from :range1 to :range2 :range3. Please make sure you visit during these hours in order to claim your :totalPoints bonus LP. Otherwise, go at whatever time you like and ask for SpotBie Loyalty Points when it's time to pay the bill. If your account is new, you'll need to follow the instructions on the e-mail. Reply with \"STOP\" to opt-out of SMS, \"HELP\" for more info.",
 ];
