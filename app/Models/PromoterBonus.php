@@ -18,7 +18,7 @@ class PromoterBonus extends Model
 
     public function redeemableItem()
     {
-        return $this->hasOneThrough('App\Models\RedeemableItems', 'App\Models\LoyaltyPointLedger', 'id', 'ledger_record_id', 'ledger_record_id', 'id')->latestOfMany();
+        return $this->hasOneThrough('App\Models\RedeemableItems', 'App\Models\LoyaltyPointLedger', 'id', 'ledger_record_id', 'ledger_record_id', 'id');
     }
 
     /**
