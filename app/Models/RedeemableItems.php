@@ -243,6 +243,8 @@ class RedeemableItems extends Model
                 DB::transaction(function () use ($lp) {
                     $lp->save();
                 }, 3);
+
+                // Now that we have inserted a balance, let's rewrite this variable.
                 $userCurrentBalance = $user->loyaltyPointBalance()->where('from_business', $redeemable->business->id)->first();
             }
 
