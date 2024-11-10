@@ -34,7 +34,7 @@ class PromoterBonus extends Model
         $now = Carbon::now();
         $nowHour = $now->format('g');
         $nowDay = $now->get('day');
-        $amOrPm = $now->format('A');
+        $amOrPm = $now->format('N');
         $query->where('day', '=', $nowDay)
             ->where('time_range_1', '>=', $nowHour)
             ->where('time_range_2', '<=', $nowHour)
