@@ -289,13 +289,9 @@ class RedeemableItems extends Model
                     });
                 });
 
-                $totalBonusDollars = $lpPromoterBonusList->redeemableItem->sum('dollar_value');
-
-
-                $lpPromoterBonusList->sum(function ($lpPromoterBonus) {
+                $totalBonusDollars = $lpPromoterBonusList->sum(function ($lpPromoterBonus) {
                     return $lpPromoterBonus->redeemedItem->dollar_value;
                 });
-
 
                 Log::info('$totalBonusDollars: ' . $totalBonusDollars);
                 $totalBonusPoints = $lpPromoterBonusList->sum('lp_amount');
