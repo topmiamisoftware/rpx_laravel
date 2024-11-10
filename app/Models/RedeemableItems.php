@@ -250,7 +250,6 @@ class RedeemableItems extends Model
             $qry =  PromoterBonus::where('business_id', $redeemable->business->id)
                     ->where('user_id', $user->id)
                     ->isNotRedeemed()
-                    ->withInTimeRange()
                     ->isNotExpired();
             $lpPromoterBonusList = $qry->get();
 
