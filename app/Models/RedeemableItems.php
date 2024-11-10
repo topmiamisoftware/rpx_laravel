@@ -267,6 +267,9 @@ class RedeemableItems extends Model
                         $insertBonusLp->loyalty_amount = abs(floatval($lpPromoterBonus->lp_amount));
                         $insertBonusLp->type = 'points';
                         $insertBonusLp->save();
+
+                        $lpPromoterBonus->redeemed = 1;
+                        $lpPromoterBonus->save();
                     });
                 });
 
