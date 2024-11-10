@@ -257,8 +257,17 @@ class RedeemableItems extends Model
 
             $totalBonusPoints = 0;
             if (count($lpPromoterBonusList) > 0) {
-                DB::transaction(function () use ($lpPromoterBonusList) {
-                    $lpPromoterBonusList->each(function ($lpPromoterBonus) {
+                DB::transaction(function () use ($lpPromoterBonusList, $redeemable) {
+                    $lpPromoterBonusList->each(function ($lpPromoterBonus) use ($redeemable){
+                        $bonusRedeemable = new RedeemableItems();
+                        $bonusRedeemable->business_id = $redeemable->business->id;
+                        $bonusRedeemable->uuid = Str::uuid();
+                        $bonusRedeemable->amount = 0;
+                        $bonusRedeemable->total_spent = 0;
+                        $bonusRedeemable->dollar_value = abs(floatval($lpPromoterBonus->lp_amount)) * $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
+                        $bonusRedeemable->loyalty_point_dollar_percent_value = $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
+                        $bonusRedeemable->redeemed = false;
+
                         // Add to ledger and to LP Balance
                         // Insert reward into ledger
                         $insertBonusLp = new LoyaltyPointLedger();
@@ -324,6 +333,12 @@ class RedeemableItems extends Model
                 $user->loyaltyPointBalanceAggregator->refresh();
                 $agg = $user->loyaltyPointBalanceAggregator->balance;
             }
+
+            // Let's temporarirly attach the TOTAL POINTS to the redeemable for the purpose of displaying the correct
+            // lp amount (with the bonus added). In the future this will be undone because the front-end will have the
+            // capability of distinguishing between a bonus lp and redeemable lp from a non-bonus transaction.
+            $redeemable->amount = $totalBonusPoints;
+            $redeemable->dollar_value = $totalBonusPoints ;
 
             $response = [
                 'success'        => true,
