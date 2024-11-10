@@ -32,7 +32,7 @@ class PromoterBonus extends Model
     public function scopeWithInTimeRange(Builder $query): void
     {
         $now = Carbon::now();
-        $nowHour = $now->get('hour');
+        $nowHour = $now->format('g');
         $nowDay = $now->get('day');
         $amOrPm = $now->format('A');
         $query->where('day', '=', $nowDay)
