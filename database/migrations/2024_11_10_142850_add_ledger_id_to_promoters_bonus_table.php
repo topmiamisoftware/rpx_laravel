@@ -13,7 +13,7 @@ class AddLedgerIdToPromotersBonusTable extends Migration
      */
     public function up()
     {
-        Schema::table('promoters_bonus', function (Blueprint $table) {
+        Schema::table('promoter_bonus', function (Blueprint $table) {
             $table->string('ledger_record_id')->references('id')->on('loyalty_point_ledger');
         });
     }
