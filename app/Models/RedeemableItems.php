@@ -284,7 +284,7 @@ class RedeemableItems extends Model
                         $bonusRedeemable->ledger_record_id = $insertBonusLp->id;
                         $bonusRedeemable->save();
 
-                        $lpPromoterBonus->id = 0;
+                        $lpPromoterBonus->redeemed = 1;
                         $lpPromoterBonus->save();
                     });
                 });
