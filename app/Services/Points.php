@@ -16,9 +16,8 @@ class Points
         SpotbieUser $spotbieUser,
         User $user,
         SystemSms $sms,
-        string $totalPoints,
+        string $businessPoints,
         string $businessName,
-        bool $withLoginInstructions,
         string $bonusPoints
     ) {
         try
@@ -30,9 +29,8 @@ class Points
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
             $body = $langHelper->getPointsRedeemedSmsTxt(
-                $totalPoints,
+                $businessPoints,
                 $businessName,
-                $withLoginInstructions,
                 $user->email,
                 $spotbieUser->first_name,
                 $bonusPoints

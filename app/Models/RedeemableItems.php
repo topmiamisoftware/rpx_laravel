@@ -297,10 +297,10 @@ class RedeemableItems extends Model
                 if (is_null($user->loyaltyPointBalanceAggregator)) {
                     $lpAgg = new LoyaltyPointBalanceAggregator();
                     $lpAgg->id = $user->id;
-                    $lpAgg->balance = $insertLp->loyalty_amount;
+                    $lpAgg->balance = $insertLp->loyalty_amount + $totalBonusPoints;
                     $lpAgg->save();
                 } else {
-                    $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount + $totalBonusPoints;
+                    $user->loyaltyPointBalanceAggregator->balance += ($insertLp->loyalty_amount + $totalBonusPoints);
                     $user->loyaltyPointBalanceAggregator->save();
                 }
 
@@ -334,18 +334,27 @@ class RedeemableItems extends Model
         }
     }
 
+    /**
+     * @param User $user
+     * @param SpotbieUser $spotbieUser
+     * @param string $businessName
+     * @param string $businessPoints How many points were redeemed in the current transaction.
+     * @param bool $sendSmsWithLoginInstructions
+     * @param string $bonusPoints
+     * @return void
+     */
     private function sendPointsRedeemedSms(
         User $user,
         SpotbieUser $spotbieUser,
         string $businessName,
-        string $totalPoints,
+        string $businessPoints,
         bool $sendSmsWithLoginInstructions,
         string $bonusPoints = '0'
     ) {
         if (! is_null($spotbieUser->phone_number) && $spotbieUser->sms_opt_in === 1) {
             $sms = app(SystemSms::class)->createSettingsSms($user, $spotbieUser->phone_number);
 
-            SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $totalPoints, $sendSmsWithLoginInstructions, $bonusPoints)
+            SendPointsRedeemedSms::dispatch($user, $sms, $spotbieUser, $businessName, $businessPoints, $sendSmsWithLoginInstructions, $bonusPoints)
                 ->onQueue(config('spotbie.sms.queue'));
         }
     }

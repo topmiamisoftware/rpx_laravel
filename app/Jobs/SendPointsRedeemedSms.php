@@ -45,7 +45,6 @@ class SendPointsRedeemedSms implements ShouldQueue
             $this->systemSms,
             $this->totalPoints,
             $this->businessName,
-            $this->withLoginInstructions,
             $this->bonusPoints
         );
     }

@@ -60,13 +60,10 @@ class SmsAndCallTwimlHelper
         }
     }
 
-    public function getPointsRedeemedSmsTxt(string $totalPoints, string $businessName, bool $withLoginInstructions, string $userEmail, string $firstName, string $bonusPoints)
+    public function getPointsRedeemedSmsTxt(int $businessPoints, string $businessName, string $userEmail, string $firstName, int $bonusPoints)
     {
-        if ($withLoginInstructions === true) {
-            return trans('promotional_sms.pointsRedeemedTextWithEmail', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
-        } else {
-            return trans('promotional_sms.pointsRedeemedText', ['totalPoints' => $totalPoints, 'businessName' => $businessName, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
-        }
+        $totalPoints = $businessPoints + $bonusPoints;
+        return trans('promotional_sms.pointsRedeemedTextWithEmail', ['businessPoints' => $businessPoints, 'totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
     }
 
     public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, int $dayOfWeek)
