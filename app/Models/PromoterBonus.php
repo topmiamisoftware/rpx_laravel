@@ -30,6 +30,9 @@ class PromoterBonus extends Model
         return $query->where('redeemed', '=', 0);
     }
 
+    /**
+     * Let's create something out of this.
+     */
     public function scopeWithInTimeRange(Builder $query): void
     {
         $now = Carbon::now();
