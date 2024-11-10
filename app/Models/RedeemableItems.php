@@ -348,8 +348,8 @@ class RedeemableItems extends Model
             // Let's temporarirly attach the TOTAL POINTS to the redeemable for the purpose of displaying the correct
             // lp amount (with the bonus added). In the future this will be undone because the front-end will have the
             // capability of distinguishing between a bonus lp and redeemable lp from a non-bonus transaction.
-            $redeemable->amount = $totalBonusPoints;
-            $redeemable->dollar_value = $totalBonusPoints ;
+            $redeemable->amount += floatval($totalBonusPoints);
+            $redeemable->dollar_value += floatval($totalBonusDollars);
 
             $response = [
                 'success'        => true,
