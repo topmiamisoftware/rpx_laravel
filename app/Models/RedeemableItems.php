@@ -282,7 +282,7 @@ class RedeemableItems extends Model
                         $bonusRedeemable->loyalty_point_dollar_percent_value = $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
                         $bonusRedeemable->redeemed = true;
                         $bonusRedeemable->ledger_record_id = $insertBonusLp->id;
-                        $redeemable->redeemer_id = $lpPromoterBonus->user_id;
+                        $bonusRedeemable->redeemer_id = $lpPromoterBonus->user_id;
                         $bonusRedeemable->save();
 
                         $lpPromoterBonus->redeemed = 1;
