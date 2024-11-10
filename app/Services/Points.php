@@ -49,6 +49,8 @@ class Points
                 'sent' => true,
             ]);
 
+            $totalPoints = intval($bonusPoints) + intval($businessPoints);
+
             Log::info(
                 '[Points]-[redeemedPoints]: Message Sent' .
                 ', User ID: '. $user->id .
