@@ -265,7 +265,7 @@ class RedeemableItems extends Model
                         $insertBonusLp->uuid = Str::uuid();
                         $insertBonusLp->business_id = $lpPromoterBonus->business_id;
                         $insertBonusLp->loyalty_amount = abs(floatval($lpPromoterBonus->lp_amount));
-                        $insertBonusLp->type = 'points_bonus';
+                        $insertBonusLp->type = 'points';
                         $insertBonusLp->save();
                     });
                 });
