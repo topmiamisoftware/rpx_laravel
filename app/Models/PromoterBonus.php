@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PromoterBonus extends Model
 {
@@ -33,8 +34,13 @@ class PromoterBonus extends Model
     {
         $now = Carbon::now();
         $nowHour = $now->format('g');
-        $nowDay = $now->get('day');
-        $amOrPm = $now->format('N');
+        $nowDay = $now->format('N');
+        $amOrPm = $now->format('A');
+
+        Log::info('$nowHour' . $nowHour);
+        Log::info('$nowDay' . $nowDay);
+        Log::info('$amOrPm' . $amOrPm);
+
         $query->where('day', '=', $nowDay)
             ->where('time_range_1', '>=', $nowHour)
             ->where('time_range_2', '<=', $nowHour)

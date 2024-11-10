@@ -254,6 +254,8 @@ class RedeemableItems extends Model
                     ->isNotExpired();
             $qryLog = $qry->toSql();
             Log::info('PromoterBonus Qry' . $qryLog);
+            Log::info('business_id' . $redeemable->business->id);
+            Log::info('user_id' . $user->id);
             $lpPromoterBonusList = $qry->get();
 
             $totalBonusPoints = 0;
