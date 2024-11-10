@@ -276,11 +276,11 @@ class RedeemableItems extends Model
                         $bonusRedeemable = new RedeemableItems();
                         $bonusRedeemable->business_id = $redeemable->business->id;
                         $bonusRedeemable->uuid = Str::uuid();
-                        $bonusRedeemable->amount = 0;
+                        $bonusRedeemable->amount = floatval($lpPromoterBonus->lp_amount);
                         $bonusRedeemable->total_spent = 0;
                         $bonusRedeemable->dollar_value = abs(floatval($lpPromoterBonus->lp_amount)) * $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
                         $bonusRedeemable->loyalty_point_dollar_percent_value = $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
-                        $bonusRedeemable->redeemed = false;
+                        $bonusRedeemable->redeemed = true;
                         $bonusRedeemable->ledger_record_id = $insertBonusLp->id;
                         $bonusRedeemable->save();
 
