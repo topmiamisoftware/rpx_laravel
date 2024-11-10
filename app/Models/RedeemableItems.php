@@ -252,10 +252,7 @@ class RedeemableItems extends Model
                     ->isNotRedeemed()
                     ->withInTimeRange()
                     ->isNotExpired();
-            $qryLog = $qry->toSql();
-
             $lpPromoterBonusList = $qry->get();
-            Log::info('user_id' . var_dump($lpPromoterBonusList));
 
             $totalBonusPoints = 0;
             if (count($lpPromoterBonusList) > 0) {
