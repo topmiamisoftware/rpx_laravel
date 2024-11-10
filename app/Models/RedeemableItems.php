@@ -283,7 +283,7 @@ class RedeemableItems extends Model
                 $redeemable,
                 $newUserBalanceInBusiness,
                 $newUserBalanceAggregateInBusiness,
-                $lpPromoterBonusList
+                $totalBonusPoints
             ) {
                 $insertLp->save();
                 $insertLp->refresh();
@@ -297,7 +297,7 @@ class RedeemableItems extends Model
                     $lpAgg->balance = $insertLp->loyalty_amount;
                     $lpAgg->save();
                 } else {
-                    $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount;
+                    $user->loyaltyPointBalanceAggregator->balance += $insertLp->loyalty_amount + $totalBonusPoints;
                     $user->loyaltyPointBalanceAggregator->save();
                 }
 
