@@ -42,8 +42,8 @@ class PromoterBonus extends Model
         Log::info('$amOrPm' . $amOrPm);
 
         $query->where('day', '=', $nowDay)
-            ->where('time_range_1', '>=', $nowHour)
-            ->where('time_range_2', '<=', $nowHour)
+            ->where('time_range_1', '<=', $nowHour)
+            ->where('time_range_2', '>=', $nowHour)
             ->where('time_range_3', '=', $amOrPm);
     }
 
