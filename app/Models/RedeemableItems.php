@@ -8,6 +8,7 @@ use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -246,11 +247,14 @@ class RedeemableItems extends Model
             }
 
             // Check if there are any VALID LP Promoter Bonus records available for this user and business.
-            $lpPromoterBonusList = PromoterBonus::where('business_id', $redeemable->business->id)
-                ->where('user_id', $user->id)
-                ->isNotRedeemed()
-                ->withInTimeRange()
-                ->isNotExpired()->get();
+            $qry =  PromoterBonus::where('business_id', $redeemable->business->id)
+                    ->where('user_id', $user->id)
+                    ->isNotRedeemed()
+                    ->withInTimeRange()
+                    ->isNotExpired();
+            $qryLog = $qry->toSql();
+            Log::info('PromoterBonus Qry' . $qryLog);
+            $lpPromoterBonusList = $qry->get();
 
             $totalBonusPoints = 0;
             if (count($lpPromoterBonusList) > 0) {
