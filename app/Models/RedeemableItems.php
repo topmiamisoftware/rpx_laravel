@@ -252,6 +252,7 @@ class RedeemableItems extends Model
                 ->withInTimeRange()
                 ->isNotExpired()->get();
 
+            $totalBonusPoints = 0;
             if (count($lpPromoterBonusList) > 0) {
                 DB::transaction(function () use ($lpPromoterBonusList) {
                     $lpPromoterBonusList->each(function ($lpPromoterBonus) {
