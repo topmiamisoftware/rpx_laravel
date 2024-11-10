@@ -16,6 +16,11 @@ class PromoterBonus extends Model
 
     protected $fillable = ['business_id', 'lp_amount', 'redeemed', 'user_id', 'promoter_id', 'device_ip', 'device_id', 'expires_at', 'day', 'time_range_1', 'time_range_2', 'time_range_3'];
 
+    public function redeemableItem()
+    {
+        return $this->hasOneThrough('App\Models\RedeemableItems', 'App\Models\LoyaltyPointLedger', 'id', 'ledger_record_id', 'ledger_record_id', 'id')->latestOfMany();
+    }
+
     /**
      * Scope a query to only include popular users.
      */

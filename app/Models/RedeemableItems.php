@@ -249,7 +249,7 @@ class RedeemableItems extends Model
             }
 
             // Check if there are any VALID LP Promoter Bonus records available for this user and business.
-            $qry =  PromoterBonus::where('business_id', $redeemable->business->id)
+            $qry = PromoterBonus::where('business_id', $redeemable->business->id)
                     ->where('user_id', $user->id)
                     ->isNotRedeemed()
                     ->isNotExpired();
@@ -289,9 +289,10 @@ class RedeemableItems extends Model
                     });
                 });
 
-                $totalBonusDollars = $lpPromoterBonusList->map(function ($lpPromoterBonus) use ($redeemable){
-                    return $lpPromoterBonus->dollar_value;
+                $totalBonusDollars = $lpPromoterBonusList->map(function ($lpPromoterBonus) {
+                    return $lpPromoterBonus->redeemableItem->dollar_value;
                 })->sum('dollar_value');
+
                 Log::info('$totalBonusDollars: ' . $totalBonusDollars);
                 $totalBonusPoints = $lpPromoterBonusList->sum('lp_amount');
             }
