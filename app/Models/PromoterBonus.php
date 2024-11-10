@@ -21,7 +21,7 @@ class PromoterBonus extends Model
     public function scopeIsNotExpired(Builder $query)
     {
         // Scope function to check if expiration_date has not transpired
-        return $query->where('expiration_date', '>', Carbon::now());
+        return $query->where('expires_at', '>', Carbon::now());
     }
 
     public function scopeIsNotRedeemed(Builder $query)
