@@ -256,18 +256,10 @@ class RedeemableItems extends Model
             $lpPromoterBonusList = $qry->get();
 
             $totalBonusPoints = 0;
+            $totalBonusDollars = 0;
             if (count($lpPromoterBonusList) > 0) {
                 DB::transaction(function () use ($lpPromoterBonusList, $redeemable) {
                     $lpPromoterBonusList->each(function ($lpPromoterBonus) use ($redeemable){
-                        $bonusRedeemable = new RedeemableItems();
-                        $bonusRedeemable->business_id = $redeemable->business->id;
-                        $bonusRedeemable->uuid = Str::uuid();
-                        $bonusRedeemable->amount = 0;
-                        $bonusRedeemable->total_spent = 0;
-                        $bonusRedeemable->dollar_value = abs(floatval($lpPromoterBonus->lp_amount)) * $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
-                        $bonusRedeemable->loyalty_point_dollar_percent_value = $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
-                        $bonusRedeemable->redeemed = false;
-
                         // Add to ledger and to LP Balance
                         // Insert reward into ledger
                         $insertBonusLp = new LoyaltyPointLedger();
@@ -277,12 +269,31 @@ class RedeemableItems extends Model
                         $insertBonusLp->loyalty_amount = abs(floatval($lpPromoterBonus->lp_amount));
                         $insertBonusLp->type = 'points';
                         $insertBonusLp->save();
+                        $insertBonusLp->refresh();
+
+                        $lpPromoterBonus->ledger_record_id = $insertBonusLp->id;
+                        $lpPromoterBonus->save();
+
+                        $bonusRedeemable = new RedeemableItems();
+                        $bonusRedeemable->business_id = $redeemable->business->id;
+                        $bonusRedeemable->uuid = Str::uuid();
+                        $bonusRedeemable->amount = 0;
+                        $bonusRedeemable->total_spent = 0;
+                        $bonusRedeemable->dollar_value = abs(floatval($lpPromoterBonus->lp_amount)) * $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
+                        $bonusRedeemable->loyalty_point_dollar_percent_value = $redeemable->business->loyaltyPointBalance->loyalty_point_dollar_percent_value;
+                        $bonusRedeemable->redeemed = false;
+                        $bonusRedeemable->ledger_record_id = $insertBonusLp->id;
+                        $bonusRedeemable->save();
 
                         $lpPromoterBonus->redeemed = 1;
                         $lpPromoterBonus->save();
                     });
                 });
 
+                $totalBonusDollars = $lpPromoterBonusList->map(function ($lpPromoterBonus) use ($redeemable){
+                    return $lpPromoterBonus->dollar_value;
+                })->sum('dollar_value');
+                Log::info('$totalBonusDollars: ' . $totalBonusDollars);
                 $totalBonusPoints = $lpPromoterBonusList->sum('lp_amount');
             }
 
