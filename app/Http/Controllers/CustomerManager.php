@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PromotionMessage;
 use Auth;
 use App\Mail\BusinessPromotional;
 use App\Models\Email;
@@ -175,6 +176,27 @@ class CustomerManager extends Controller
         $smsList = SmsGroup::where('from_id', $user->business()->first()->id)->orderBy('id', 'DESC')->paginate(20);
 
         return response($smsList);
+    }
+
+    public function sendPromotion(Request $request, PromotionMessage $promotionMessage) {
+        $validated = $request->validate([
+            'message' => 'required|string'
+        ]);
+
+        $user = Auth::user();
+        $business = $user->business;
+
+        try {
+            $promotionMessage->updateOrCreate(
+                ['message' => $validated['message']],
+                ['business_id' => $business->id]
+            );;
+        } catch (\Exception $exception) {
+            Log::info('There was an error sendingPromotion: ' . $exception->getMessage() );
+            return response($exception->getMessage(), $exception->getCode());
+        }
+
+        return response($promotionMessage, 200);
     }
 
     /**
