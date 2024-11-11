@@ -11,4 +11,5 @@ Route::get('index', [RedeemableItemsController::class, 'index'])->middleware('au
 Route::get('lp-redeemed', [RedeemableItemsController::class, 'lpRedeemed'])->middleware('auth');
 Route::get('ledger', [LoyaltyPointLedgerController::class, 'index'])->middleware('auth');
 Route::get('balance-list', [\App\Http\Controllers\LoyaltyPointBalance\LoyaltyPointBalanceController::class, 'balanceList'])->middleware('auth');
+Route::get('promoter-lp', [\App\Http\Controllers\LoyaltyPointBalance\LoyaltyPointBalanceController::class, 'promoterLp'])->middleware('auth');
 Route::post('scan-receipt', [RedeemableItemsController::class, 'scanReceipt'])->middleware('auth');

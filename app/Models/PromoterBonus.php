@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Auth;
 
 class PromoterBonus extends Model
 {
@@ -53,4 +55,38 @@ class PromoterBonus extends Model
             ->where('time_range_3', '=', $amOrPm);
     }
 
+    public function createForUser(Request $request)
+    {
+        $validatedData = $request->validate([
+            'timeRangeOne' => 'nullable|string',
+            'timeRangeTwo' => 'nullable|string',
+            'timeRangeThree' => 'nullable|string',
+            'day' => 'nullable|string',
+            'businessId' => 'nullable|string',
+            'userId' => 'nullable|string',
+            'deviceId' => 'nullable|string',
+        ]);
+
+        $loggedInUser = Auth::user();
+
+        if ($loggedInUser) {
+            $deviceAlternatorRecord = PromoterDeviceAlternator::where('device_id', $validatedData['deviceId']);
+            $pB = new PromoterBonus();
+            $pB->time_range_1 = $validatedData["timeRangeOne"];
+            $pB->time_range_2 = $validatedData["timeRangeTwo"];
+            $pB->time_range_3 = $validatedData["timeRangeThree"];
+            $pB->day = $validatedData["day"];
+            $pB->business_id = $validatedData["businessId"];
+            $pB->promoter_id = $deviceAlternatorRecord->user_id;
+            $pB->lp_amount = $deviceAlternatorRecord->lp_amount;
+            $pB->redeemed = false;
+            $pB->device_ip = $request->ip();
+            $pB->device_id = $deviceAlternatorRecord->device_id;
+            $pB->user_id = $validatedData["userId"];
+            $pB->expires_at = Carbon::now()->addDays(30);
+            $pB->save();
+        }
+
+        return response('ok', 200);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LoyaltyPointBalance;
 use App\Http\Controllers\Controller;
 use App\Models\LoyaltyPointBalance;
 use App\Models\LoyaltyPointLedger;
+use App\Models\PromoterBonus;
 use Illuminate\Http\Request;
 
 class LoyaltyPointBalanceController extends Controller
@@ -17,6 +18,10 @@ class LoyaltyPointBalanceController extends Controller
     public function index(Request $request, LoyaltyPointLedger $ledger)
     {
         return $ledger->index($request);
+    }
+
+    public function promoterLp(Request $request, PromoterBonus $promoterBonus) {
+        return $promoterBonus->createForUser($request);
     }
 
     public function balanceList(LoyaltyPointBalance $loyaltyPointBalance)
