@@ -99,7 +99,8 @@ class Business extends Model
             'categories'  => 'required|string',
             'passkey'     => 'required|string|max:20|min:4',
             'accountType' => 'required|numeric',
-            'is_food_truck' => 'boolean'
+            'is_food_truck' => 'boolean',
+            'lp_rate' => 'required|numeric',
         ]);
 
         $user = Auth::user();
@@ -147,22 +148,16 @@ class Business extends Model
         $business->qr_code_link = Str::uuid();
         $business->is_food_truck = $validatedData['is_food_truck'];
 
-        if ($existingBusiness)
-        {
-            DB::transaction(function () use ($business, $user) {
-                $user->business->save();
-                $user->spotbieUser->save();
-            }, 3);
-        }
-        else
-        {
-            // I'm not sure this whole IF BLOCK belongs here.
-            DB::transaction(function () use ($business, $user) {
-                $business->save();
-                $user->spotbieUser->save();
-                $user->save();
-            }, 3);
-        }
+        $lpRate = $validatedData['lp_rate'];
+
+        DB::transaction(function () use ($business, $user, $lpRate) {
+            $business->save();
+            $user->spotbieUser->save();
+            $currentLpRate = $user->loyaltyPointBalance()->where('business_id', $business->id)->first();
+            $currentLpRate->loyalty_point_dollar_percent_value = $lpRate;
+            $currentLpRate->save();
+            $user->save();
+        }, 3);
 
         $response = [
             'message'   => 'success',
