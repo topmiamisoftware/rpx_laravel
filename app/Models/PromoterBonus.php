@@ -87,6 +87,9 @@ class PromoterBonus extends Model
             $pB->expires_at = Carbon::now()->addDays(30);
             $pB->ledger_record_id = '0';
             $pB->save();
+
+            $pB->refresh();
+
             $user = User::find($pB->user_id);
             $spotbieUser = SpotbieUser::find($pB->user_id);
             $business = Business::find($pB->business_id)->first();
