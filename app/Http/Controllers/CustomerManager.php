@@ -178,7 +178,7 @@ class CustomerManager extends Controller
         return response($smsList);
     }
 
-    public function sendPromotion(Request $request, PromotionMessage $promotionMessage) {
+    public function sendPromotion(Request $request) {
         $validated = $request->validate([
             'message' => 'required|string'
         ]);
@@ -187,10 +187,10 @@ class CustomerManager extends Controller
         $business = $user->business;
 
         try {
-            $promotionMessage->updateOrCreate(
+            $promotionMessage = PromotionMessage::updateOrCreate(
                 ['message' => $validated['message']],
                 ['business_id' => $business->id]
-            );;
+            );
         } catch (\Exception $exception) {
             Log::info('There was an error sendingPromotion: ' . $exception->getMessage() );
             return response($exception->getMessage(), $exception->getCode());
