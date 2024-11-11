@@ -70,7 +70,7 @@ class PromoterBonus extends Model
         $loggedInUser = Auth::user();
 
         if ($loggedInUser) {
-            $deviceAlternatorRecord = PromoterDeviceAlternator::where('device_id', $validatedData['deviceId']);
+            $deviceAlternatorRecord = PromoterDeviceAlternator::where('device_id', $validatedData['deviceId'])->first();
             $pB = new PromoterBonus();
             $pB->time_range_1 = $validatedData["timeRangeOne"];
             $pB->time_range_2 = $validatedData["timeRangeTwo"];
