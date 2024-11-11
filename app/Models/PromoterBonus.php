@@ -90,6 +90,7 @@ class PromoterBonus extends Model
             $user = User::find($pB->user_id);
             $spotbieUser = SpotbieUser::find($pB->user_id);
             $business = Business::find($pB->business_id)->first();
+            Log::info('Business Name ' . $business->name . ' Business Id ' . $pB->business_id);
             $this->sendBonusLpSms(
                 $user,
                 $spotbieUser,
