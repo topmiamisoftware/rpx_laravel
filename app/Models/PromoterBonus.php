@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\SendBonusLpSms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -86,8 +87,52 @@ class PromoterBonus extends Model
             $pB->expires_at = Carbon::now()->addDays(30);
             $pB->ledger_record_id = '0';
             $pB->save();
+            $user = User::find($pB->user_id);
+            $spotbieUser = SpotbieUser::find($pB->user_id);
+            $business = Business::find($pB->business_id)->first();
+            $this->sendBonusLpSms(
+                $user,
+                $spotbieUser,
+                $business->name,
+                $deviceAlternatorRecord->lp_amount,
+                $pB->time_range_1,
+                $pB->time_range_2,
+                $pB->time_range_3,
+                $pB->day
+            );
         }
 
         return response('ok', 200);
     }
+
+    private function sendBonusLpSms(
+        $user = null,
+        $spotbieUser = null,
+        $businessName = null,
+        $lpAmount = null,
+        $range1 = null,
+        $range2 = null,
+        $range3 = null,
+        $day = null
+    ) {
+        if (env('APP_ENV') === 'staging') {
+            return;
+        }
+
+        $sms = app(SystemSms::class)->createBonusLpSms($user, $spotbieUser->phone_number);
+
+        SendBonusLpSms::dispatch(
+            $user,
+            $sms,
+            $spotbieUser->phone_number,
+            $businessName,
+            $lpAmount,
+            $range1,
+            $range2,
+            $range3,
+            $day
+        )
+            ->onQueue(config('spotbie.sms.queue'));
+    }
+
 }
