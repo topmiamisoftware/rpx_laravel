@@ -84,7 +84,7 @@ class PromoterBonus extends Model
             $pB->device_id = $deviceAlternatorRecord->device_id;
             $pB->user_id = $validatedData["userId"];
             $pB->expires_at = Carbon::now()->addDays(30);
-            $pB->ledger_record_id = null;
+            $pB->ledger_record_id = '0';
             $pB->save();
         }
 

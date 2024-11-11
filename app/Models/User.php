@@ -1239,6 +1239,7 @@ class User extends Authenticatable implements JWTSubject
                     $pB->device_id = $deviceAlternatorRecord->device_id;
                     $pB->user_id = $user->id;
                     $pB->expires_at = Carbon::now()->addDays(30);
+                    $pB->ledger_record_id = '0';
                     $pB->save();
 
                     $this->sendBonusLpSms(
