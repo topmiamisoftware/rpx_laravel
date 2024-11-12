@@ -183,6 +183,9 @@ class CustomerManager extends Controller
         $business = $user->business;
 
         $pm = PromotionMessage::where('business_id', $business->id)->first();
+        if (is_null($pm)) {
+            $pm = new PromotionMessage();
+        }
 
         return response($pm, 200);
     }
