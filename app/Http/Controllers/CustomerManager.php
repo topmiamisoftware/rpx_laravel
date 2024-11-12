@@ -198,20 +198,15 @@ class CustomerManager extends Controller
         $user = Auth::user();
         $business = $user->business;
 
-        try {
-            $promotionMessage = PromotionMessage::where('business_id', $business->id)->first();
-            if (!is_null($promotionMessage)) {
-                $promotionMessage->message = $validated['message'];
-                $promotionMessage->save();
-            } else {
-                $promotionMessage = new PromotionMessage();
-                $promotionMessage->message = $validated['message'];
-                $promotionMessage->business_id = $validated['business_id'];
-                $promotionMessage->save();
-            }
-        } catch (\Exception $exception) {
-            Log::info('There was an error sendingPromotion: ' . $exception->getMessage() );
-            return response($exception->getMessage(), $exception->getCode());
+        $promotionMessage = PromotionMessage::where('business_id', $business->id)->first();
+        if (!is_null($promotionMessage)) {
+            $promotionMessage->message = $validated['message'];
+            $promotionMessage->save();
+        } else {
+            $promotionMessage = new PromotionMessage();
+            $promotionMessage->message = $validated['message'];
+            $promotionMessage->business_id = $validated['business_id'];
+            $promotionMessage->save();
         }
 
         return response($promotionMessage, 200);
