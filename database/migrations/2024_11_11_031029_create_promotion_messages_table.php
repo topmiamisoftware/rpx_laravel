@@ -15,7 +15,7 @@ class CreatePromotionMessagesTable extends Migration
     {
         Schema::create('promotion_messages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('business_id')->references('id')->on('business');
+            $table->unsignedBigInteger('business_id')->unique()->references('id')->on('business');
             $table->string('message', 420);
             $table->timestamps();
         });
