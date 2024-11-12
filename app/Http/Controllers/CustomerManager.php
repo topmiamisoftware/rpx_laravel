@@ -178,6 +178,15 @@ class CustomerManager extends Controller
         return response($smsList);
     }
 
+    public function getPromotion(Request $request) {
+        $user = Auth::user();
+        $business = $user->business;
+
+        $pm = PromotionMessage::where('business_id', $business->id)->first();
+
+        return response($pm, 200);
+    }
+
     public function sendPromotion(Request $request) {
         $validated = $request->validate([
             'message' => 'required|string'

@@ -9,3 +9,4 @@ Route::get('sms-group-list', [CustomerManager::class, 'smsGroupList'])->middlewa
 Route::post('email', [CustomerManager::class, 'email'])->middleware('auth');
 Route::post('send-promotion', [CustomerManager::class, 'sendPromotion'])->middleware('auth');
 Route::get('email-group-list', [CustomerManager::class, 'emailGroupList'])->middleware('auth');
+Route::get('get-promotion', [CustomerManager::class, 'getPromotion'])->middleware('auth');
