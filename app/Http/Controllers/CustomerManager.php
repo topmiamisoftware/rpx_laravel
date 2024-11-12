@@ -205,7 +205,7 @@ class CustomerManager extends Controller
         } else {
             $promotionMessage = new PromotionMessage();
             $promotionMessage->message = $validated['message'];
-            $promotionMessage->business_id = $validated['business_id'];
+            $promotionMessage->business_id = $business->id;
             $promotionMessage->save();
         }
 
