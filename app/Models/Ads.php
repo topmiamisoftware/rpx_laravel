@@ -619,7 +619,7 @@ class Ads extends Model
             ->where('is_live', true)
             ->where('type', $validatedData['type'])
             ->orderByDesc('views')
-            ->get()->pluck('views')[0];
+            ->get()->pluck('views')[0] ?? 0;
 
         $businessAd->business_id = $business->id;
 
