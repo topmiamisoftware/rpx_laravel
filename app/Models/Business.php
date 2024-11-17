@@ -400,14 +400,9 @@ class Business extends Model
 
         $imagePath = 'defaults/images/' . $user->id . '/' . $hashedFileName;
 
-        if ($environment == 'local')
-        {
-            $imagePath = Storage::disk('s3')->put($imagePath, $newFile);
-        }
-        else
-        {
-            $imagePath = Storage::disk('s3')->put($imagePath, $newFile, 'public');
-        }
+        Storage::disk('s3')->put($imagePath, $newFile);
+
+        $imagePath = Storage::disk('s3')->get($imagePath);
 
         $response = [
             'success' => $success,
