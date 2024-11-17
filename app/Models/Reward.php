@@ -59,12 +59,12 @@ class Reward extends Model
 
         if ($environment == 'local')
         {
-            Storage::put($imagePath, $newFile);
+            Storage::disk('s3')->put($imagePath, $newFile);
             $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
-            Storage::put($imagePath, $newFile, 'public');
+            Storage::disk('s3')->put($imagePath, $newFile, 'public');
             $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
 

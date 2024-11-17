@@ -552,13 +552,13 @@ class Ads extends Model
         if ('local' == $environment)
         {
             $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
-            Storage::put($imagePath, $newFile);
+            Storage::disk('s3')->put($imagePath, $newFile);
             $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
         else
         {
             $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
-            Storage::put($imagePath, $newFile, 'public');
+            Storage::disk('s3')->put($imagePath, $newFile, 'public');
             $imagePath = UrlHelper::getServerUrl() . $imagePath;
         }
 
@@ -635,15 +635,12 @@ class Ads extends Model
         {
             case 0:
                 $businessAd->dollar_cost = 19.99;
-
                 break;
             case 1:
                 $businessAd->dollar_cost = 13.99;
-
                 break;
             case 2:
                 $businessAd->dollar_cost = 16.99;
-
                 break;
         }
 
