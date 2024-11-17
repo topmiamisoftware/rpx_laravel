@@ -400,7 +400,7 @@ class Business extends Model
 
         $imagePath = 'defaults/images/' . $user->id . '/' . $hashedFileName;
 
-        Storage::disk('s3')->put($imagePath, $newFile);
+        Storage::disk('s3')->put($imagePath, $newFile, 'public');
 
         $imagePath = Storage::disk('s3')->url($imagePath);
 
