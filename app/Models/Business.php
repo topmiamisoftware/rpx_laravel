@@ -402,13 +402,11 @@ class Business extends Model
 
         if ($environment == 'local')
         {
-            Storage::disk('s3')->put($imagePath, $newFile);
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
+            $imagePath = Storage::disk('s3')->put($imagePath, $newFile);
         }
         else
         {
-            Storage::disk('s3')->put($imagePath, $newFile, 'public');
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
+            $imagePath = Storage::disk('s3')->put($imagePath, $newFile, 'public');
         }
 
         $response = [
