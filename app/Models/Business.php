@@ -402,7 +402,7 @@ class Business extends Model
 
         Storage::disk('s3')->put($imagePath, $newFile);
 
-        $imagePath = Storage::disk('s3')->get($imagePath);
+        $imagePath = Storage::disk('s3')->url($imagePath);
 
         $response = [
             'success' => $success,
