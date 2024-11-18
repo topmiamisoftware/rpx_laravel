@@ -111,17 +111,8 @@ class RedeemableItems extends Model
         $environment = App::environment();
 
         $imagePath = 'receipts/images/' . $user->id . '/';
-
-        if ($environment == 'local')
-        {
-            Storage::disk('s3')->put($imagePath, $request->file('file'));
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
-        }
-        else
-        {
-            Storage::disk('s3')->put($imagePath, $request->file('file'), 'public');
-            $imagePath = UrlHelper::getServerUrl() . $imagePath . $hashedFileName;
-        }
+        Storage::disk('s3')->put($imagePath, $request->file('file'), 'public');
+        $imagePath = Storage::disk('s3')->url($imagePath . $hashedFileName);
 
         $redeemable = new RedeemableItems();
         $redeemable->business_id = 0;

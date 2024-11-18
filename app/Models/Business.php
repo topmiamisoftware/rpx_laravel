@@ -399,9 +399,7 @@ class Business extends Model
         $environment = App::environment();
 
         $imagePath = 'defaults/images/' . $user->id . '/' . $hashedFileName;
-
         Storage::disk('s3')->put($imagePath, $newFile, 'public');
-
         $imagePath = Storage::disk('s3')->url($imagePath);
 
         $response = [
@@ -412,5 +410,4 @@ class Business extends Model
 
         return response($response);
     }
-
 }

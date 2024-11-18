@@ -547,20 +547,9 @@ class Ads extends Model
         $newFile = $newFile->encode('jpg', 60);
         $newFile = (string) $newFile;
 
-        $environment = App::environment();
-
-        if ('local' == $environment)
-        {
-            $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
-            Storage::disk('s3')->put($imagePath, $newFile);
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
-        }
-        else
-        {
-            $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
-            Storage::disk('s3')->put($imagePath, $newFile, 'public');
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
-        }
+        $imagePath = 'ad-media/images/' . $user->id . '/' . $hashedFileName;
+        Storage::disk('s3')->put($imagePath, $newFile, 'public');
+        $imagePath = Storage::disk('s3')->url($imagePath);
 
         $response = [
             'success' => $success,

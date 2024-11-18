@@ -56,17 +56,8 @@ class Reward extends Model
         $environment = App::environment();
 
         $imagePath = 'rewards-media/images/' . $user->id . '/' . $hashedFileName;
-
-        if ($environment == 'local')
-        {
-            Storage::disk('s3')->put($imagePath, $newFile);
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
-        }
-        else
-        {
-            Storage::disk('s3')->put($imagePath, $newFile, 'public');
-            $imagePath = UrlHelper::getServerUrl() . $imagePath;
-        }
+        Storage::disk('s3')->put($imagePath, $newFile, 'public');
+        $imagePath = Storage::disk('s3')->url($imagePath);
 
         $response = [
             'success' => $success,
