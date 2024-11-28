@@ -856,6 +856,7 @@ class User extends Authenticatable implements JWTSubject
         $validatedData = $request->validate([
             'password'          => ['nullable', new Password],
             'is_social_account' => ['required', 'boolean'],
+            'deactivation_type'  => ['required', 'boolean']
         ]);
 
         $passwordCheck = false;
@@ -883,9 +884,10 @@ class User extends Authenticatable implements JWTSubject
 
             if ($deleteStripeMembership)
             {
-                if ($user->delete())
-                {
-                    $success = true;
+                if ($validatedData['deactivation_type'] === true) {
+                    $success = $user->forceDelete();
+                } else {
+                    $success = $user->delete();
                 }
             }
             else
