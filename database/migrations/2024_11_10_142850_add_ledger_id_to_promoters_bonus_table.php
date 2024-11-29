@@ -26,7 +26,7 @@ class AddLedgerIdToPromotersBonusTable extends Migration
     public function down()
     {
         Schema::table('promoters_bonus', function (Blueprint $table) {
-            //
+            $table->dropColumn('ledger_record_id');
         });
     }
 }

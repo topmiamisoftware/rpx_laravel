@@ -42,6 +42,29 @@ class SystemSms extends Model
     }
 
     /**
+     * Create a system SMS to let the user know that they haven't finished
+     * setting up their account yet.
+     * @param User $user
+     * @return void
+     */
+    public function createAccountCompletionReminderSms(User $user, string $phoneNumber)
+    {
+        $sms = new SystemSms;
+
+        if (is_null($phoneNumber)) {
+            return $sms;
+        }
+
+        $sms->price = 0.0079;
+        $sms->to_id = $user->id;
+        $sms->to_phone = $phoneNumber;
+        $sms->save();
+        $sms->refresh();
+
+        return $sms;
+    }
+
+    /**
      * Create a system SMS to let the user know that they've opted in to
      * SMS messaging.
      * @param User $user

@@ -15,6 +15,7 @@ class AddAccountCompletedColumnInSpotbieUsersTable extends Migration
     {
         Schema::table('spotbie_users', function (Blueprint $table) {
             $table->boolean('account_completed')->nullable(false)->default(false);
+            $table->unsignedBigInteger('created_in_business')->nullable()->references('id')->on('business');
         });
     }
 
@@ -27,6 +28,7 @@ class AddAccountCompletedColumnInSpotbieUsersTable extends Migration
     {
         Schema::table('spotbie_users', function (Blueprint $table) {
             $table->dropColumn('account_completed');
+            $table->dropColumn('created_in_business');
         });
     }
 }
