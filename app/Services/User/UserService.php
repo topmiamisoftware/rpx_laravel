@@ -232,6 +232,7 @@ class UserService
         SpotbieUser $spotbieUser,
         SystemSms $sms,
         string $resetToken,
+        string $email
     )
     {
         try
@@ -242,6 +243,7 @@ class UserService
 
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
+            $resetToken = $resetToken . '?email='.urlencode($email);
             $body = $langHelper->getPasswordResetText($spotbieUser->first_name, $resetToken);
             $client->messages->create(
                 $userPhoneNumber,

@@ -42,7 +42,8 @@ class SendResetPasswordSms implements ShouldQueue
             $this->user->id,
             $spotbieUser,
             $this->systemSms,
-            $this->token
+            $this->token,
+            $this->user->email
         );
     }
 }
