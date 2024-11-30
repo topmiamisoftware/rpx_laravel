@@ -225,4 +225,66 @@ class UserService
             return $errorCode;
         }
     }
+
+    public function sendPasswordResetSms(
+        string $userPhoneNumber,
+        string $userID,
+        SpotbieUser $spotbieUser,
+        SystemSms $sms,
+        string $resetToken,
+    )
+    {
+        try
+        {
+            $lang = 'en';
+            $sid = config('services.twilio.account_sid');
+            $token = config('services.twilio.token');
+
+            $client = new Client($sid, $token);
+            $langHelper = new SmsAndCallTwimlHelper($lang);
+            $body = $langHelper->getPasswordResetText($spotbieUser->first_name, $resetToken);
+            $client->messages->create(
+                $userPhoneNumber,
+                [
+                    'from' => config('services.twilio.from'),
+                    'body' => $body,
+                ]
+            );
+
+            // Update SMS message in DB;
+            $sms->update([
+                'sent' => true,
+            ]);
+
+            Log::info(
+                '[UserService]-[sendPasswordResetSms]: Message Sent' .
+                ', User ID: '. $userID .
+                ', Phone-Number: ' . $userPhoneNumber
+            );
+        } catch (TwilioException $e) {
+            $errorCode = '';
+            switch ($e->getCode()) {
+                case '21211':
+                    $errorCode = 'phoneNumber.invalid';
+                    break;
+                case '21612':
+                case '21408':
+                case '21610':
+                case '21614':
+                    $errorCode = 'phoneNumber.unavailable';
+                    break;
+                default:
+                    $errorCode = $e->getCode();
+            }
+
+            Log::error(
+                '[UserService]-[sendPasswordResetSms]: Message Failed' .
+                ', Phone-Number: ' . $userPhoneNumber .
+                ", Error Code: " . $errorCode .
+                ", Error Message: " . $e->getMessage()
+            );
+
+            return $errorCode;
+        }
+    }
 }

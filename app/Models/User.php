@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\SendBonusLpSms;
+use App\Jobs\SendResetPasswordSms;
 use App\Jobs\SendSystemSms;
 use App\Jobs\SendAccountCreatedThroughBusinessSms;
 use Auth;
@@ -755,19 +756,39 @@ class User extends Authenticatable implements JWTSubject
 
         $validatedData = $request->validate([
             'email' => 'required|string',
+            'using_phone_number' => 'required|boolean'
         ]);
 
-        $user = User::select('id', 'email')
-        ->where('email', $validatedData['email'])
-        ->first();
+        if ($validatedData['using_phone_number']) {
+            $su = SpotbieUser::select('id', 'phone_number')
+                ->where('phone_number', '+1'.$validatedData['email'])
+                ->first();
+            $user = User::find($su->id);
+        } else {
+            $user = User::select('id', 'email')
+                ->where('email', $validatedData['email'])
+                ->first();
+        }
 
         if ($user !== null)
         {
             $userId = $user->id;
 
-            $status = IlluminatePassword::sendResetLink(
-                $request->only('email')
-            );
+            if ($validatedData['using_phone_number']) {
+                if(!is_null($su)) {
+                    $myToken = IlluminatePassword::createToken($user);
+
+                    $sms = app(SystemSms::class)->createResetPasswordSms($user, $su->phone_number);
+                    SendResetPasswordSms::dispatch($user, $sms, $su, $myToken)
+                        ->onQueue(config('spotbie.sms.queue'));
+
+                    $status = 'passwords.sent';
+                }
+            } else {
+                $status = IlluminatePassword::sendResetLink(
+                    $request->only('email')
+                );
+            }
         }
         else
         {

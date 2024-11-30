@@ -86,4 +86,21 @@ class SystemSms extends Model
 
         return $sms;
     }
+
+    public function createResetPasswordSms(User $user, string $phoneNumber)
+    {
+        $sms = new SystemSms;
+
+        if (is_null($phoneNumber)) {
+            return $sms;
+        }
+
+        $sms->price = 0.0079;
+        $sms->to_id = $user->id;
+        $sms->to_phone = $phoneNumber;
+        $sms->save();
+        $sms->refresh();
+
+        return $sms;
+    }
 }
