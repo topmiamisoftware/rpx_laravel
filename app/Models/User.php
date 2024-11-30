@@ -759,7 +759,7 @@ class User extends Authenticatable implements JWTSubject
             'using_phone_number' => 'required|boolean'
         ]);
 
-        if ($validatedData['using_phone_number']) {
+        if (!is_null($validatedData['using_phone_number'])) {
             $su = SpotbieUser::select('id', 'phone_number')
                 ->where('phone_number', '+1'.$validatedData['email'])
                 ->first();
