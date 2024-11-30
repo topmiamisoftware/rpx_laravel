@@ -38,7 +38,7 @@ class SendResetPasswordSms implements ShouldQueue
         $spotbieUser = $this->user->spotbieUser()->first();
 
         app(UserService::class)->sendPasswordResetSms(
-            $this->phoneNumber,
+            $spotbieUser->phone_number,
             $this->user->id,
             $spotbieUser,
             $this->systemSms,
