@@ -779,7 +779,7 @@ class User extends Authenticatable implements JWTSubject
                     $myToken = IlluminatePassword::createToken($user);
 
                     $sms = app(SystemSms::class)->createResetPasswordSms($user, $su->phone_number);
-                    SendResetPasswordSms::dispatch($user, $sms, $su, $myToken)
+                    SendResetPasswordSms::dispatch($user, $sms, $myToken)
                         ->onQueue(config('spotbie.sms.queue'));
 
                     $status = 'passwords.sent';

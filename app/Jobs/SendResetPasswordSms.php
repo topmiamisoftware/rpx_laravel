@@ -24,7 +24,6 @@ class SendResetPasswordSms implements ShouldQueue
     public function __construct(
         private User $user,
         private SystemSms $systemSms,
-        private string $phoneNumber,
         private string $token
     ){
     }
