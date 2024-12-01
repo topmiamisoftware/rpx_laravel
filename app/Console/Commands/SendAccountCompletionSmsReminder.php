@@ -43,10 +43,6 @@ class SendAccountCompletionSmsReminder extends Command
      */
     public function handle()
     {
-        if (env('APP_ENV') === 'staging') {
-            return;
-        }
-
         $businessId = $this->argument('business_id');
 
         $userList = SpotbieUser::where('account_completed', '=', false)
@@ -57,9 +53,17 @@ class SendAccountCompletionSmsReminder extends Command
         $userList->each(function ($spotbieUser) use ($businessId) {
             $user = User::find($spotbieUser->id);
             $sms = app(SystemSms::class)->createAccountCompletionReminderSms($user, $spotbieUser->phone_number);
-            $businessName = Business::find($businessId)->name;
+            $business = Business::find($businessId);
+            $businessName = $business->name;
 
-            SendAccountCompletionReminderSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName)
+            $portalUrl = '';
+            if (env('APP_ENV') === 'staging') {
+                $portalUrl = 'https://personal-demo.spotbie.com/community/'.$business->qr_code_link;
+            } else if(env('APP_ENV') === 'production') {
+                $portalUrl = 'https://home.spotbie.com/community/' . $business->qr_code_link;
+            }
+
+            SendAccountCompletionReminderSms::dispatch($user, $sms, $spotbieUser->phone_number, $businessName, $portalUrl)
                 ->onQueue(config('spotbie.sms.queue'));
         });
     }

@@ -169,6 +169,7 @@ class UserService
         SpotbieUser $spotbieUser,
         SystemSms $sms,
         string $businessName,
+        string $portalUrl
     )
     {
         try
@@ -179,7 +180,7 @@ class UserService
 
             $client = new Client($sid, $token);
             $langHelper = new SmsAndCallTwimlHelper($lang);
-            $body = $langHelper->getAccountCompletionReminderText($spotbieUser->first_name, $businessName);
+            $body = $langHelper->getAccountCompletionReminderText($spotbieUser->first_name, $businessName, $portalUrl);
             $client->messages->create(
                 $userPhoneNumber,
                 [

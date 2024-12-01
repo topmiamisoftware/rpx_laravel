@@ -46,9 +46,9 @@ class SmsAndCallTwimlHelper
         return trans('promotional_sms.smsOptInText', ['firstName' => $firstName]);
     }
 
-    public function getAccountCompletionReminderText(string $firstName, string $businessName,)
+    public function getAccountCompletionReminderText(string $firstName, string $businessName, string $portalUrl)
     {
-        return trans('promotional_sms.accountCompletionReminderText', ['firstName' => $firstName, 'businessName' => $businessName]);
+        return trans('promotional_sms.accountCompletionReminderText', ['firstName' => $firstName, 'businessName' => $businessName, 'portalUrl' => $portalUrl]);
     }
 
     public function getPasswordResetText(string $firstName, string $token)

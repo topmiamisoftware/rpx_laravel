@@ -25,7 +25,8 @@ class SendAccountCompletionReminderSms implements ShouldQueue
         private User $user,
         private SystemSms $systemSms,
         private string $phoneNumber,
-        private string $businessName
+        private string $businessName,
+        private string $portalUrl
     ){
     }
 
@@ -44,7 +45,8 @@ class SendAccountCompletionReminderSms implements ShouldQueue
             $spotbieUser,
             $this->systemSms,
             $this->businessName,
-            $this->user->email
+            $this->user->email,
+            $this->portalUrl
         );
     }
 }
