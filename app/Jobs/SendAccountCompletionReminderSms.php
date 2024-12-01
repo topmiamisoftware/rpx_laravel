@@ -45,7 +45,6 @@ class SendAccountCompletionReminderSms implements ShouldQueue
             $spotbieUser,
             $this->systemSms,
             $this->businessName,
-            $this->user->email,
             $this->portalUrl
         );
     }
