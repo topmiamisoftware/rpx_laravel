@@ -257,7 +257,7 @@ class User extends Authenticatable implements JWTSubject
             $userWPh = SpotbieUser::where('phone_number', '+1'.$login)->first();
             if (! is_null($userWPh)) {
                 $user = User::find($userWPh->id);
-                if (! Hash::check($password, $searchUser->password)) {
+                if (! Hash::check($password, $user->password)) {
                     $login_failed = true;
                 } else {
                     $login_failed = false;
