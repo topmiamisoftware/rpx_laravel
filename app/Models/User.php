@@ -257,8 +257,11 @@ class User extends Authenticatable implements JWTSubject
             $userWPh = SpotbieUser::where('phone_number', '+1'.$login)->first();
             if (! is_null($userWPh)) {
                 $user = User::find($userWPh->id);
-                Auth::attempt(['username' => $user->email, 'password' => $password]);
-                $login_failed = false;
+                if (! Hash::check($password, $searchUser->password)) {
+                    $login_failed = true;
+                } else {
+                    $login_failed = false;
+                }
             } else {
                 $login_failed = true;
             }
@@ -282,7 +285,7 @@ class User extends Authenticatable implements JWTSubject
                 ->where(function ($query) use ($login) {
                     $query->where('users.username', $login)
                         ->orWhere('users.email', $login)
-                        ->orWhere('spotbie_users.phone_number', '+1' . $login);
+                        ->orWhere('spotbie_users.phone_number', '+1'.$login);
                 })->first();
 
             $accountTypeCheck = $this->checkAccountType($accountType, $user);
