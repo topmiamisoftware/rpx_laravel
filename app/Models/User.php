@@ -240,11 +240,12 @@ class User extends Authenticatable implements JWTSubject
 
         $searchUser = User::onlyTrashed()
             ->select('id', 'password')
+            ->join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
             ->where(function ($query) use ($login) {
-                $query->where('username', $login)
-                    ->orWhere('email', $login);
-            })
-            ->first();
+                $query->where('users.username', $login)
+                    ->orWhere('users.email', $login)
+                    ->orWhere('spotbie_users.phone_number', '+1'.$login);
+            })->first();
 
         if ($searchUser !== null && Hash::check($password, $searchUser->password))
         {
@@ -254,7 +255,13 @@ class User extends Authenticatable implements JWTSubject
         if (!Auth::attempt(['email' => $login, 'password' => $password]) &&
             !Auth::attempt(['username' => $login, 'password' => $password])
         ) {
-            $login_failed = true;
+            $userWPh = SpotbieUser::where('phone_number', '+1'.$login)->first();
+            if (! is_null($userWPh)) {
+                $user = User::find($userWPh->id);
+                Auth::attempt(['username' => $user->email, 'password' => $password]);
+            } else {
+                $login_failed = true;
+            }
         }
         else
         {
