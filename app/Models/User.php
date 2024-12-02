@@ -239,7 +239,6 @@ class User extends Authenticatable implements JWTSubject
         }
 
         $searchUser = User::onlyTrashed()
-            ->select('id', 'password')
             ->join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
             ->where(function ($query) use ($login) {
                 $query->where('users.username', $login)
