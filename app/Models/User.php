@@ -258,6 +258,7 @@ class User extends Authenticatable implements JWTSubject
             if (! is_null($userWPh)) {
                 $user = User::find($userWPh->id);
                 Auth::attempt(['username' => $user->email, 'password' => $password]);
+                $login_failed = false;
             } else {
                 $login_failed = true;
             }
