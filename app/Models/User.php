@@ -277,10 +277,13 @@ class User extends Authenticatable implements JWTSubject
         }
         else
         {
-            $user = User::select('id', 'username', 'stripe_id')->where(function ($query) use ($login) {
-                $query->where('username', $login)
-                        ->orWhere('email', $login);
-            })->first();
+            $user = User::select('users.id', 'users.username', 'users.stripe_id')
+                ->join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
+                ->where(function ($query) use ($login) {
+                    $query->where('users.username', $login)
+                        ->orWhere('users.email', $login)
+                        ->orWhere('spotbie_users.phone_number', '+1' . $login);
+                })->first();
 
             $accountTypeCheck = $this->checkAccountType($accountType, $user);
 
