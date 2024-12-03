@@ -32,7 +32,10 @@ class MeetUpController extends Controller
     }
 
     public function destroy(Request $request, MeetUp $meetUp): int {
-        return $meetUp->destroy($request);
+        $validatedDate = $request->validate([
+            'meet_up_id' => 'required|integer|exists:meet_ups,id',
+        ]);
+        return $meetUp->destroy($validatedDate['meet_up_id']);
     }
 
     public function show(MeetUp $meetUp): Response {
