@@ -40,7 +40,6 @@ class Friendship extends Model
             return response(['status' => 'Friendship already exists.'], 403);
         }
 
-
         $friendship = Friendship::where('user_id', $user->id)
             ->where('friend_id', $validatedData['friend_id'])
             ->where('relationship', config('enums.friendships.DECLINED'))
@@ -146,6 +145,59 @@ class Friendship extends Model
 
         return response([
             'friendship' => $friendship
+        ]);
+    }
+
+    public function searchforUser(Request $request) {
+        $validatedData = $request->validate([
+            'searchString' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+
+        $matchingUserList = User::join('spotbie_users', 'spotbie_users.user_id', '=', 'users.id')
+            ->where('users.username', 'like', '%' . $validatedData['searchString'] . '%')
+            ->orWhere('spotbie_users.first_name', 'like', '%' . $validatedData['searchString'] . '%')
+            ->orWhere('spotbie_users.last_name', 'like', '%' . $validatedData['searchString'] . '%')
+            ->get();
+
+        return response([
+            'matchingUserList' => $matchingUserList,
+        ]);
+    }
+
+    public function randomNearby(Request $request) {
+        $validatedData = $request->validate([
+            'loc_x' => 'required|max:90|min:-90|numeric',
+            'loc_y' => 'required|max:180|min:-180|numeric',
+        ]);
+
+        $user = Auth::user();
+        $loc_x = $validatedData['loc_x'];
+        $loc_y = $validatedData['loc_y'];
+
+        $randomNearby = SpotbieUser::whereRaw("(
+                (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+                OR (
+                        ABS (
+                                SQRT    (
+                                            (POWER ( (business.loc_x - $loc_x), 2) ) +
+                                            (POWER ( (business.loc_y - $loc_y), 2) )
+                                        )
+                            )
+                        <= 0.1
+                    )
+
+                )")
+            ->paginate(20)
+            ->get();
+
+        $matchingUserList = User::whereIn('id', $randomNearby)
+            ->with('spotbieUser')
+            ->get();
+
+        return response([
+            'matchingUserList' => $matchingUserList,
         ]);
     }
 }
