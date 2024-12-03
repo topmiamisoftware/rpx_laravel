@@ -26,8 +26,4 @@ class SpotbieUser extends Model
     {
         return $this->hasOne('App\Models\UserLocation', 'id');
     }
-
-    public function store()
-    {
-    }
 }
