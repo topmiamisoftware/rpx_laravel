@@ -24,9 +24,9 @@ class LoyaltyPointBalanceController extends Controller
         return $promoterBonus->createForUser($request);
     }
 
-    public function balanceList(LoyaltyPointBalance $loyaltyPointBalance)
+    public function balanceList(Request $request, LoyaltyPointBalance $loyaltyPointBalance)
     {
-        return $loyaltyPointBalance->balanceList();
+        return $loyaltyPointBalance->balanceList($request);
     }
 
     /**

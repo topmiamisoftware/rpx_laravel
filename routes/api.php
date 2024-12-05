@@ -28,3 +28,5 @@ Route::prefix('lp-tiers')->group(__DIR__ . '/LoyaltyTiers/LoyaltyTiers.routes.ph
 Route::prefix('feedback')->group(__DIR__ . '/Feedback/Feedback.routes.php');
 Route::prefix('business-app')->group(__DIR__ . '/AppDownload/BusinessApp.routes.php');
 Route::prefix('promoter')->group(__DIR__ . '/Promoter/Promoter.routes.php');
+Route::prefix('meet-ups')->group(__DIR__ . '/MeetUps/MeetUps.routes.php');
+Route::prefix('my-friends')->group(__DIR__ . '/MyFriends/MyFriends.routes.php');

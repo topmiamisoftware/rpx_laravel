@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\Models\MeetUp;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Carbon;
 
 class MeetUpController extends Controller
 {
@@ -18,12 +18,13 @@ class MeetUpController extends Controller
     {
         $user = Auth::user();
 
-        $matchUpList = MeetUp::where('user_id', $user->id)
-            ->paginate(20)
-            ->get();
+        $meetUpListing = MeetUp::join('business', 'business.id', '=', 'meet_ups.business_id')
+            ->where('meet_ups.user_id', $user->id)
+            ->orWhere('meet_ups.friend_id', $user->id)
+            ->paginate(20);
 
         return response([
-            'matchUpList' => $matchUpList
+            'meetUpListing' => $meetUpListing
         ]);
     }
 

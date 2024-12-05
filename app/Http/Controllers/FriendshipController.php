@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Friendship;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 
 class FriendshipController extends Controller
 {
@@ -17,13 +17,18 @@ class FriendshipController extends Controller
     public function index(): Response
     {
         $user = Auth::user();
-        $friendList = Friendship::select('id', 'user_id', 'friend_id')
+        $friendList = Friendship::select('id', 'user_id', 'friend_id', 'relationship')
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('friend_id', $user->id);
+            })
             ->with('userProfile', function ($query) {
                 $query->with('spotbieUser');
             })
-            ->where('user_id', $user->id)
-            ->orWhere('friend_id', $user->id)
-            ->paginate(20)->get();
+            ->with('friendProfile', function ($query) {
+                $query->with('spotbieUser');
+            })
+            ->paginate(20);
 
         return response([
             'friendList' => $friendList,
@@ -44,5 +49,13 @@ class FriendshipController extends Controller
 
     public function blockFriendship(Friendship $friendship, Request $request): Response {
         return $friendship->blockFriendship($request);
+    }
+
+    public function randomNearby(Friendship $friendship, Request $request) {
+        return $friendship->randomNearby($request);
+    }
+
+    public function searchForUser(Friendship $friendship, Request $request) {
+        return $friendship->searchforUser($request);
     }
 }

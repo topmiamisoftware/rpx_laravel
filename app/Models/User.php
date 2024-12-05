@@ -43,7 +43,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $fillable = ['trial_ends_at'];
 
-    protected $hidden = ['password', 'stripe_id', 'pm_last_four', 'pm_type', 'created_at', 'delete_at', 'end_of_month'];
+    protected $hidden = ['password', 'stripe_id', 'pm_last_four', 'pm_type', 'created_at', 'delete_at', 'end_of_month', 'remember_token'];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -641,9 +641,9 @@ class User extends Authenticatable implements JWTSubject
                 ->count();
 
             if ($s > 0) {
-                return new HttpResponseException(response([
+                return response([
                     'error' => 'The phone number is already in use.'
-                ], 422));
+                ], 422);
             }
         }
 

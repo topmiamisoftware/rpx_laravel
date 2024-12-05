@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LoyaltyPointBalance extends Model
 {
@@ -31,7 +32,7 @@ class LoyaltyPointBalance extends Model
         return $this->hasMany('App\Models\RedeemableItems', 'redeemer_id', 'id');
     }
 
-    public function balanceList()
+    public function balanceList(Request $request)
     {
         $user = Auth::user();
 

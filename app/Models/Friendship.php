@@ -15,11 +15,11 @@ class Friendship extends Model
     protected $fillable = [];
 
     public function userProfile(){
-        return $this->belongsTo( 'user', 'id', 'user_id');
+        return $this->belongsTo( '\App\Models\User', 'user_id', 'id');
     }
 
-    public function spotbieUserProfile() {
-        return $this->belongsTo('spotbie_user','id', 'user_id');
+    public function friendProfile(){
+        return $this->belongsTo( '\App\Models\User', 'friend_id', 'id');
     }
 
     public function requestFriendship(Request $request): Response {
@@ -31,25 +31,14 @@ class Friendship extends Model
 
         $existing = Friendship::where('user_id', $user->id)
             ->where('friend_id', $validatedData['friend_id'])
-            ->where('relationship', config('enums.friendships.PENDING'))
-            ->where('relationship', config('enums.friendships.BLOCKED'))
-            ->where('relationship', config('enums.friendships.ACCEPTED'))
             ->get();
 
-        if (! is_null($existing)) {
+        if (count($existing) > 0) {
             return response(['status' => 'Friendship already exists.'], 403);
         }
 
-        $friendship = Friendship::where('user_id', $user->id)
-            ->where('friend_id', $validatedData['friend_id'])
-            ->where('relationship', config('enums.friendships.DECLINED'))
-            ->get();
-
-        if (is_null($friendship)) {
-            $friendship = new Friendship();
-        }
-
-        $friendship->user_id = $validatedData['user_id'];
+        $friendship = new Friendship();
+        $friendship->user_id = $user->id;
         $friendship->friend_id = $validatedData['friend_id'];
         $friendship->relationship = config('enums.friendships.PENDING');
         $friendship->save();
@@ -67,11 +56,9 @@ class Friendship extends Model
 
         $user = Auth::user();
 
-        $friendship = Friendship::
-        where('friend_id', $validateData['friend_id'])
+        $friendship = Friendship::where('friend_id', $validateData['friend_id'])
             ->where('user_id', $user->id)
-            ->where('relationship', config('enums.friendships.ACCEPTED'))
-            ->get();
+            ->first();
 
         if (is_null($friendship)) {
             return response(['status' => 'Friendship not found.'], 404);
@@ -92,8 +79,14 @@ class Friendship extends Model
 
         $user = Auth::user();
 
-        $friendship = Friendship::where('friend_id', $validateData['friend_id'])
-            ->where('user_id', $user->id)
+        $friendship = Friendship::where(function ($query) use ($validateData, $user) {
+                $query->where('friend_id', $validateData['friend_id'])
+                    ->orWhere('friend_id', $user->id);
+            })
+            ->where(function ($query) use ($validateData, $user) {
+                $query->where('user_id', $validateData['friend_id'])
+                    ->orWhere('user_id', $user->id);
+            })
             ->where('relationship', config('enums.friendships.PENDING'))
             ->first();
 
@@ -120,8 +113,14 @@ class Friendship extends Model
 
         $user = Auth::user();
 
-        $friendship = Friendship::where('friend_id', $validateData['friend_id'])
-            ->where('user_id', $user->id)
+        $friendship = Friendship::where(function ($query) use ($validateData, $user) {
+                $query->where('user_id', $validateData['friend_id'])
+                    ->orWhere('user_id', $user->id);
+            })
+            ->where(function ($query) use ($validateData, $user) {
+                $query->where('friend_id', $validateData['friend_id'])
+                    ->orWhere('friend_id', $user->id);
+            })
             ->where('relationship', config('enums.friendships.BLOCKED'))
             ->first();
 
@@ -131,14 +130,22 @@ class Friendship extends Model
             ], 403);
         }
 
-        $friendship = Friendship::where('friend_id', $validateData['friend_id'])
-            ->where('user_id', $user->id)
+        $friendship = Friendship::where(function ($query) use ($validateData, $user) {
+            $query->where('user_id', $validateData['friend_id'])
+                ->orWhere('user_id', $user->id);
+            })
+            ->where(function ($query) use ($validateData, $user) {
+                $query->where('friend_id', $validateData['friend_id'])
+                    ->orWhere('friend_id', $user->id);
+            })
             ->first();
 
         if (is_null($friendship)) {
             $friendship = new Friendship();
         }
 
+        $friendship->user_id = $user->id;
+        $friendship->friend_id = $validateData['friend_id'];
         $friendship->relationship = config('enums.friendships.BLOCKED');
         $friendship->save();
         $friendship->refresh();
@@ -150,15 +157,16 @@ class Friendship extends Model
 
     public function searchforUser(Request $request) {
         $validatedData = $request->validate([
-            'searchString' => 'required|string',
+            'search_string' => 'required|string',
         ]);
 
         $user = Auth::user();
 
-        $matchingUserList = User::join('spotbie_users', 'spotbie_users.user_id', '=', 'users.id')
-            ->where('users.username', 'like', '%' . $validatedData['searchString'] . '%')
-            ->orWhere('spotbie_users.first_name', 'like', '%' . $validatedData['searchString'] . '%')
-            ->orWhere('spotbie_users.last_name', 'like', '%' . $validatedData['searchString'] . '%')
+        $matchingUserList = User::join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
+            ->where('users.username', 'like', '%' . $validatedData['search_string'] . '%')
+            ->orWhere('spotbie_users.first_name', 'like', '%' . $validatedData['search_string'] . '%')
+            ->orWhere('spotbie_users.last_name', 'like', '%' . $validatedData['search_string'] . '%')
+            ->with('spotbieUser')
             ->get();
 
         return response([
@@ -176,23 +184,26 @@ class Friendship extends Model
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
 
-        $randomNearby = SpotbieUser::whereRaw("(
-                (business.loc_x = $loc_x AND business.loc_y = $loc_y)
+        $randomNearby = UserLocation::join('spotbie_users', 'spotbie_users.id', '=', 'user_locations.id')
+            ->where('spotbie_users.user_type', 4)
+            ->whereRaw("(
+                (loc_x = $loc_x AND loc_y = $loc_y)
                 OR (
                         ABS (
                                 SQRT    (
-                                            (POWER ( (business.loc_x - $loc_x), 2) ) +
-                                            (POWER ( (business.loc_y - $loc_y), 2) )
+                                            (POWER ( (loc_x - $loc_x), 2) ) +
+                                            (POWER ( (loc_y - $loc_y), 2) )
                                         )
                             )
-                        <= 0.1
+                        <= 0.5
                     )
 
                 )")
-            ->paginate(20)
-            ->get();
+            ->inRandomOrder()
+            ->paginate(20);
 
-        $matchingUserList = User::whereIn('id', $randomNearby)
+        $matchingUserList = User::whereIn('id', $randomNearby->pluck('id'))
+            ->where('id', '!=', $user->id)
             ->with('spotbieUser')
             ->get();
 

@@ -4,14 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers">
-      <change beforePath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/spotbie_laravel.iml" afterDir="false" />
+    <list default="true" id="733eb8f4-8a99-4f28-87df-901b2a65c8f4" name="Changes" comment="REMOVED unused function">
+      <change afterPath="$PROJECT_DIR$/routes/MeetUps/MeetUps.routes.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/MyFriends/MyFriends.routes.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/Ads.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Ads.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/FriendshipController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/FriendshipController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/LoyaltyPointBalance/LoyaltyPointBalanceController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/LoyaltyPointBalance/LoyaltyPointBalanceController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MeetUpController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MeetUpController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Surrounding/SurroundingsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Surrounding/SurroundingsController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/User/UserController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Friendship.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Friendship.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/LoyaltyPointBalance.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/LoyaltyPointBalance.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/ad-media" beforeDir="false" afterPath="$PROJECT_DIR$/public/ad-media" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/defaults" beforeDir="false" afterPath="$PROJECT_DIR$/public/defaults" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/receipts" beforeDir="false" afterPath="$PROJECT_DIR$/public/receipts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/rewards-media" beforeDir="false" afterPath="$PROJECT_DIR$/public/rewards-media" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/Redeemable/Redeemable.routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/Redeemable/Redeemable.routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage/logs/.gitignore" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,13 +33,17 @@
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
     <execution />
   </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/master" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="spotbie-staging" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="SOFT" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -234,11 +249,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "PHP Built-in Web Server.Docker.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/spotbie/spotbie_laravel/routes/CustomerManager",
+    "last_opened_file_path": "/Users/franco/PhpstormProjects/spotbie_laravel/routes/MyFriends",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -250,6 +266,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/routes/MyFriends" />
+      <recent name="$PROJECT_DIR$/routes/MeetUps" />
       <recent name="$PROJECT_DIR$/routes/CustomerManager" />
       <recent name="$PROJECT_DIR$/app/Models" />
     </key>
@@ -357,6 +375,11 @@
       <workItem from="1723068114453" duration="11065000" />
       <workItem from="1724190945878" duration="3188000" />
       <workItem from="1724535907346" duration="21665000" />
+      <workItem from="1727361366970" duration="404000" />
+      <workItem from="1727758776838" duration="15564000" />
+      <workItem from="1728884178009" duration="27206000" />
+      <workItem from="1729565160526" duration="9440000" />
+      <workItem from="1730178777828" duration="232500000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the subscription with regular key issue.">
       <created>1657433063930</created>
@@ -498,239 +521,239 @@
       <option name="project" value="LOCAL" />
       <updated>1684737588687</updated>
     </task>
-    <task id="LOCAL-00024" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00151" summary="s3 testing">
       <option name="closed" value="true" />
-      <created>1721514694448</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
+      <created>1731885416734</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
       <option name="project" value="LOCAL" />
-      <updated>1721514694448</updated>
+      <updated>1731885416734</updated>
     </task>
-    <task id="LOCAL-00025" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00152" summary="s3 testing">
       <option name="closed" value="true" />
-      <created>1721515000844</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
+      <created>1731885806000</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
       <option name="project" value="LOCAL" />
-      <updated>1721515000845</updated>
+      <updated>1731885806000</updated>
     </task>
-    <task id="LOCAL-00026" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00153" summary="s3 testing">
       <option name="closed" value="true" />
-      <created>1721515082043</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
+      <created>1731886010639</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
       <option name="project" value="LOCAL" />
-      <updated>1721515082043</updated>
+      <updated>1731886010640</updated>
     </task>
-    <task id="LOCAL-00027" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00154" summary="s3 testing">
       <option name="closed" value="true" />
-      <created>1721515955414</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
+      <created>1731887998196</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
       <option name="project" value="LOCAL" />
-      <updated>1721515955414</updated>
+      <updated>1731887998196</updated>
     </task>
-    <task id="LOCAL-00028" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00155" summary="s3 testing">
       <option name="closed" value="true" />
-      <created>1721529114614</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
+      <created>1731897988646</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
       <option name="project" value="LOCAL" />
-      <updated>1721529114614</updated>
+      <updated>1731897988646</updated>
     </task>
-    <task id="LOCAL-00029" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00156" summary="ADDED: force deleting users when 'deactivation_type' is set to true">
       <option name="closed" value="true" />
-      <created>1721529748019</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
+      <created>1732808608801</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
       <option name="project" value="LOCAL" />
-      <updated>1721529748019</updated>
+      <updated>1732808608801</updated>
     </task>
-    <task id="LOCAL-00030" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00157" summary="ADDED: account completed to spotbie_users table">
       <option name="closed" value="true" />
-      <created>1721529920002</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
+      <created>1732917791814</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
       <option name="project" value="LOCAL" />
-      <updated>1721529920002</updated>
+      <updated>1732917791814</updated>
     </task>
-    <task id="LOCAL-00031" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00158" summary="ADDED: command to text users who have not completed their account">
       <option name="closed" value="true" />
-      <created>1721530368394</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
+      <created>1732919464919</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
       <option name="project" value="LOCAL" />
-      <updated>1721530368394</updated>
+      <updated>1732919464920</updated>
     </task>
-    <task id="LOCAL-00032" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00159" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1721530781655</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
+      <created>1732927041211</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
       <option name="project" value="LOCAL" />
-      <updated>1721530781655</updated>
+      <updated>1732927041211</updated>
     </task>
-    <task id="LOCAL-00033" summary="ADDED: temp. validator for phone numbers saved through the user app">
+    <task id="LOCAL-00160" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1721531250985</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
+      <created>1732928014876</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
       <option name="project" value="LOCAL" />
-      <updated>1721531250985</updated>
+      <updated>1732928014876</updated>
     </task>
-    <task id="LOCAL-00034" summary="FIXED: weird issue where if user subscription is not found the user would get a blank screen when loading their membership page">
+    <task id="LOCAL-00161" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1721531742339</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
+      <created>1732928976726</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
       <option name="project" value="LOCAL" />
-      <updated>1721531742339</updated>
+      <updated>1732928976726</updated>
     </task>
-    <task id="LOCAL-00035" summary="ADDED: business-app routes &amp; storage link&#10;ADDED: AppVersionController to allow users to download their new business app&#10;ADDED: testing blade">
+    <task id="LOCAL-00162" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1722117963628</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
+      <created>1732929606673</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
       <option name="project" value="LOCAL" />
-      <updated>1722117963628</updated>
+      <updated>1732929606673</updated>
     </task>
-    <task id="LOCAL-00036" summary="REMOVED: console logs">
+    <task id="LOCAL-00163" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1722118277805</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
+      <created>1732929806120</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
       <option name="project" value="LOCAL" />
-      <updated>1722118277805</updated>
+      <updated>1732929806121</updated>
     </task>
-    <task id="LOCAL-00037" summary="ADDED: Content-type header">
+    <task id="LOCAL-00164" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1722398734869</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
+      <created>1732930032519</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
       <option name="project" value="LOCAL" />
-      <updated>1722398734869</updated>
+      <updated>1732930032519</updated>
     </task>
-    <task id="LOCAL-00038" summary="ADDED: Content-Disposition header">
+    <task id="LOCAL-00165" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1722399408773</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
+      <created>1732930800994</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
       <option name="project" value="LOCAL" />
-      <updated>1722399408773</updated>
+      <updated>1732930800994</updated>
     </task>
-    <task id="LOCAL-00039" summary="CHANGED: change name for download">
+    <task id="LOCAL-00166" summary="ADDED: command to text users who want to reset their accounts using their phone numbers">
       <option name="closed" value="true" />
-      <created>1722483078621</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
+      <created>1732976411048</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
       <option name="project" value="LOCAL" />
-      <updated>1722483078621</updated>
+      <updated>1732976411049</updated>
     </task>
-    <task id="LOCAL-00040" summary="CHANGED: change name for download">
+    <task id="LOCAL-00167" summary="ADDED: continuation to promotional sms for accounts that are not completed">
       <option name="closed" value="true" />
-      <created>1722489387042</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
+      <created>1733013019906</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
       <option name="project" value="LOCAL" />
-      <updated>1722489387042</updated>
+      <updated>1733013019906</updated>
     </task>
-    <task id="LOCAL-00041" summary="CHANGED: added filename*= per spec and changed from inline to attachment.">
+    <task id="LOCAL-00168" summary="ADDED: continuation to promotional sms for accounts that are not completed">
       <option name="closed" value="true" />
-      <created>1722722622243</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
+      <created>1733013933431</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
       <option name="project" value="LOCAL" />
-      <updated>1722722622243</updated>
+      <updated>1733013933432</updated>
     </task>
-    <task id="LOCAL-00042" summary="CHANGED: back to inline">
+    <task id="LOCAL-00169" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722723240652</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
+      <created>1733149846999</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
       <option name="project" value="LOCAL" />
-      <updated>1722723240652</updated>
+      <updated>1733149846999</updated>
     </task>
-    <task id="LOCAL-00043" summary="testing">
+    <task id="LOCAL-00170" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722727068062</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
+      <created>1733150263782</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
       <option name="project" value="LOCAL" />
-      <updated>1722727068063</updated>
+      <updated>1733150263782</updated>
     </task>
-    <task id="LOCAL-00044" summary="testing">
+    <task id="LOCAL-00171" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722728131430</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
+      <created>1733150513359</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
       <option name="project" value="LOCAL" />
-      <updated>1722728131430</updated>
+      <updated>1733150513359</updated>
     </task>
-    <task id="LOCAL-00045" summary="testing">
+    <task id="LOCAL-00172" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722729660962</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
+      <created>1733150794472</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
       <option name="project" value="LOCAL" />
-      <updated>1722729660962</updated>
+      <updated>1733150794473</updated>
     </task>
-    <task id="LOCAL-00046" summary="ADDED: config front_end_business_version value">
+    <task id="LOCAL-00173" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722738891126</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
+      <created>1733153018848</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
       <option name="project" value="LOCAL" />
-      <updated>1722738891126</updated>
+      <updated>1733153018848</updated>
     </task>
-    <task id="LOCAL-00047" summary="ADDED: config current_version_download_url">
+    <task id="LOCAL-00174" summary="ADDED: log-in with user phone number">
       <option name="closed" value="true" />
-      <created>1722740303604</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
+      <created>1733153093578</created>
+      <option name="number" value="00174" />
+      <option name="presentableId" value="LOCAL-00174" />
       <option name="project" value="LOCAL" />
-      <updated>1722740303604</updated>
+      <updated>1733153093578</updated>
     </task>
-    <task id="LOCAL-00048" summary="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:">
+    <task id="LOCAL-00175" summary="ADDED: friendship tables, controllers, migrations, enums">
       <option name="closed" value="true" />
-      <created>1724041497725</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
+      <created>1733201637707</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
       <option name="project" value="LOCAL" />
-      <updated>1724041497725</updated>
+      <updated>1733201637708</updated>
     </task>
-    <task id="LOCAL-00049" summary="ADDED: Ads Views">
+    <task id="LOCAL-00176" summary="Meet Up Table, Model, and Controller">
       <option name="closed" value="true" />
-      <created>1724626888965</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
+      <created>1733205073031</created>
+      <option name="number" value="00176" />
+      <option name="presentableId" value="LOCAL-00176" />
       <option name="project" value="LOCAL" />
-      <updated>1724626888965</updated>
+      <updated>1733205073031</updated>
     </task>
-    <task id="LOCAL-00050" summary="CHANGED: BusinessFactory now checks for BusinessName to avoid duplicates">
+    <task id="LOCAL-00177" summary="SharedExperience Table, Model, and Controller">
       <option name="closed" value="true" />
-      <created>1724628624089</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
+      <created>1733206732240</created>
+      <option name="number" value="00177" />
+      <option name="presentableId" value="LOCAL-00177" />
       <option name="project" value="LOCAL" />
-      <updated>1724628624090</updated>
+      <updated>1733206732240</updated>
     </task>
-    <task id="LOCAL-00051" summary="ADDED: Add logging to views">
+    <task id="LOCAL-00178" summary="ADDED: search for user and random user pop up in Friendship">
       <option name="closed" value="true" />
-      <created>1724629637215</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
+      <created>1733230069442</created>
+      <option name="number" value="00178" />
+      <option name="presentableId" value="LOCAL-00178" />
       <option name="project" value="LOCAL" />
-      <updated>1724629637215</updated>
+      <updated>1733230069442</updated>
     </task>
-    <task id="LOCAL-00052" summary="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers">
+    <task id="LOCAL-00179" summary="REMOVED unused function">
       <option name="closed" value="true" />
-      <created>1724638654184</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
+      <created>1733230082651</created>
+      <option name="number" value="00179" />
+      <option name="presentableId" value="LOCAL-00179" />
       <option name="project" value="LOCAL" />
-      <updated>1724638654184</updated>
+      <updated>1733230082651</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <option name="localTasksCounter" value="180" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -747,14 +770,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/master" />
-                      </list>
-                    </value>
-                  </entry>
-                  <entry key="text">
-                    <value>
-                      <list>
-                        <option value="time" />
+                        <option value="HEAD" />
                       </list>
                     </value>
                   </entry>
@@ -767,32 +783,43 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Lp &amp; business ad fix" />
-    <MESSAGE value="cors fix" />
-    <MESSAGE value="Lp Aggregator fix" />
-    <MESSAGE value="Cors was messed up. &#10;For some reason, the bottom half of the file had been deleted. I'm not sure how this happened but it was probably somewhere during the installation of cs-fixer." />
-    <MESSAGE value="re-enabled Separate LP balances per business" />
-    <MESSAGE value="testing something" />
-    <MESSAGE value="CHANGED: make users phone number unique" />
-    <MESSAGE value="REMOVED: +1 from phone number store/save functions" />
-    <MESSAGE value="ADDED: temp. validator for phone numbers saved through the user app" />
-    <MESSAGE value="FIXED: weird issue where if user subscription is not found the user would get a blank screen when loading their membership page" />
-    <MESSAGE value="ADDED: business-app routes &amp; storage link&#10;ADDED: AppVersionController to allow users to download their new business app&#10;ADDED: testing blade" />
-    <MESSAGE value="REMOVED: console logs" />
-    <MESSAGE value="ADDED: Content-type header" />
-    <MESSAGE value="ADDED: Content-Disposition header" />
-    <MESSAGE value="CHANGED: change name for download" />
-    <MESSAGE value="CHANGED: added filename*= per spec and changed from inline to attachment." />
-    <MESSAGE value="CHANGED: back to inline" />
-    <MESSAGE value="testing" />
-    <MESSAGE value="ADDED: config front_end_business_version value" />
-    <MESSAGE value="ADDED: config current_version_download_url" />
-    <MESSAGE value="ADDED: don't notify users about mass SMS messages from businesses unless they have opted-in to messages.&#10;CHANGED:" />
-    <MESSAGE value="ADDED: Ads Views" />
-    <MESSAGE value="CHANGED: BusinessFactory now checks for BusinessName to avoid duplicates" />
-    <MESSAGE value="ADDED: Add logging to views" />
-    <MESSAGE value="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers" />
-    <option name="LAST_COMMIT_MESSAGE" value="CHANGED: Simplify categories, business factories, Ads, and Sorroundings Controllers" />
+    <MESSAGE value="Upload business photo." />
+    <MESSAGE value="Added &quot;Smoke Shops&quot; to shopping categories." />
+    <MESSAGE value="Added &quot;Promoter Table Model Resource Controller&quot;" />
+    <MESSAGE value="Added with('rewards') to query" />
+    <MESSAGE value="User QUEUE from config instead" />
+    <MESSAGE value="Adding PromoterBonus Tables and Inserts" />
+    <MESSAGE value="Updated account created e-mail with better wording for the withLink flag." />
+    <MESSAGE value="Added Bonus LP on sign sms." />
+    <MESSAGE value="Added Bonus LP on sign up sms." />
+    <MESSAGE value="Adding Save Business LP RATE." />
+    <MESSAGE value="PromotionManger" />
+    <MESSAGE value="CustomerManager" />
+    <MESSAGE value="0 if null" />
+    <MESSAGE value="s3 testing" />
+    <MESSAGE value="ADDED: force deleting users when 'deactivation_type' is set to true" />
+    <MESSAGE value="ADDED: account completed to spotbie_users table" />
+    <MESSAGE value="ADDED: command to text users who have not completed their account" />
+    <MESSAGE value="ADDED: command to text users who want to reset their accounts using their phone numbers" />
+    <MESSAGE value="ADDED: continuation to promotional sms for accounts that are not completed" />
+    <MESSAGE value="ADDED: log-in with user phone number" />
+    <MESSAGE value="ADDED: friendship tables, controllers, migrations, enums" />
+    <MESSAGE value="Meet Up Table, Model, and Controller" />
+    <MESSAGE value="SharedExperience Table, Model, and Controller" />
+    <MESSAGE value="ADDED: search for user and random user pop up in Friendship" />
+    <MESSAGE value="REMOVED unused function" />
+    <option name="LAST_COMMIT_MESSAGE" value="REMOVED unused function" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/app/Models/Ads.php</url>
+          <line>136</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
