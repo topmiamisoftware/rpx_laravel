@@ -160,15 +160,20 @@ class Friendship extends Model
 
     public function inviteContact(Request $request) {
         $validatedData = $request->validate([
-            'phoneNumber' => 'required|numeric|phone_number|size:11',
+            'phoneNumber' => 'required|numeric',
             'displayName' => 'required|string',
         ]);
 
-        $sms = app(SystemSms::class)->createInviteContactSms($validatedData['displayName'], $validatedData['phoneNumber']);
+        $sms = app(SystemSms::class)->createInviteContactSms($validatedData['phoneNumber']);
 
         $user = Auth::user();
 
-        SendInviteContactSms::dispatch($validatedData['displayName'], $sms, $validatedData['phoneNumber'], $user)
+        SendInviteContactSms::dispatch(
+            $validatedData['displayName'],
+            $sms,
+            $validatedData['phoneNumber'],
+            $user
+        )
             ->onQueue(config('spotbie.sms.queue'));
 
         return response([

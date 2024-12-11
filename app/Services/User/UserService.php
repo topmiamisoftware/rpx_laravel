@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Log;
 class UserService
 {
     public function sendInviteContactSms(
-        string $displayName,
         string $userPhoneNumber,
+        string $displayName,
         SystemSms $sms,
         string $personInviting,
     ) {

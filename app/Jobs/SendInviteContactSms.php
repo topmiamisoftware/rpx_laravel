@@ -40,7 +40,7 @@ class SendInviteContactSms implements ShouldQueue
             $this->phoneNumber,
             $this->displayName,
             $this->systemSms,
-            $this->user->spotbie_user->first_name
+            $this->user->spotbieUser->first_name
         );
     }
 }
