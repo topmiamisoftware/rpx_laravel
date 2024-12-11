@@ -29,6 +29,12 @@ class SmsAndCallTwimlHelper
         return $text;
     }
 
+    public function getInviteContactSmsText(string $displayName, string $personInviting)
+    {
+        return trans('promotional_sms.inviteContact', ['displayName' => $displayName, 'personInviting' => $personInviting]);
+
+    }
+
     public function getConfirmPhoneSmsText($confirmationCode)
     {
         $smsText = trans('phoneConfirmation.smsText', ['confirmationCode' => $confirmationCode]);

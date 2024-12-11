@@ -64,6 +64,19 @@ class SystemSms extends Model
         return $sms;
     }
 
+
+
+    public function createInviteContactSms(string $phoneNumber)
+    {
+        $sms = new SystemSms;
+        $sms->price = 0.0079;
+        $sms->to_phone = $phoneNumber;
+        $sms->save();
+        $sms->refresh();
+
+        return $sms;
+    }
+
     /**
      * Create a system SMS to let the user know that they've opted in to
      * SMS messaging.

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\SendInviteContactSms;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -29,12 +30,16 @@ class Friendship extends Model
 
         $user = Auth::user();
 
-        $existing = Friendship::where('user_id', $user->id)
-            ->where('friend_id', $validatedData['friend_id'])
-            ->get();
+        $existing = Friendship::where(function ($qry) use ($user, $validatedData) {
+                $qry->where('user_id', $user->id)
+                    ->orWhere('user_id', $validatedData['friend_id']);
+            })->where(function ($qry) use ($user, $validatedData) {
+                $qry->where('friend_id', $user->id)
+                    ->orWhere('friend_id', $validatedData['friend_id']);
+            })->get();
 
         if (count($existing) > 0) {
-            return response(['status' => 'Friendship already exists.'], 403);
+            return response(['message' => 'Friendship already exists.'], 403);
         }
 
         $friendship = new Friendship();
@@ -51,17 +56,15 @@ class Friendship extends Model
 
     public function deleteFriendship(Request $request) {
         $validateData = $request->validate([
-            'friend_id' => 'required|integer',
+            'friendship_id' => 'required|integer|exists:friendships,id',
         ]);
 
         $user = Auth::user();
 
-        $friendship = Friendship::where('friend_id', $validateData['friend_id'])
-            ->where('user_id', $user->id)
-            ->first();
+        $friendship = Friendship::find($validateData['friendship_id']);
 
         if (is_null($friendship)) {
-            return response(['status' => 'Friendship not found.'], 404);
+            return response(['message' => 'Friendship not found.'], 404);
         }
 
         $friendship->delete();
@@ -126,7 +129,7 @@ class Friendship extends Model
 
         if (! is_null($friendship)) {
             return response([
-                'status' => 'You have already blocked this user.'
+                'message' => 'You have already blocked this user.'
             ], 403);
         }
 
@@ -155,6 +158,23 @@ class Friendship extends Model
         ]);
     }
 
+    public function inviteContact(Request $request) {
+        $validatedData = $request->validate([
+            'phoneNumber' => 'required|numeric|phone_number|size:11',
+            'displayName' => 'required|string',
+        ]);
+
+        $sms = app(SystemSms::class)->createInviteContactSms($validatedData['displayName'], $validatedData['phoneNumber']);
+
+        $user = Auth::user();
+
+        SendInviteContactSms::dispatch($validatedData['displayName'], $sms, $validatedData['phoneNumber'], $user)
+            ->onQueue(config('spotbie.sms.queue'));
+
+        return response([
+            'status' => 'ok',
+        ]);
+    }
     public function searchforUser(Request $request) {
         $validatedData = $request->validate([
             'search_string' => 'required|string',

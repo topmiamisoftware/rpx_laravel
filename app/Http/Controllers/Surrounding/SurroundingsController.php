@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\SurroundingsApi;
 use Illuminate\Http\Request;
 use App\Models\Business;
+use Illuminate\Support\Facades\DB;
 
 class SurroundingsController extends Controller
 {
@@ -89,6 +90,9 @@ class SurroundingsController extends Controller
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
 
+        $maxDistance = 0.1;
+        $earthRadius = "3958.8";
+
         $data = Business::select(
             'business.id',
             'business.qr_code_link',
@@ -103,6 +107,13 @@ class SurroundingsController extends Controller
             'spotbie_users.user_type',
             'loyalty_point_balances.balance',
             'loyalty_point_balances.loyalty_point_dollar_percent_value',
+            DB::raw("(
+                $earthRadius * ACOS(
+                    COS(RADIANS($loc_y)) * COS(RADIANS(business.loc_y)) *
+                    COS(RADIANS(business.loc_x) - RADIANS($loc_x)) +
+                    SIN(RADIANS($loc_y)) * SIN(RADIANS(business.loc_y))
+                )
+            ) AS max_distance"),
         )
         ->with('loyaltyTiers')
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
@@ -112,18 +123,7 @@ class SurroundingsController extends Controller
         })
         ->where('business.is_verified', 1)
         ->where('business.categories', $categories)
-        ->whereRaw("(
-            (business.loc_x = $loc_x AND business.loc_y = $loc_y)
-            OR (
-                    ABS (
-                            SQRT    (
-                                        (POWER ( (business.loc_x - $loc_x), 2) ) +
-                                        (POWER ( (business.loc_y - $loc_y), 2) )
-                                    )
-                        )
-                    <= 0.1
-                )
-        )")
+        ->having('max_distance', '>', $maxDistance)
         ->has('rewards')
         ->inRandomOrder()
         ->limit(8)

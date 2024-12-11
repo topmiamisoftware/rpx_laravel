@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -34,40 +35,46 @@ class MeetUp extends Model
 
     public function createMeetUp(Request $request) {
         $validatedData = $request->validate([
-            'business_id' => 'required|integer|exists:businesses,id',
+            'meet_up_name' => 'required|string|max:35',
+            'meet_up_description' => 'required|string|max:350',
+            'business_id' => 'required|integer|exists:business,id',
             'friend_list' => 'required|array',
             'friend_list.*' => 'required|integer|exists:users,id',
-            'time' => 'required|date_format:d:H:i',
+            'time' => 'required|date',
         ]);
 
         $user = Auth::user();
 
         $timeForMeetUp = Carbon::createFromDate($validatedData['time']);
 
-        $conflictingMeetUpList = MeetUp::where('user_id', $user->id)
-            ->paginate(20)
-            ->whereIn('friend_id', $validatedData['friend_list'])
+        $conflictingMeetUpList = MeetUp::
+            where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('friend_id', $user->id);
+            })
             ->where('time', '>', $timeForMeetUp->addHours(2))
             ->where('time', '<', $timeForMeetUp->subHours(2))
+            ->limit(20)
             ->get();
 
-        if(! is_null($conflictingMeetUpList)) {
+        if(count($conflictingMeetUpList) > 0) {
             return response([
-                'matchUpList' => $conflictingMeetUpList,
+                'conflictingMatchUpList' => $conflictingMeetUpList,
                 'status' => 'There are conflicting meet ups.'
             ]);
         }
 
         $friendList = $validatedData['friend_list'];
-        $newMeetUpList = [];
+        $newMeetUpList = array();
         foreach($friendList as $friend) {
             $newMeetUp = new MeetUp();
             $newMeetUp->user_id = $user->id;
-            $newMeetUp->friend_id = $friend->id;
+            $newMeetUp->friend_id = $friend;
             $newMeetUp->business_id = $validatedData['business_id'];
-            $newMeetUp->time = $validatedData['time'];
+            $newMeetUp->time = $timeForMeetUp;
             $newMeetUp->save();
-            $newMeetUpList = array_push($newMeetUpList, $newMeetUp);
+            $newMeetUp->refresh();
+            array_push($newMeetUpList, $newMeetUp);
         }
 
         return response([

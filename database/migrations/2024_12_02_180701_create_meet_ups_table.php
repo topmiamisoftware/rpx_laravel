@@ -17,7 +17,7 @@ class CreateMeetUpsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('friend_id')->references('id')->on('users');
-            $table->unsignedBigInteger('business_id')->references('id')->on('businesses');
+            $table->string('business_id', 65);
             $table->dateTime('time');
             $table->softDeletes();
             $table->timestamps();

@@ -11,6 +11,70 @@ use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+    public function sendInviteContactSms(
+        string $displayName,
+        string $userPhoneNumber,
+        SystemSms $sms,
+        string $personInviting,
+    ) {
+        try {
+            $lang = 'en';
+            $sid = config('services.twilio.account_sid');
+            $token = config('services.twilio.token');
+
+            $client = new Client($sid, $token);
+            $langHelper = new SmsAndCallTwimlHelper($lang);
+            $body = $langHelper->getInviteContactSmsText($displayName, $personInviting);
+            $body .= $sms->body;
+
+            $client->messages->create(
+                $userPhoneNumber,
+                [
+                    'from' => config('services.twilio.from'),
+                    'body' => $body,
+                ]
+            );
+
+            Log::info(
+                '[UserService]-[sendInviteContactSms]: Message Sent' .
+                ', Phone-Number: ' . $userPhoneNumber
+            );
+
+            // Update SMS message in DB;
+            $sms->update([
+                'sent' => true,
+            ]);
+
+            Log::info(
+                '[UserService]-[sendInviteContactSms]: Phone Number Updated ' .
+                ', Phone-Number: ' . $userPhoneNumber
+            );
+        } catch (TwilioException $e) {
+            $errorCode = '';
+            switch ($e->getCode()) {
+                case '21211':
+                    $errorCode = 'phoneNumber.invalid';
+                    break;
+                case '21612':
+                case '21408':
+                case '21610':
+                case '21614':
+                    $errorCode = 'phoneNumber.unavailable';
+                    break;
+                default:
+                    $errorCode = $e->getCode();
+            }
+
+            Log::error(
+                '[UserService]-[sendSettingsSms]: Message Failed' .
+                ', Phone-Number: ' . $userPhoneNumber .
+                ", Error Code: " . $errorCode .
+                ", Error Message: " . $e->getMessage()
+            );
+
+            return $errorCode;
+        }
+    }
     public function sendSettingsSms(
         string $userPhoneNumber,
         string $userID,
