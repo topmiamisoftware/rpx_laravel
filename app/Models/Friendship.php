@@ -188,6 +188,7 @@ class Friendship extends Model
         $user = Auth::user();
 
         $matchingUserList = User::join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
+            ->where('users.id', '!=', $user->id)
             ->where('users.username', 'like', '%' . $validatedData['search_string'] . '%')
             ->orWhere('spotbie_users.first_name', 'like', '%' . $validatedData['search_string'] . '%')
             ->orWhere('spotbie_users.last_name', 'like', '%' . $validatedData['search_string'] . '%')
