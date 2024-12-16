@@ -176,14 +176,13 @@ class MeetUp extends Model
         $notInNewList = array_diff($alreadyInvited, $validatedData['friend_list']);
 
         foreach ($notInNewList as $key => $invId) {
-            Log::info('ID TO DE L' . $invId);
             MeetUpInvitation::where('friend_id', $invId)->where('meet_up_id', $meetUp->id)->delete();
         }
 
         foreach($meetUpInvitation as $mui) {
-            $e = MeetUpInvitation::where(function ($qry) use ($user, $meetUp){
+            $e = MeetUpInvitation::where(function ($qry) use ($mui, $meetUp, $user){
                 $qry->where('user_id', $user->id)
-                    ->orWhere('friend_id', $user->id);
+                    ->where('friend_id', $mui);
             })->where('meet_up_id', $meetUp->id)->get();
 
             if (count($e) > 0) {
