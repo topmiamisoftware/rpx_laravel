@@ -11,4 +11,16 @@ class MeetUpInvitation extends Model
 
     protected $table = 'meet_up_invitations';
     protected $fillable = [];
+
+    public function friendProfile() {
+        return $this->hasOne('App\Models\SpotbieUser', 'id', 'friend_id');
+    }
+
+    public function meetUp() {
+        return $this->belongsTo('App\Models\MeetUp', 'meet_up_id', 'id');
+    }
+
+    public function ownerProfile() {
+        return $this->belongsTo('App\Models\SpotbieUser', 'user_id', 'id');
+    }
 }

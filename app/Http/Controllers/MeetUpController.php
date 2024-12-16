@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MeetUpInvitation;
 use Auth;
 use App\Models\MeetUp;
 use Illuminate\Http\Request;
@@ -18,13 +19,25 @@ class MeetUpController extends Controller
     {
         $user = Auth::user();
 
-        $meetUpListing = MeetUp::select(
-            'meet_ups.*',
-            'mui.*'
+        $meetUpListing = MeetUpInvitation::select(
+            'mu.time',
+            'meet_up_invitations.meet_up_id'
         )
-            ->join('meet_up_invitations as mui', 'mui.meet_up_id', '=', 'meet_ups.id')
-            ->where('meet_ups.user_id', $user->id)
-            ->orWhere('mui.friend_id', $user->id)
+            ->join('meet_ups as mu', function ($qry) use ($user) {
+                $qry->on('mu.id', '=', 'meet_up_invitations.meet_up_id');
+            })
+            ->where('meet_up_invitations.user_id', $user->id)
+            ->orWhere('meet_up_invitations.friend_id', $user->id)
+            ->with('meetUp', function ($qry) {
+                $qry->with('invitationList', function ($qry) {
+                    $qry->with('friendProfile');
+                })->with('owner', function($qry) {
+                    $qry->with('spotbieUser');
+                })
+                    ->with('business');
+            })
+            ->groupBy('meet_up_invitations.meet_up_id')
+            ->orderBy('mu.time', 'asc')
             ->paginate(20);
 
         return response([
@@ -34,6 +47,11 @@ class MeetUpController extends Controller
 
     public function createMeetUp(Request $request, MeetUp $meetUp): Response {
         return $meetUp->createMeetUp($request);
+    }
+
+
+    public function editMeetUp(Request $request, MeetUp $meetUp): Response {
+        return $meetUp->editMeetUp($request);
     }
 
     public function destroy(Request $request, MeetUp $meetUp): int {
