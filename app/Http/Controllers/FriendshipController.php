@@ -59,6 +59,10 @@ class FriendshipController extends Controller
         return $friendship->searchforUser($request);
     }
 
+    public function searchForFriends(Friendship $friendship, Request $request) {
+        return $friendship->searchForFriends($request);
+    }
+
     public function inviteContact(Friendship $friendship, Request $request) {
         return $friendship->inviteContact($request);
     }

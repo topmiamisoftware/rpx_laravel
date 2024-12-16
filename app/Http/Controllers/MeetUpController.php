@@ -20,19 +20,11 @@ class MeetUpController extends Controller
 
         $meetUpListing = MeetUp::select(
             'meet_ups.*',
-            'business.*',
-            'users.username as owner_username',
-            'friend.username as friend_username'
+            'mui.*'
         )
+            ->join('meet_up_invitations as mui', 'mui.meet_up_id', '=', 'meet_ups.id')
             ->where('meet_ups.user_id', $user->id)
-            ->orWhere('meet_ups.friend_id', $user->id)
-            ->join('business', 'business.id', '=', 'meet_ups.business_id_sb')
-            ->join('users', function ($query) {
-                $query->on('users.id', '=', 'meet_ups.user_id');
-            })
-            ->join('users as friend', function ($query) {
-                $query->on('friend.id', '=', 'meet_ups.friend_id');
-            })
+            ->orWhere('mui.friend_id', $user->id)
             ->paginate(20);
 
         return response([

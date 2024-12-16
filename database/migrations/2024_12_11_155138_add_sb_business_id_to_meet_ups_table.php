@@ -15,7 +15,8 @@ class AddSbBusinessIdToMeetUpsTable extends Migration
     {
         Schema::table('meet_ups', function (Blueprint $table) {
             $table->string('business_id', 65)->nullable()->change();
-
+            $table->dropColumn( 'friend_id');
+            $table->text( 'friend_list');
             $table->unsignedBigInteger('business_id_sb')->references('id')->on('businesses')->nullable();
         });
     }

@@ -9,5 +9,6 @@ Route::delete('delete-friendship', [FriendshipController::class, 'deleteFriendsh
 Route::post('accept-friendship', [FriendshipController::class, 'acceptFriendship'])->middleware('auth');
 Route::post('block-friendship', [FriendshipController::class, 'blockFriendship'])->middleware('auth');
 Route::post('search-for-user', [FriendshipController::class, 'searchForUser'])->middleware('auth');
+Route::post('search-for-friends', [FriendshipController::class, 'searchForFriends'])->middleware('auth');
 Route::post('invite-contact', [FriendshipController::class, 'inviteContact'])->middleware('auth');
 // Route::post('random-nearby', [FriendshipController::class, 'randomNearby'])->middleware('auth');

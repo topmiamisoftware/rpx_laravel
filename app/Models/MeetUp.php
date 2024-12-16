@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class MeetUp extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'friend_id', 'time'];
+    protected $fillable = ['user_id', 'friend_id', 'time', 'business_id_sb', 'business_id'];
 
     public function owner() {
         $this->belongsTo('App\Models\User', 'id', 'user_id');
@@ -42,23 +43,29 @@ class MeetUp extends Model
             'friend_list' => 'required|array',
             'friend_list.*' => 'required|integer|exists:users,id',
             'time' => 'required|date',
+            'contact_list' => 'array',
+            'contact_list.*' => 'json',
         ]);
 
         $user = Auth::user();
 
         $timeForMeetUp = Carbon::createFromDate($validatedData['time']);
 
-        $conflictingMeetUpList = MeetUp::
-            where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('friend_id', $user->id);
+        $conflictingMeetUpList = MeetUp::select([
+            'meet_ups.*',
+            'mui.*',
+        ])
+            ->join('meet_up_invitations as mui', 'mui.meet_up_id', '=', 'meet_ups.id')
+            ->where(function ($query) use ($user) {
+                $query->where('mui.user_id', $user->id)
+                    ->orWhere('mui.friend_id', $user->id);
             })
-            ->where('time', '>', $timeForMeetUp->addHours(2))
+            ->where('meet_ups.time', '>', $timeForMeetUp->addHours(2))
             ->where('time', '<', $timeForMeetUp->subHours(2))
             ->limit(20)
             ->get();
 
-        if(count($conflictingMeetUpList) > 0) {
+        if( count($conflictingMeetUpList) > 0) {
             return response([
                 'conflictingMatchUpList' => $conflictingMeetUpList,
                 'status' => 'There are conflicting meet ups.'
@@ -68,28 +75,40 @@ class MeetUp extends Model
         if ($validatedData['sbcm'] === true) {
             $sbId = $validatedData['business_id'];
             $bId = null;
-
         } else {
             $sbId = null;
             $bId = $validatedData['business_id'];;
         }
 
-        $friendList = $validatedData['friend_list'];
-        $newMeetUpList = array();
-        foreach($friendList as $friend) {
-            $newMeetUp = new MeetUp();
-            $newMeetUp->user_id = $user->id;
-            $newMeetUp->friend_id = $friend;
-            $newMeetUp->business_id_sb = $sbId;
-            $newMeetUp->business_id = $bId;
-            $newMeetUp->time = $timeForMeetUp;
-            $newMeetUp->save();
-            $newMeetUp->refresh();
-            array_push($newMeetUpList, $newMeetUp);
+        $newMeetUp = new MeetUp();
+        $newMeetUp->user_id = $user->id;
+        $newMeetUp->friend_list = json_encode($validatedData['friend_list']);
+        $newMeetUp->business_id_sb = $sbId;
+        $newMeetUp->business_id = $bId;
+        $newMeetUp->time = $timeForMeetUp;
+        Log::info('The New Meet Up : '. $newMeetUp);
+        $newMeetUp->save();
+        $newMeetUp->refresh();
+
+        $meetUpInvitation = $validatedData['friend_list'];
+        $newMuiList = array();
+
+        foreach($meetUpInvitation as $mui) {
+            $newMui = new MeetUpInvitation();
+            $newMui->user_id = $user->id;
+            $newMui->friend_id = $mui;
+            $newMui->meet_up_id = $newMeetUp->id;
+            $newMui->business_id_sb = $sbId;
+            $newMui->business_id = $bId;
+            $newMui->going = false;
+            $newMui->save();
+            $newMui->refresh();
+            array_push($newMuiList, $newMui);
         }
 
         return response([
-            'matchUpList' => $newMeetUpList
+            'meetUp' => $newMeetUp,
+            'meetUpInvitationList' => $newMuiList,
         ]);
     }
 }

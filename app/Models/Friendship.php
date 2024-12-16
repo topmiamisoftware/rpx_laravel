@@ -19,6 +19,15 @@ class Friendship extends Model
         return $this->belongsTo( '\App\Models\User', 'user_id', 'id');
     }
 
+    public function spotbieProfile(){
+        return $this->belongsTo( '\App\Models\SpotbieUser', 'user_id', 'id');
+    }
+
+    public function friendSpotbieProfile(){
+        return $this->belongsTo( '\App\Models\SpotbieUser', 'friend_id', 'id');
+    }
+
+
     public function friendProfile(){
         return $this->belongsTo( '\App\Models\User', 'friend_id', 'id');
     }
@@ -180,6 +189,7 @@ class Friendship extends Model
             'status' => 'ok',
         ]);
     }
+
     public function searchforUser(Request $request) {
         $validatedData = $request->validate([
             'search_string' => 'required|string',
@@ -189,10 +199,52 @@ class Friendship extends Model
 
         $matchingUserList = User::join('spotbie_users', 'spotbie_users.id', '=', 'users.id')
             ->where('users.id', '!=', $user->id)
-            ->where('users.username', 'like', '%' . $validatedData['search_string'] . '%')
-            ->orWhere('spotbie_users.first_name', 'like', '%' . $validatedData['search_string'] . '%')
-            ->orWhere('spotbie_users.last_name', 'like', '%' . $validatedData['search_string'] . '%')
+            ->where(function ($query) use ($validatedData) {
+                    $query->where('users.username', 'like', '%' . $validatedData['search_string'] . '%')
+                        ->orWhereRaw("
+                            CONCAT(spotbie_users.first_name, ' ', spotbie_users.last_name)
+                            LIKE ?", ['%'.$validatedData['search_string'].'%']
+                        );
+            })
             ->with('spotbieUser')
+            ->get();
+
+        return response([
+            'matchingUserList' => $matchingUserList,
+        ]);
+    }
+
+    public function searchforFriends(Request $request) {
+        $validatedData = $request->validate([
+            'search_string' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+
+        $matchingUserList = Friendship::select([
+            'friendships.*',
+            'users.username',
+            'spotbie_users.first_name',
+            'spotbie_users.last_name',
+        ])->join('spotbie_users', 'friendships.friend_id', '=', 'spotbie_users.id')
+            ->join('users', 'friendships.friend_id', '=', 'users.id')
+            ->where(function ($query) use ($user){
+                $query->where('friendships.friend_id', $user->id)
+                        ->orWhere('friendships.user_id', $user->id);
+            })
+            ->where(function ($query) {
+                $query->where('friendships.relationship', config('enums.friendships.ACCEPTED'))
+                    ->orWhere('friendships.relationship', config('enums.friendships.PENDING'));
+            })
+            ->where(function ($query) use ($validatedData) {
+                $query->where('users.username', 'like', '%' . $validatedData['search_string'] . '%')
+                    ->orWhereRaw("
+                            CONCAT(spotbie_users.first_name, ' ', spotbie_users.last_name)
+                            LIKE ?", ['%'.$validatedData['search_string'].'%']
+                    );
+            })
+            ->with('spotbieProfile')
+            ->with('friendSpotbieProfile')
             ->get();
 
         return response([
