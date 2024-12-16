@@ -88,7 +88,6 @@ class MeetUp extends Model
         $newMeetUp->time = $timeForMeetUp;
         $newMeetUp->description = $validatedData['meet_up_description'];
         $newMeetUp->name = $validatedData['meet_up_name'];
-        Log::info('The New Meet Up : '. $newMeetUp);
         $newMeetUp->save();
         $newMeetUp->refresh();
 
@@ -100,8 +99,6 @@ class MeetUp extends Model
             $newMui->user_id = $user->id;
             $newMui->friend_id = $mui;
             $newMui->meet_up_id = $newMeetUp->id;
-            $newMui->business_id_sb = $sbId;
-            $newMui->business_id = $bId;
             $newMui->going = false;
             $newMui->save();
             $newMui->refresh();
@@ -116,6 +113,7 @@ class MeetUp extends Model
 
     public function editMeetUp(Request $request) {
         $validatedData = $request->validate([
+            'id' => 'required|integer|exists:meet_ups,id',
             'meet_up_name' => 'required|string|max:35',
             'meet_up_description' => 'required|string|max:350',
             'friend_list' => 'required|array',
@@ -126,6 +124,14 @@ class MeetUp extends Model
         ]);
 
         $user = Auth::user();
+
+        $meetUp = MeetUp::find($validatedData['id']);
+
+        if ($meetUp->user_id !== $user->id) {
+            return response([
+                'message' => 'You cannot edit this meet up.',
+            ], 403);
+        }
 
         $timeForMeetUp = Carbon::createFromDate($validatedData['time']);
 
@@ -143,52 +149,64 @@ class MeetUp extends Model
             ->limit(20)
             ->get();
 
-        if( count($conflictingMeetUpList) > 0) {
+        if (count($conflictingMeetUpList) > 0) {
             return response([
                 'conflictingMatchUpList' => $conflictingMeetUpList,
                 'status' => 'There are conflicting meet ups.'
             ]);
         }
 
-        if ($validatedData['sbcm'] === true) {
-            $sbId = $validatedData['business_id'];
-            $bId = null;
-        } else {
-            $sbId = null;
-            $bId = $validatedData['business_id'];;
-        }
-
-        $newMeetUp = new MeetUp();
-        $newMeetUp->user_id = $user->id;
-        $newMeetUp->friend_list = json_encode($validatedData['friend_list']);
-        $newMeetUp->business_id_sb = $sbId;
-        $newMeetUp->business_id = $bId;
-        $newMeetUp->time = $timeForMeetUp;
-        $newMeetUp->description = $validatedData['meet_up_description'];
-        $newMeetUp->name = $validatedData['meet_up_name'];
-        Log::info('The New Meet Up : '. $newMeetUp);
-        $newMeetUp->save();
-        $newMeetUp->refresh();
+        $meetUp->user_id = $user->id;
+        $meetUp->friend_list = json_encode($validatedData['friend_list']);
+        $meetUp->time = $timeForMeetUp;
+        $meetUp->description = $validatedData['meet_up_description'];
+        $meetUp->name = $validatedData['meet_up_name'];
+        $meetUp->save();
+        $meetUp->refresh();
 
         $meetUpInvitation = $validatedData['friend_list'];
         $newMuiList = array();
 
+        // Let's delete the ones that were removed
+        $alreadyInvited = MeetUpInvitation::where(function ($qry) use ($user, $meetUp){
+            $qry->where('user_id', $user->id)
+                ->orWhere('friend_id', $user->id);
+        })->where('meet_up_id', $meetUp->id)->get()->pluck('friend_id')->toArray();
+
+        $notInNewList = array_diff($alreadyInvited, $validatedData['friend_list']);
+
+        foreach ($notInNewList as $key => $invId) {
+            Log::info('ID TO DE L' . $invId);
+            MeetUpInvitation::where('friend_id', $invId)->where('meet_up_id', $meetUp->id)->delete();
+        }
+
         foreach($meetUpInvitation as $mui) {
-            $newMui = new MeetUpInvitation();
-            $newMui->user_id = $user->id;
-            $newMui->friend_id = $mui;
-            $newMui->meet_up_id = $newMeetUp->id;
-            $newMui->business_id_sb = $sbId;
-            $newMui->business_id = $bId;
-            $newMui->going = false;
-            $newMui->save();
-            $newMui->refresh();
-            array_push($newMuiList, $newMui);
+            $e = MeetUpInvitation::where(function ($qry) use ($user, $meetUp){
+                $qry->where('user_id', $user->id)
+                    ->orWhere('friend_id', $user->id);
+            })->where('meet_up_id', $meetUp->id)->get();
+
+            if (count($e) > 0) {
+                continue;
+            }
+
+            $e = new MeetUpInvitation();
+            $e->user_id = $user->id;
+            $e->friend_id = $mui;
+            $e->meet_up_id = $meetUp->id;
+            $e->going = false;
+            $e->save();
+            $e->refresh();
+
+            array_push($newMuiList, $e);
         }
 
         return response([
-            'meetUp' => $newMeetUp,
+            'meetUp' => $meetUp,
             'meetUpInvitationList' => $newMuiList,
+            '$notInNewList' => $notInNewList,
+            'alreadyInvited' => $alreadyInvited,
+            'newList' => $validatedData['friend_list'],
         ]);
     }
 }

@@ -50,8 +50,8 @@ class MeetUpController extends Controller
     }
 
 
-    public function editMeetUp(Request $request, MeetUp $meetUp): Response {
-        return $meetUp->editMeetUp($request);
+    public function editMeetUp(MeetUp $meetUp, Request $request): Response {
+        return $meetUp->editMeetUp($request, $meetUp);
     }
 
     public function destroy(Request $request, MeetUp $meetUp): int {
