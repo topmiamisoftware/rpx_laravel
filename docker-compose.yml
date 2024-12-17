@@ -2,6 +2,9 @@
 version: '3'
 services:
     laravel.test:
+        command:
+           - "--request-header-add"       # Add a custom header
+           - "Origin: capacitor://localhost"
         build:
             context: ./docker/8.2
             dockerfile: Dockerfile

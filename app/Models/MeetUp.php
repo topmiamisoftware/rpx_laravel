@@ -83,6 +83,7 @@ class MeetUp extends Model
         $newMeetUp = new MeetUp();
         $newMeetUp->user_id = $user->id;
         $newMeetUp->friend_list = json_encode($validatedData['friend_list']);
+        $newMeetUp->contact_list = json_encode($validatedData['contact_list']);
         $newMeetUp->business_id_sb = $sbId;
         $newMeetUp->business_id = $bId;
         $newMeetUp->time = $timeForMeetUp;
@@ -158,6 +159,7 @@ class MeetUp extends Model
 
         $meetUp->user_id = $user->id;
         $meetUp->friend_list = json_encode($validatedData['friend_list']);
+        $meetUp->contact_list = json_encode($validatedData['contact_list']);
         $meetUp->time = $timeForMeetUp;
         $meetUp->description = $validatedData['meet_up_description'];
         $meetUp->name = $validatedData['meet_up_name'];
