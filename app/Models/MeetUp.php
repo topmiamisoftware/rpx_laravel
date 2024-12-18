@@ -92,7 +92,8 @@ class MeetUp extends Model
         $newMeetUp->save();
         $newMeetUp->refresh();
 
-        $meetUpInvitation = $validatedData['friend_list'];
+        $phoneNumbersOnly = (count($validatedData['contact_list']) > 0) ? $this->mapToPhoneOnly($validatedData['contact_list']) : null;
+        $meetUpInvitation = array_merge($validatedData['friend_list'], $phoneNumbersOnly);
         $newMuiList = array();
 
         foreach($meetUpInvitation as $mui) {
@@ -178,7 +179,7 @@ class MeetUp extends Model
             MeetUpInvitation::where('friend_id', $invId)->where('meet_up_id', $meetUp->id)->delete();
         }
 
-        $phoneNumbersOnly = $this->mapToPhoneOnly($validatedData['contact_list']);
+        $phoneNumbersOnly = (count($validatedData['contact_list']) > 0) ? $this->mapToPhoneOnly($validatedData['contact_list']) : null;
         $meetUpInvitation = array_merge($validatedData['friend_list'], $phoneNumbersOnly);
         $newMuiList = array();
 
