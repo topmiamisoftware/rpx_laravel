@@ -77,7 +77,6 @@ class Friendship extends Model
         }
 
         $friendship->delete();
-        $friendship->refresh();
 
         return response([
             'friendship' => $friendship
