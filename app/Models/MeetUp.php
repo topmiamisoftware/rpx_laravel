@@ -94,7 +94,11 @@ class MeetUp extends Model
 
         if (!is_null($validatedData['contact_list']) && count($validatedData['contact_list']) > 0) {
             $phoneNumbersOnly = $this->mapToPhoneOnly($validatedData['contact_list']);
-            $meetUpInvitation = array_merge($validatedData['friend_list'], $phoneNumbersOnly);
+            if (array_key_exists('friend_list', $validatedData)) {
+                $meetUpInvitation = array_merge($validatedData['friend_list'], $phoneNumbersOnly);
+            } else {
+                $meetUpInvitation = $phoneNumbersOnly;
+            }
         } else {
             $meetUpInvitation = $validatedData['friend_list'];
         }
