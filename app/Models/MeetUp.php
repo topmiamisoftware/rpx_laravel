@@ -41,7 +41,7 @@ class MeetUp extends Model
             'business_id' => 'required|string',
             'sbcm' => 'required|boolean',
             'friend_list' => 'nullable|array',
-            'friend_list.*' => 'nullable|integer|exists:users,id',
+            'friend_list.*' => 'nullable|integer',
             'time' => 'required|date',
             'contact_list' => 'array|nullable',
             'contact_list.*' => 'json|nullable',
