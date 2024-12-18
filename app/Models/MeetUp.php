@@ -14,7 +14,7 @@ class MeetUp extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'friend_id', 'time', 'business_id_sb', 'business_id'];
+    protected $fillable = ['user_id', 'friend_list', 'contact_list', 'time', 'business_id_sb', 'business_id'];
 
     public function owner() {
         return $this->belongsTo('App\Models\User', 'user_id', 'id');
@@ -43,8 +43,8 @@ class MeetUp extends Model
             'friend_list' => 'required|array',
             'friend_list.*' => 'required|integer|exists:users,id',
             'time' => 'required|date',
-            'contact_list' => 'array',
-            'contact_list.*' => 'json',
+            'contact_list' => 'array|nullable',
+            'contact_list.*' => 'json|nullable',
         ]);
 
         $user = Auth::user();
