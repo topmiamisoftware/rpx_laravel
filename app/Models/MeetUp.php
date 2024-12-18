@@ -38,7 +38,7 @@ class MeetUp extends Model
         $validatedData = $request->validate([
             'meet_up_name' => 'required|string|max:35',
             'meet_up_description' => 'required|string|max:350',
-            'business_id' => 'required|integer|exists:business,id',
+            'business_id' => 'required|string',
             'sbcm' => 'required|boolean',
             'friend_list' => 'required|array',
             'friend_list.*' => 'required|integer|exists:users,id',
