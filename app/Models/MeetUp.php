@@ -40,11 +40,11 @@ class MeetUp extends Model
             'meet_up_description' => 'required|string|max:350',
             'business_id' => 'required|string',
             'sbcm' => 'required|boolean',
-            'friend_list' => 'nullable|array',
-            'friend_list.*' => 'nullable|integer',
+            'friend_list' => 'array',
+            'friend_list.*' => 'integer',
             'time' => 'required|date',
-            'contact_list' => 'array|nullable',
-            'contact_list.*' => 'json|nullable',
+            'contact_list' => 'array',
+            'contact_list.*' => 'json',
         ]);
 
         $user = Auth::user();
@@ -127,11 +127,11 @@ class MeetUp extends Model
             'id' => 'required|integer|exists:meet_ups,id',
             'meet_up_name' => 'required|string|max:35',
             'meet_up_description' => 'required|string|max:350',
-            'friend_list' => 'nullable|array',
-            'friend_list.*' => 'nullable|integer',
+            'friend_list' => 'array',
+            'friend_list.*' => 'integer',
             'time' => 'required|date',
-            'contact_list' => 'array|nullable',
-            'contact_list.*' => 'json|nullable',
+            'contact_list' => 'array',
+            'contact_list.*' => 'json',
         ]);
 
         $user = Auth::user();
