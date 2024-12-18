@@ -213,7 +213,8 @@ class MeetUp extends Model
         $a = array();
 
         foreach ($contactList as $contact) {
-            array_push( $a, $contact['number']);
+            $c = json_decode($contact);
+            array_push( $a, $c['number']);
         }
 
         return $a;
