@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Friendship extends Model
 {
@@ -68,9 +69,13 @@ class Friendship extends Model
             'friendship_id' => 'required|integer|exists:friendships,id',
         ]);
 
+        Log::info("The friendship" . $validateData['friendship_id']);
+
         $user = Auth::user();
 
         $friendship = Friendship::find($validateData['friendship_id']);
+
+        Log::info("The friendship" . $friendship);
 
         if (is_null($friendship)) {
             return response(['message' => 'Friendship not found.'], 404);
