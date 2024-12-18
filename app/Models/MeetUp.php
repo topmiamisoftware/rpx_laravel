@@ -118,7 +118,7 @@ class MeetUp extends Model
             'meet_up_name' => 'required|string|max:35',
             'meet_up_description' => 'required|string|max:350',
             'friend_list' => 'nullable|array',
-            'friend_list.*' => 'nullable|integer|exists:users,id',
+            'friend_list.*' => 'nullable|integer',
             'time' => 'required|date',
             'contact_list' => 'array|nullable',
             'contact_list.*' => 'json|nullable',
