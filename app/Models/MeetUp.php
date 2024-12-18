@@ -82,8 +82,8 @@ class MeetUp extends Model
 
         $newMeetUp = new MeetUp();
         $newMeetUp->user_id = $user->id;
-        $newMeetUp->friend_list = (!is_null($validatedData['friend_list'])) ? json_encode($validatedData['friend_list']) : null;
-        $newMeetUp->contact_list = (!is_null($validatedData['contact_list'])) ? json_encode($validatedData['contact_list']) : null;
+        $newMeetUp->friend_list = (array_key_exists('friend_list', $validatedData)) ? json_encode($validatedData['friend_list']) : null;
+        $newMeetUp->contact_list = (array_key_exists('contact_list', $validatedData)) ? json_encode($validatedData['contact_list']) : null;
         $newMeetUp->business_id_sb = $sbId;
         $newMeetUp->business_id = $bId;
         $newMeetUp->time = $timeForMeetUp;
@@ -164,8 +164,8 @@ class MeetUp extends Model
         }
 
         $meetUp->user_id = $user->id;
-        $meetUp->friend_list = (!is_null($validatedData['friend_list'])) ? json_encode($validatedData['friend_list']) : null;
-        $meetUp->contact_list = (!is_null($validatedData['contact_list'])) ? json_encode($validatedData['contact_list']) : null;
+        $meetUp->friend_list = (array_key_exists('friend_list', $validatedData)) ? json_encode($validatedData['friend_list']) : null;
+        $meetUp->contact_list = (array_key_exists('contact_list', $validatedData)) ? json_encode($validatedData['contact_list']) : null;
         $meetUp->time = $timeForMeetUp;
         $meetUp->description = $validatedData['meet_up_description'];
         $meetUp->name = $validatedData['meet_up_name'];
