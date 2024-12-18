@@ -72,7 +72,7 @@ class Friendship extends Model
         $user = Auth::user();
 
         $friendship = Friendship::find($validateData['friendship_id']);
-        
+
         if (is_null($friendship)) {
             return response(['message' => 'Friendship not found.'], 404);
         }

@@ -166,9 +166,6 @@ class MeetUp extends Model
         $meetUp->save();
         $meetUp->refresh();
 
-        $meetUpInvitation = $validatedData['friend_list'];
-        $newMuiList = array();
-
         // Let's delete the ones that were removed
         $alreadyInvited = MeetUpInvitation::where(function ($qry) use ($user, $meetUp){
             $qry->where('user_id', $user->id)
@@ -180,6 +177,10 @@ class MeetUp extends Model
         foreach ($notInNewList as $key => $invId) {
             MeetUpInvitation::where('friend_id', $invId)->where('meet_up_id', $meetUp->id)->delete();
         }
+
+        $phoneNumbersOnly = array_map($this['mapToPhoneOnly'], $validatedData['contact_list']);
+        $meetUpInvitation = array_merge($validatedData['friend_list'], $phoneNumbersOnly);
+        $newMuiList = array();
 
         foreach($meetUpInvitation as $mui) {
             $e = MeetUpInvitation::where(function ($qry) use ($mui, $meetUp, $user){
@@ -205,9 +206,10 @@ class MeetUp extends Model
         return response([
             'meetUp' => $meetUp,
             'meetUpInvitationList' => $newMuiList,
-            '$notInNewList' => $notInNewList,
-            'alreadyInvited' => $alreadyInvited,
-            'newList' => $validatedData['friend_list'],
         ]);
+    }
+
+    function mapToPhoneOnly($contact) {
+        return $contact['number'];
     }
 }
