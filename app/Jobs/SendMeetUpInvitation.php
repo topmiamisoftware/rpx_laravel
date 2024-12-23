@@ -57,14 +57,16 @@ class SendMeetUpInvitation implements ShouldQueue
         $spotbieUseOwner = $this->meetUpOwner->spotbieUser;
 
         $eventRecipient = User::find($this->meetUpInvitation->friend_id);
-        if (is_null($eventRecipient->spotbieUser->phone_number)) {
-            Log::info("[SendMeetUpInvitation][handle] - User ID: " . $eventRecipient->spotbieUser->id . " does not have a phone number.");
-            return;
-        }
+        if (! is_null($eventRecipient->spotbieUser)) {
+            if (is_null($eventRecipient->spotbieUser->phone_number)) {
+                Log::info("[SendMeetUpInvitation][handle] - User ID: " . $eventRecipient->spotbieUser->id . " does not have a phone number.");
+                return;
+            }
 
-        if ($eventRecipient->spotbieUser->sms_opt_in === 0) {
-            Log::info("[SendMeetUpInvitation][handle] - User ID: " . $eventRecipient->spotbieUser->id . " is opted out of SMS.");
-            return;
+            if ($eventRecipient->spotbieUser->sms_opt_in === 0) {
+                Log::info("[SendMeetUpInvitation][handle] - User ID: " . $eventRecipient->spotbieUser->id . " is opted out of SMS.");
+                return;
+            }
         }
 
         $guestPhoneNumber = null;
