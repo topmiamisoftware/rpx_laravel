@@ -95,8 +95,6 @@ class Ads extends Model
             )")
             ->orderBy('business_exposure.total_exposure', 'asc')->get()[0] ?? null;
 
-        Log::info('Nearby Business No Category: '.$a);
-
         return $a;
     }
 
