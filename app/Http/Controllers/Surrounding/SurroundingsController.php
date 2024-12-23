@@ -21,7 +21,7 @@ class SurroundingsController extends Controller
     {
         $response = [
             'success' => true,
-            'data'    => $this->apiService->pullInfoObject($request),
+            'data'    => $this->apiService->pullInfoObject($request->config_url),
         ];
 
         return response($response);

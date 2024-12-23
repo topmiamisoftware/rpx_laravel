@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
-use App\Observers\UserObserver;
+use App\Models\MeetUpInvitation;
 use App\Models\User;
+use App\Observers\MeetUpInvitationObserver;
+use App\Observers\UserObserver;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         User::observe(UserObserver::class);
+        MeetUpInvitation::observe(MeetUpInvitationObserver::class);
 
         Validator::extend('phone_number', function($attribute, $value, $parameters)
         {

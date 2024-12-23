@@ -20,7 +20,7 @@ class MeetUpInvitation extends Model
         return $this->belongsTo('App\Models\MeetUp', 'meet_up_id', 'id');
     }
 
-    public function ownerProfile() {
-        return $this->belongsTo('App\Models\SpotbieUser', 'user_id', 'id');
+    public function ownerAccount() {
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
     }
 }

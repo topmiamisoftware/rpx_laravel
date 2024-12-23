@@ -58,6 +58,11 @@ class MeetUpController extends Controller
         $validatedData = $request->validate([
             'meet_up_id' => 'required|integer|exists:meet_ups,id',
         ]);
+
+        // Let's delete the MeetUpInvitations... There's something def. wrong with the MeetUp -> invitationList()
+        // relationship because cascades and the MeetUpObserver deleted method don't work.
+        MeetUpInvitation::where('meet_up_id', $validatedData['meet_up_id'])->delete();
+
         return $meetUp->destroy($validatedData['meet_up_id']);
     }
 

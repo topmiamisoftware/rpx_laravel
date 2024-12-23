@@ -82,6 +82,30 @@ class SmsAndCallTwimlHelper
         return trans('promotional_sms.pointsRedeemedTextWithEmail', ['businessPoints' => $businessPoints, 'totalPoints' => $totalPoints, 'businessName' => $businessName, 'userEmail' => $userEmail, 'firstName' => $firstName, 'bonusPoints' => $bonusPoints]);
     }
 
+    public function getInvitationSmsText(
+        string $meetUpName,
+        string $businessName,
+        string $hostName,
+        string $date,
+        string $time,
+        string $guestName,
+        string $invitationListNameList,
+    )
+    {
+        return trans(
+            'promotional_sms.invitationSmsText',
+            [
+                'businessName' => $businessName,
+                'hostName' => $hostName,
+                'date' => $date,
+                'time' => $time,
+                'meetUpName' => $meetUpName,
+                'guestName' => $guestName,
+                'invitationListNameList' => $invitationListNameList
+            ]
+        );
+    }
+
     public function getBonusLpSmsTxt(string $totalPoints, string $businessName, string $firstName, string $range1, string $range2, string $range3, int $dayOfWeek)
     {
         $friendlyDayName = $this->getDayNameFromNumber($dayOfWeek);

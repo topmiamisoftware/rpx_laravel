@@ -18,9 +18,16 @@ class SurroundingsApi
     {
     }
 
-    public function pullInfoObject(Request $request)
+    public function pullInfoObject(Request | string $request)
     {
-        $serviceUrl = $request->config_url;
+        if (gettype($request) === 'string') {
+            $serviceUrl = $request;
+        } else {
+            $validatedData = $request->validate([
+                'config_url' => 'required|string'
+            ]);
+            $serviceUrl = $validatedData['config_url'];
+        }
 
         $curl = curl_init($serviceUrl);
 
