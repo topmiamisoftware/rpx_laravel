@@ -62,7 +62,8 @@ class MeetUpInvitationObserver
         $invitationContactList = json_decode($meetUp->contact_list);
         if (! is_null($invitationContactList)) {
             foreach ($invitationContactList as $invitation) {
-                array_push($invitationListNameList, $invitation->name);
+                $inv = json_decode($invitation);
+                array_push($invitationListNameList, $inv->name);
             }
         }
 
