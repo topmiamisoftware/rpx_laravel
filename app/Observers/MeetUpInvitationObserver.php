@@ -41,20 +41,22 @@ class MeetUpInvitationObserver
         $invitationList = json_decode($meetUp->friend_list);
         $invitationListNameList = array();
 
-        foreach ($invitationList as $invitation) {
-            $invitedUser = User::find($invitation);
+        if (! is_null($invitationList)) {
+            foreach ($invitationList as $invitation) {
+                $invitedUser = User::find($invitation);
 
-            $invitedUserProfile = $invitedUser->spotbieUser;
-            $invitedName = null;
+                $invitedUserProfile = $invitedUser->spotbieUser;
+                $invitedName = null;
 
-            // First Name and Last Name are not required, but usernames are.
-            if (! is_null($invitedUserProfile->first_name)) {
-                $invitedName = $invitedUserProfile->first_name . " " . $invitedUserProfile->last_name;
-            } else {
-                $invitedName = $meetUpOwner->username;
+                // First Name and Last Name are not required, but usernames are.
+                if (! is_null($invitedUserProfile->first_name)) {
+                    $invitedName = $invitedUserProfile->first_name . " " . $invitedUserProfile->last_name;
+                } else {
+                    $invitedName = $meetUpOwner->username;
+                }
+
+                array_push($invitationListNameList, $invitedName);
             }
-
-            array_push($invitationListNameList, $invitedName);
         }
 
         $invitationContactList = json_decode($meetUp->contact_list);
