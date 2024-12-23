@@ -389,7 +389,6 @@ class Ads extends Model
         string $categories
     ) {
         //  If there is a nearby business, then try getting one of its ads.
-        Log::info("For business ID " . $nearbyBusiness);
         $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
 
         if (! is_null($ad)) {
@@ -403,7 +402,6 @@ class Ads extends Model
 
             if (! is_null($nearbyBusiness)) {
                 // If there is a nearby Business with an unrelated category, try getting an AD from it.
-                Log::info("For business ID" . $nearbyBusiness);
                 $ad = $this->nearbyAd($nearbyBusiness->id, $adType);
                 if(is_null($ad)) {
                     $ad = $this->getSpotbieAd($adType);
