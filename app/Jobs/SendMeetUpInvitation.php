@@ -47,13 +47,6 @@ class SendMeetUpInvitation implements ShouldQueue
     {
         // There are two users that we need info from, that's the user who owns the event "host"
         // and the person invited to the event.
-        Log::info('Meet Up Owner: ' . $this->meetUpOwner);
-        Log::info('Meet Up: ' . $this->meetUp);
-        Log::info('Meet Up Invitation: ' . $this->meetUpInvitation);
-        Log::info('Invitation List: ' . $this->invitationListNameList);
-        Log::info('Business Name: ' . $this->businessName);
-        Log::info('Guest Name: ' . $this->guestName);
-
         $spotbieUseOwner = $this->meetUpOwner->spotbieUser;
 
         $eventRecipient = User::find($this->meetUpInvitation->friend_id);

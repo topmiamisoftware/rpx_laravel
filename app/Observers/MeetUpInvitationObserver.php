@@ -75,18 +75,10 @@ class MeetUpInvitationObserver
             $businessId = $meetUp->business_id;
             $yelpConfigUrl = "https://api.yelp.com/v3/businesses/$businessId";
             $business = app(SurroundingsApi::class)->pullInfoObject($yelpConfigUrl);
-            Log::info("Yelp Business URL: " . $yelpConfigUrl);
-            Log::info("Yelp Business: " . json_encode($business));
             $businessName = $business->name;
         }
 
         $invitationListNameList = implode(', ', $invitationListNameList);
-
-        Log::info('Meet Up Owner: ' . $meetUpOwner);
-        Log::info('Meet Up: ' . $meetUp);
-        Log::info('Meet Up Invitation: ' . $meetUpInvitation);
-        Log::info('Invitation List: ' . $invitationListNameList);
-        Log::info('Business Name: ' . $businessName);
 
         // Create MeetUp Invitation SMS Job
         SendMeetUpInvitation::dispatch($meetUpOwner, $meetUp, $meetUpInvitation, $invitationListNameList, $businessName, $guestName)
