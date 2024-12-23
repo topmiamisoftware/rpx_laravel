@@ -57,7 +57,7 @@ class SendMeetUpInvitation implements ShouldQueue
         $spotbieUseOwner = $this->meetUpOwner->spotbieUser;
 
         $eventRecipient = User::find($this->meetUpInvitation->friend_id);
-        if (! is_null($eventRecipient->spotbieUser)) {
+        if (! is_null($eventRecipient)) {
             if (is_null($eventRecipient->spotbieUser->phone_number)) {
                 Log::info("[SendMeetUpInvitation][handle] - User ID: " . $eventRecipient->spotbieUser->id . " does not have a phone number.");
                 return;
