@@ -123,7 +123,7 @@ class SystemSms extends Model
      * @param User $user
      * @return void
      */
-    public function createInviteMeetUpSms(string | User $user, string $phoneNumber)
+    public function createInviteMeetUpSms(null | User $user, string $phoneNumber)
     {
         $sms = new SystemSms;
         if (is_null($phoneNumber)) {
