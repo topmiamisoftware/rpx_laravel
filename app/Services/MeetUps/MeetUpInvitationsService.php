@@ -24,7 +24,7 @@ class MeetUpInvitationsService
     ) {
         $meetUpName = $meetUp->name;
 
-        $dateTime = Carbon::createFromTimestamp($meetUp->time);
+        $dateTime = Carbon::createFromDate($meetUp->time);
 
         $meetUpTime = $dateTime->toTimeString('minute');
         $meetUpDate = $dateTime->toDateString();
