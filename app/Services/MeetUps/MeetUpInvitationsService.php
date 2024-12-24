@@ -66,7 +66,6 @@ class MeetUpInvitationsService
                 ', Phone-Number: ' . $phoneNumber .
                 ', Business: ' . $businessName .
                 ', Date: ' . $meetUpDate.
-                ', Time: ' . $meetUpTime.
                 ', MeetUp Name: ' . $meetUpName
             );
         }
@@ -95,7 +94,6 @@ class MeetUpInvitationsService
                 ", Phone-Number: " . $phoneNumber .
                 ", Business: " . $businessName .
                 ", Date: " . $meetUpDate.
-                ", Time: " . $meetUpTime.
                 ", MeetUp Name: " . $meetUpName .
                 ", Error Code: " . $errorCode .
                 ", Error Message: " . $e->getMessage()
