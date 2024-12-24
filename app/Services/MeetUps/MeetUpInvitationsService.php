@@ -5,7 +5,7 @@ namespace App\Services\MeetUps;
 use App\Helpers\Sms\SmsAndCallTwimlHelper;
 use App\Models\MeetUp;
 use App\Models\SystemSms;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
