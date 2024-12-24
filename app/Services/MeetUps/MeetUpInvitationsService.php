@@ -27,8 +27,7 @@ class MeetUpInvitationsService
         $dateTime = Carbon::createFromFormat('Y-m-d H:i:s', $meetUp->time, 'UTC');
 
         $dateTime = $dateTime->setTimezone('America/New_York');
-        $meetUpTime = $dateTime->toTimeString('minute');
-        $meetUpDate = $dateTime->toDateString();
+        $meetUpDate = $dateTime->format('D, M d, Y h:i A');
 
         try
         {
@@ -43,7 +42,6 @@ class MeetUpInvitationsService
                 $businessName,
                 $hostName,
                 $meetUpDate,
-                $meetUpTime,
                 $guestName,
                 $invitationListNameList
             );

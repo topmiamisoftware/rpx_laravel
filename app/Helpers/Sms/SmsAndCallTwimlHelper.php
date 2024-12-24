@@ -87,7 +87,6 @@ class SmsAndCallTwimlHelper
         string $businessName,
         string $hostName,
         string $date,
-        string $time,
         string $guestName,
         string $invitationListNameList,
     )
@@ -98,7 +97,6 @@ class SmsAndCallTwimlHelper
                 'businessName' => $businessName,
                 'hostName' => $hostName,
                 'date' => $date,
-                'time' => $time,
                 'meetUpName' => $meetUpName,
                 'guestName' => $guestName,
                 'invitationListNameList' => $invitationListNameList
