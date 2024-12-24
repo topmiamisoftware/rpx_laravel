@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class MeetUp extends Model
 {
@@ -77,7 +76,7 @@ class MeetUp extends Model
             $bId = null;
         } else {
             $sbId = null;
-            $bId = $validatedData['business_id'];;
+            $bId = $validatedData['business_id'];
         }
 
         $newMeetUp = new MeetUp();
@@ -120,6 +119,12 @@ class MeetUp extends Model
             'meetUp' => $newMeetUp,
             'meetUpInvitationList' => $newMuiList,
         ]);
+    }
+
+    public function setPhoneMobileAttribute($phone)
+    {
+        // Strip all but numbers
+        return  '+1' . trim(preg_replace('/^1|\D/', "", $phone));
     }
 
     public function editMeetUp(Request $request) {
@@ -202,7 +207,7 @@ class MeetUp extends Model
         $newMuiList = array();
 
         foreach($meetUpInvitation as $mui) {
-            $e = MeetUpInvitation::where(function ($qry) use ($mui, $meetUp, $user){
+            $e = MeetUpInvitation::where(function ($qry) use ($mui, $meetUp, $user) {
                 $qry->where('user_id', $user->id)
                     ->where('friend_id', $mui);
             })->where('meet_up_id', $meetUp->id)->get();
@@ -228,12 +233,12 @@ class MeetUp extends Model
         ]);
     }
 
-    function mapToPhoneOnly($contactList) {
+    public function mapToPhoneOnly($contactList) {
         $a = array();
 
         foreach ($contactList as $contact) {
             $c = json_decode($contact);
-            array_push( $a, $c->number);
+            array_push($a, $this->setPhoneMobileAttribute($c->number));
         }
 
         return $a;
