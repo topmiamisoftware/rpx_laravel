@@ -124,6 +124,7 @@ class MeetUp extends Model
     public function setPhoneMobileAttribute($phone)
     {
         // Strip all but numbers
+        $phone = str_replace('+1', '', $phone);
         return  '+1' . trim(preg_replace('/^1|\D/', "", $phone));
     }
 
