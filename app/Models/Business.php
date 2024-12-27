@@ -358,6 +358,7 @@ class Business extends Model
         ->orWhere('slug', $validatedData['qrCodeLink'])
         ->get();
 
+        $businessTierList = null;
         if (count($business) > 0) {
             $businessTierList = LoyaltyTier::where('business_id', $business->id)->get();
             $success = true;
