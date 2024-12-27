@@ -355,14 +355,14 @@ class Business extends Model
         ->join('spotbie_users', 'business.id', '=', 'spotbie_users.id')
         ->with('loyaltyPointBalance')
         ->where('qr_code_link', $validatedData['qrCodeLink'])
-        ->get()[0];
+        ->orWhere('slug', $validatedData['qrCodeLink'])
+        ->get();
 
         $businessTierList = LoyaltyTier::where('business_id', $business->id)->get();
 
-        if ($business) {
+        if (count($business) > 0) {
             $success = true;
-        }
-        else {
+        } else {
             $success = false;
         }
 
