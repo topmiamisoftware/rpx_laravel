@@ -362,6 +362,7 @@ class Business extends Model
         if (count($business) > 0) {
             $businessTierList = LoyaltyTier::where('business_id', $business[0]->id)->get();
             $success = true;
+            $business = $business[0];
         } else {
             $success = false;
         }
