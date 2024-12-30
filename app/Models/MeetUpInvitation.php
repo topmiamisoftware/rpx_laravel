@@ -45,8 +45,8 @@ class MeetUpInvitation extends Model
             $profile = User::find(intval($invitation->friend_id));
 
             // The friend_id field in the mui can also be a string so we can't use the foreign key relationship
-            if (!is_null($profile)) {
-                $profile = $profile;
+            if (!is_null($profile) && !empty($profile)) {
+                $profile =  User::find(intval($invitation->friend_id))->with('spotbieUser');
                 array_push($userProfileList, $profile);
             }
         }
