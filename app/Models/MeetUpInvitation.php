@@ -42,7 +42,7 @@ class MeetUpInvitation extends Model
 
         $userProfileList = array();
         foreach ($this->meetUp->invitationList as $invitation) {
-            $profile =  SpotbieUser::find(intval($invitation->friend_id));
+            $profile = User::find(intval($invitation->friend_id))->with('spotbieUser');
 
             // The friend_id field in the mui can also be a string so we can't use the foreign key relationship
             if (!is_null($profile)) {
@@ -56,7 +56,7 @@ class MeetUpInvitation extends Model
             array_push($contactListProfiles, json_decode($invitation));
         }
 
-        $ownerProfile =  SpotbieUser::find(intval($this->meetUp->user_id));
+        $ownerProfile = User::find(intval($this->meetUp->user_id))->with('spotbieUser');
 
         $meetUpLocation = null;
         if (! is_null($this->meetUp->business_id_sb)) {
