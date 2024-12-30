@@ -42,10 +42,11 @@ class MeetUpInvitation extends Model
 
         $userProfileList = array();
         foreach ($this->meetUp->invitationList as $invitation) {
-            $profile = User::find(intval($invitation->friend_id))->with('spotbieUser');
+            $profile = User::find(intval($invitation->friend_id));
 
             // The friend_id field in the mui can also be a string so we can't use the foreign key relationship
             if (!is_null($profile)) {
+                $profile = $profile->with('spotbieUser');
                 array_push($userProfileList, $profile);
             }
         }
