@@ -59,7 +59,7 @@ class MeetUpInvitation extends Model
 
         $ownerProfile = User::find(intval($this->meetUp->user_id));
         if (!is_null($ownerProfile)) {
-            $ownerProfile = User::find(intval($this->meetUp->user_id))->with('spotbieUser');
+            $ownerProfile = User::find(intval($this->meetUp->user_id));
         }
 
         $meetUpLocation = null;
