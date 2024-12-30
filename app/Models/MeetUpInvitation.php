@@ -56,7 +56,10 @@ class MeetUpInvitation extends Model
             array_push($contactListProfiles, json_decode($invitation));
         }
 
-        $ownerProfile = User::find(intval($this->meetUp->user_id))->with('spotbieUser');
+        $ownerProfile = User::find(intval($this->meetUp->user_id));
+        if (!is_null($ownerProfile)) {
+            $ownerProfile = $ownerProfile->with('spotbieUser');
+        }
 
         $meetUpLocation = null;
         if (! is_null($this->meetUp->business_id_sb)) {
