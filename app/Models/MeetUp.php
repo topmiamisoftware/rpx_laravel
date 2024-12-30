@@ -81,7 +81,6 @@ class MeetUp extends Model
         }
 
         $newMeetUp = new MeetUp();
-        $newMeetUp->uuid = Str::uuid();
         $newMeetUp->user_id = $user->id;
         $newMeetUp->friend_list = (array_key_exists('friend_list', $validatedData)) ? json_encode($validatedData['friend_list']) : null;
         $newMeetUp->contact_list = (array_key_exists('contact_list', $validatedData)) ? json_encode($validatedData['contact_list']) : null;
