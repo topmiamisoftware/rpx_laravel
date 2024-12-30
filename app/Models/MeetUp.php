@@ -107,6 +107,7 @@ class MeetUp extends Model
 
         foreach($meetUpInvitation as $mui) {
             $newMui = new MeetUpInvitation();
+            $newMui->uuid = Str::uuid();
             $newMui->user_id = $user->id;
             $newMui->friend_id = $mui;
             $newMui->meet_up_id = $newMeetUp->id;
