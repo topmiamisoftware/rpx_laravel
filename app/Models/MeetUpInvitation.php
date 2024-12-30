@@ -45,7 +45,7 @@ class MeetUpInvitation extends Model
         $contactListProfiles = array();
         $contactList = json_decode($this->meetUp->contact_list);
         foreach ($contactList as $invitation) {
-            array_push($contactListProfiles, $invitation);
+            array_push($contactListProfiles, json_decode($invitation));
         }
 
         $ownerProfile =  SpotbieUser::find(intval($this->meetUp->user_id));
