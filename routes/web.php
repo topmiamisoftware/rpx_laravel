@@ -11,3 +11,7 @@ use Illuminate\Support\Facades\Route;
     | contains the "web" middleware group. Now create something great!
     |
     */
+
+use App\Http\Controllers\MeetUpInvitationController;
+
+Route::post('webhook/endpoint', [MeetUpInvitationController::class, 'handle']);

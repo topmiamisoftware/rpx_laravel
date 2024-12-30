@@ -89,7 +89,8 @@ class SendMeetUpInvitation implements ShouldQueue
             $guestPhoneNumber,
             $sms,
             $this->guestName,
-            $this->invitationListNameList
+            $this->invitationListNameList,
+            $this->meetUpInvitation
         );
     }
 }

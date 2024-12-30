@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Sms;
 
+use App\Models\MeetUpInvitation;
 use Carbon\Carbon;
 
 class SmsAndCallTwimlHelper
@@ -89,6 +90,7 @@ class SmsAndCallTwimlHelper
         string $date,
         string $guestName,
         string $invitationListNameList,
+        MeetUpInvitation $meetUpInvitation,
     )
     {
         return trans(
@@ -99,7 +101,8 @@ class SmsAndCallTwimlHelper
                 'date' => $date,
                 'meetUpName' => $meetUpName,
                 'guestName' => $guestName,
-                'invitationListNameList' => $invitationListNameList
+                'invitationListNameList' => $invitationListNameList,
+                'invitationId' => $meetUpInvitation->uuid,
             ]
         );
     }

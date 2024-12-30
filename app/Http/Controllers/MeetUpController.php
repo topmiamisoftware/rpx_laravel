@@ -7,6 +7,7 @@ use Auth;
 use App\Models\MeetUp;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class MeetUpController extends Controller
 {
@@ -54,6 +55,10 @@ class MeetUpController extends Controller
         return $meetUp->editMeetUp($request, $meetUp);
     }
 
+    public function acceptInvitation(MeetUp $meetUp, Request $request): Response {
+        return $meetUp->acceptInvitation($request);
+    }
+
     public function destroy(Request $request, MeetUp $meetUp): int {
         $validatedData = $request->validate([
             'meet_up_id' => 'required|integer|exists:meet_ups,id',
@@ -68,5 +73,9 @@ class MeetUpController extends Controller
 
     public function show(MeetUp $meetUp): Response {
         return $meetUp->show($meetUp);
+    }
+
+    public function showMui(Request $request, MeetUpInvitation $mui): Response {
+        return $mui->showMui();
     }
 }

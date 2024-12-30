@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class MeetUp extends Model
 {
@@ -80,6 +81,7 @@ class MeetUp extends Model
         }
 
         $newMeetUp = new MeetUp();
+        $newMeetUp->uuid = Str::uuid();
         $newMeetUp->user_id = $user->id;
         $newMeetUp->friend_list = (array_key_exists('friend_list', $validatedData)) ? json_encode($validatedData['friend_list']) : null;
         $newMeetUp->contact_list = (array_key_exists('contact_list', $validatedData)) ? json_encode($validatedData['contact_list']) : null;
@@ -183,7 +185,7 @@ class MeetUp extends Model
         $meetUp->refresh();
 
         // Let's delete the ones that were removed
-        $alreadyInvited = MeetUpInvitation::where(function ($qry) use ($user, $meetUp){
+        $alreadyInvited = MeetUpInvitation::where(function ($qry) use ($user, $meetUp) {
             $qry->where('user_id', $user->id)
                 ->orWhere('friend_id', $user->id);
         })->where('meet_up_id', $meetUp->id)->get()->pluck('friend_id')->toArray();
@@ -243,5 +245,27 @@ class MeetUp extends Model
         }
 
         return $a;
+    }
+
+    public function acceptInvitation(Request $request) {
+        $validatedData = $request->validate([
+            'uuid' => 'required|exits:meet_up_invitations,uuid',
+        ]);
+
+        $invitationId = $validatedData['uuid'];
+
+        $m = MeetUpInvitation::where('uuid', $invitationId)->first();
+
+        if (!is_null($m)) {
+            $m->going = 1;
+            $m->save();
+        } else {
+            return response([
+                'status' => '404',
+                'message' => 'Invitation not found.'
+            ], 404);
+        }
+
+        return response(['200']);
     }
 }

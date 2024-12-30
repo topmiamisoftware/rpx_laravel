@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Feedback;
+use App\Models\MeetUpInvitation;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,11 @@ class RouteServiceProvider extends ServiceProvider
             return Feedback::where('uuid', $value)->firstOrFail();
         });
 
+        Route::model('meet_up_invitations', MeetUpInvitation::class);
+        // Explicitly bind 'meet_up_invitations' using the 'uuid' column
+        Route::bind('meet_up_invitations', function ($value) {
+            return MeetUpInvitation::where('uuid', $value)->firstOrFail();
+        });
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Services\MeetUps;
 
 use App\Helpers\Sms\SmsAndCallTwimlHelper;
 use App\Models\MeetUp;
+use App\Models\MeetUpInvitation;
 use App\Models\SystemSms;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +21,8 @@ class MeetUpInvitationsService
         string $phoneNumber,
         SystemSms $sms,
         string $guestName,
-        string $invitationListNameList
+        string $invitationListNameList,
+        MeetUpInvitation $meetUpInvitation,
     ) {
         $meetUpName = $meetUp->name;
 
@@ -43,7 +45,8 @@ class MeetUpInvitationsService
                 $hostName,
                 $meetUpDate,
                 $guestName,
-                $invitationListNameList
+                $invitationListNameList,
+                $meetUpInvitation
             );
 
             $client->messages->create(
