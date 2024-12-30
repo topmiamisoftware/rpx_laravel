@@ -246,26 +246,4 @@ class MeetUp extends Model
 
         return $a;
     }
-
-    public function acceptInvitation(Request $request) {
-        $validatedData = $request->validate([
-            'uuid' => 'required|exits:meet_up_invitations,uuid',
-        ]);
-
-        $invitationId = $validatedData['uuid'];
-
-        $m = MeetUpInvitation::where('uuid', $invitationId)->first();
-
-        if (!is_null($m)) {
-            $m->going = 1;
-            $m->save();
-        } else {
-            return response([
-                'status' => '404',
-                'message' => 'Invitation not found.'
-            ], 404);
-        }
-
-        return response(['200']);
-    }
 }

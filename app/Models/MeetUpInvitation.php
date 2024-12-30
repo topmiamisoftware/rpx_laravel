@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Services\SurroundingsApi;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Bus;
 
@@ -25,6 +26,13 @@ class MeetUpInvitation extends Model
 
     public function ownerAccount() {
         return $this->belongsTo('App\Models\User', 'user_id', 'id');
+    }
+
+    public function acceptInvitation(Request $request) {
+        $this->going = 1;
+        $this->save();
+
+        return response(['message' => 'Accepted']);
     }
 
     public function showMui(): Response {

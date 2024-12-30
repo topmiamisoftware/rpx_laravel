@@ -55,8 +55,8 @@ class MeetUpController extends Controller
         return $meetUp->editMeetUp($request, $meetUp);
     }
 
-    public function acceptInvitation(MeetUp $meetUp, Request $request): Response {
-        return $meetUp->acceptInvitation($request);
+    public function acceptInvitation(Request $request, MeetUpInvitation $mui): Response {
+        return $mui->acceptInvitation($request);
     }
 
     public function destroy(Request $request, MeetUp $meetUp): int {
