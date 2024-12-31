@@ -20,6 +20,10 @@ class MeetUpInvitation extends Model
         return $this->hasOne('App\Models\SpotbieUser', 'id', 'friend_id');
     }
 
+    public function userProfile() {
+        return $this->hasOne('App\Models\User', 'id', 'friend_id');
+    }
+
     public function meetUp() {
         return $this->belongsTo('App\Models\MeetUp', 'meet_up_id', 'id');
     }

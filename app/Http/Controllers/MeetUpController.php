@@ -31,6 +31,7 @@ class MeetUpController extends Controller
             ->orWhere('meet_up_invitations.friend_id', $user->id)
             ->with('meetUp', function ($qry) {
                 $qry->with('invitationList', function ($qry) {
+                    $qry->with('userProfile');
                     $qry->with('friendProfile');
                 })->with('owner', function($qry) {
                     $qry->with('spotbieUser');
