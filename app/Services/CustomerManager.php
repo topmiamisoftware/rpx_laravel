@@ -18,6 +18,7 @@ class CustomerManager
         string $businessName,
         Sms $sms,
         SmsGroup $smsGroup,
+        string $fromNumber,
     ) {
         try
         {
@@ -32,7 +33,7 @@ class CustomerManager
             $client->messages->create(
                 $userPhoneNumber,
                 [
-                    'from' => config('services.twilio.from'),
+                    'from' => $fromNumber,
                     'body' => $body,
                 ]
             );

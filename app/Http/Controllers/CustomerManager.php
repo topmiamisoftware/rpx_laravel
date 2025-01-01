@@ -134,7 +134,7 @@ class CustomerManager extends Controller
                     $phoneNumber = $spotbieUser->phone_number;
                     if (! is_null($phoneNumber) && $spotbieUser->sms_opt_in === 1) {
                         $sms = $sms->createNewSms($user, $business, $smsGroup);
-                        SendMassSms::dispatch($user, $business->name, $sms, $smsGroup)
+                        SendMassSms::dispatch($user, $business->name, $sms, $smsGroup, $business->from_number)
                             ->onQueue(config('spotbie.sms.queue'));
                     } else {
                         Log::info(

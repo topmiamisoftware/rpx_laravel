@@ -26,6 +26,7 @@ class SendMassSms implements ShouldQueue
         private string $businessName,
         private Sms $sms,
         private SmsGroup $smsGroup,
+        private string $fromNumber
     ){
     }
 
@@ -45,7 +46,8 @@ class SendMassSms implements ShouldQueue
             $spotbieUser->first_name,
             $this->businessName,
             $this->sms,
-            $this->smsGroup
+            $this->smsGroup,
+            $this->fromNumber,
         );
     }
 }
