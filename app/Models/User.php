@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as IlluminatePassword;
 use Illuminate\Support\Str;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Rules\FirstName;
 use App\Rules\LastName;
@@ -654,8 +653,10 @@ class User extends Authenticatable implements JWTSubject
 
             $user->save();
             $user->spotbieUser->save();
+            $user->refresh();
 
             if (array_key_exists('phone_number', $validatedData) && $user->spotbieUser->sms_opt_in === 0) {
+                $user->spotbieUser->sms_opt_in = 1;
                 $sms = app(SystemSms::class)->createSettingsSms($user, $validatedData['phone_number']);
                 SendSystemSms::dispatch($user, $sms, $validatedData['phone_number'])
                     ->onQueue(config('spotbie.sms.queue'));
@@ -666,15 +667,9 @@ class User extends Authenticatable implements JWTSubject
                 } else {
                     $user->spotbieUser->phone_number = null;
                 }
-                $user->spotbieUser->save();
-
-                Log::info(
-                    '[UserService]-[sendSettingsSms]: Phone Number Updated' .
-                    ', User ID: ' . $user->id .
-                    ', Phone-Number: ' . $user->spotbieUser->phone_number
-                );
             }
 
+            $user->spotbieUser->save();
         }, 3);
 
         $response = [
