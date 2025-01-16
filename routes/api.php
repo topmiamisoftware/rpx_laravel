@@ -30,3 +30,5 @@ Route::prefix('business-app')->group(__DIR__ . '/AppDownload/BusinessApp.routes.
 Route::prefix('promoter')->group(__DIR__ . '/Promoter/Promoter.routes.php');
 Route::prefix('meet-ups')->group(__DIR__ . '/MeetUps/MeetUps.routes.php');
 Route::prefix('my-friends')->group(__DIR__ . '/MyFriends/MyFriends.routes.php');
+Route::prefix('cache-bust')->group(__DIR__ . '/CacheBust/CacheBust.routes.php');
+
