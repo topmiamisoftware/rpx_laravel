@@ -1,61 +1,51 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+<h1>Rewards Platform X</h2>
+
+<h2>Open Source Client Mobile App (iOS and Android) for a Rewards Platform</h2>
 
 <p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
+    This is the client side app portion of Rewards Platform X platform. It uses Capacitor, Ionic, and Angular. The whole purpose of the client app is to give shoppers a way to interface with the backend data provided by the Laravel Backend. There is room for improvement. Feel free to make your PRs and read the issues as you wish.
 </p>
 
-## About Laravel
+## Rewards Platform X Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Location Updates for people who sign up to the platform.
+- Rewards Uploader
+- Points Awarder
+- Tier Management
+- Meet Ups
+- Friendships
+- Nearby Promotions Messages
+- Text Messages Upon Points and Award Redemption
+- SMS Promotion for all your customers.
+- Email Promotion for all your customers. 
+- Track how many points users have in your store.
+- Make points available for use in either one location all throughout all franchises.
+- Update your food trucks location easily.
+- Upload advertisements from third parties onto your app.
+- Leave private feedback to businesses.
+- Display businesses in order of which business has gotten the least exposure lately.
+- Invite friends from outside of the app through text messaging.
+- A subscription system if you want to sign up and charge monthly memberships for retail stores.
+- Receipt Analyzer - Read Uploaded receipts from users and see what they have been spending on. This is still under development.
+- A Promoter feature in order for your promoters to go promote your app.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## What you will currently need for a successful installation.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+- Android and Apple Developer accounts.
+- MacOS to run the iOS App.
+- Capacitor
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Thank you for considering contributing to Rewards Platform X.
 
 ## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+In order to ensure that Rewards Platform X is welcoming to all, please review and abide by the [Code of Conduct].
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Rewards Platform X, please send an e-mail to Franco Petitfour via [rank1.tech.official@gmail.com](rank1.tech.official@gmail.com). All security vulnerabilities will be promptly addressed.
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Rewards Platform X project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
