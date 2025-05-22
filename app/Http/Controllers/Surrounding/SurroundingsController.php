@@ -123,7 +123,7 @@ class SurroundingsController extends Controller
         })
         ->where('business.is_verified', 1)
         ->where('business.categories', $categories)
-        ->having('max_distance', '>', $maxDistance)
+        ->having('max_distance', '<=', $maxDistance)
         ->has('rewards')
         ->inRandomOrder()
         ->limit(8)
