@@ -107,11 +107,10 @@ class SurroundingsController extends Controller
             'spotbie_users.user_type',
             'loyalty_point_balances.balance',
             'loyalty_point_balances.loyalty_point_dollar_percent_value',
-            DB::raw("(
-                $earthRadius * ACOS(
-                    COS(RADIANS($loc_y)) * COS(RADIANS(business.loc_y)) *
-                    COS(RADIANS($loc_x) - RADIANS(business.loc_x)) +
-                    SIN(RADIANS($loc_y)) * SIN(RADIANS(business.loc_y))
+            DB::raw("($earthRadius * ACOS(
+                    COS(RADIANS($loc_x)) * COS(RADIANS(business.loc_x)) *
+                    COS(RADIANS(business.loc_y) - RADIANS($loc_y)) +
+                    SIN(RADIANS($loc_x)) * SIN(RADIANS(business.loc_x))
                 )
             ) AS max_distance"),
         )
