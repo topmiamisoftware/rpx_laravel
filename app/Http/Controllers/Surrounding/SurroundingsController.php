@@ -90,7 +90,7 @@ class SurroundingsController extends Controller
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
 
-        $maxDistance = 20;
+        $maxDistance = 10;
         $earthRadius = "3958.8";
 
         $data = Business::select(
