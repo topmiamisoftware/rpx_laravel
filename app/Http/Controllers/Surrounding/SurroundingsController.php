@@ -110,7 +110,7 @@ class SurroundingsController extends Controller
             DB::raw("(
                 $earthRadius * ACOS(
                     COS(RADIANS($loc_y)) * COS(RADIANS(business.loc_y)) *
-                    COS(RADIANS(business.loc_x) - RADIANS($loc_x)) +
+                    COS(RADIANS($loc_x) - RADIANS(business.loc_x)) +
                     SIN(RADIANS($loc_y)) * SIN(RADIANS(business.loc_y))
                 )
             ) AS max_distance"),
