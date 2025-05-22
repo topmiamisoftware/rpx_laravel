@@ -90,7 +90,7 @@ class SurroundingsController extends Controller
         $loc_x = $validatedData['loc_x'];
         $loc_y = $validatedData['loc_y'];
 
-        $maxDistance = 0.1;
+        $maxDistance = 20;
         $earthRadius = "3958.8";
 
         $data = Business::select(
@@ -123,6 +123,7 @@ class SurroundingsController extends Controller
         })
         ->where('business.is_verified', 1)
         ->where('business.categories', $categories)
+        ->having('max_distance', '<', $maxDistance)
         ->has('rewards')
         ->inRandomOrder()
         ->limit(8)
